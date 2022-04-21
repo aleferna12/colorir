@@ -4,7 +4,7 @@ Examples:
     Create a new color format and make it default:
 
     >>> from colorir import config, ColorFormat
-    >>> config.DEFAULT_COLOR_FORMAT = ColorFormat(sRGB, max_rgba=1)
+    >>> config.DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB, max_rgba=1)
 
     Change the default locations from which palettes are loaded and to which they are saved:
 
@@ -19,7 +19,7 @@ Attributes:
 """
 from os import path
 from .color_format import ColorFormat
-from .color import sRGB
+from .color import HexRGB
 
 DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
-DEFAULT_COLOR_FORMAT = ColorFormat(sRGB, round_to=0)
+DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB, round_to=0)

@@ -83,7 +83,7 @@ sRGB(255, 0, 255), sRGB(255.0, 17.0, 255.0)]
     >>> kivy_palette.red
     sRGB(1.0, 0.0, 0.0, 1)
 
-    By default, the default color format is similar to the ine used by PyGame (RGB, 256 colors).
+    By default, the default color format is similar to the one used by PyGame (RGB, 256 colors).
 
     >>> from colorir import config, PYGAME_COLOR_FORMAT
     >>> config.DEFAULT_COLOR_FORMAT = PYGAME_COLOR_FORMAT # Change default format back to PyGame
@@ -223,6 +223,10 @@ class Palette:
             with open(palette_file) as file:
                 palette = json.load(file)
             for c_name, c_rgba in palette.items():
+                c_rgba = (int(c_rgba[3:5], 16) / 255,
+                          int(c_rgba[5:7], 16) / 255,
+                          int(c_rgba[7:9], 16) / 255,
+                          int(c_rgba[1:3], 16) / 255)
                 new_color = palette_obj.color_format._from_rgba(c_rgba)
                 old_color = palette_obj.get_color(c_name, new_color)
                 if new_color != old_color and warnings:
@@ -463,5 +467,9 @@ class Palette:
         if directory is None:
             directory = config.DEFAULT_PALETTES_DIR
         with open(Path(directory) / (self.name + ".palette"), "w") as file:
-            json.dump({c_name: c_val._rgba for c_name, c_val in self._color_dict.items()}, file,
-                      indent=4)
+            formatted_colors = {}
+            for c_name, c_rgba in self._color_dict.items():
+                c_rgba = tuple(round(spec * 255) for spec in c_rgba)
+                c_rgba = "#%02x" % c_rgba[-1] + "%02x%02x%02x" % c_rgba[:3]
+                formatted_colors[c_name] = c_rgba
+            json.dump(formatted_colors, file, indent=4)

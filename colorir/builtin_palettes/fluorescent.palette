@@ -1,86 +1,16 @@
 {
-    "radicalred": [
-        1.0,
-        0.20784313725490197,
-        0.3686274509803922,
-        1.0
-    ],
-    "wildwatermelon": [
-        0.9921568627450981,
-        0.3568627450980392,
-        0.47058823529411764,
-        1.0
-    ],
-    "outrageousorange": [
-        1.0,
-        0.3764705882352941,
-        0.21568627450980393,
-        1.0
-    ],
-    "atomictangerine": [
-        1.0,
-        0.6,
-        0.4,
-        1.0
-    ],
-    "neoncarrot": [
-        1.0,
-        0.6,
-        0.2,
-        1.0
-    ],
-    "sunglow": [
-        1.0,
-        0.8,
-        0.2,
-        1.0
-    ],
-    "laserlemon": [
-        1.0,
-        1.0,
-        0.4,
-        1.0
-    ],
-    "electriclime": [
-        0.8,
-        1.0,
-        0.0,
-        1.0
-    ],
-    "screamingreen": [
-        0.4,
-        1.0,
-        0.4,
-        1.0
-    ],
-    "magicmint": [
-        0.6666666666666666,
-        0.9411764705882353,
-        0.8196078431372549,
-        1.0
-    ],
-    "blizzardblue": [
-        0.3137254901960784,
-        0.7490196078431373,
-        0.9019607843137255,
-        1.0
-    ],
-    "shockingpink": [
-        1.0,
-        0.43137254901960786,
-        1.0,
-        1.0
-    ],
-    "razzledazzlerose": [
-        0.9333333333333333,
-        0.20392156862745098,
-        0.8235294117647058,
-        1.0
-    ],
-    "hotmagenta": [
-        1.0,
-        0.0,
-        0.8,
-        1.0
-    ]
+    "radicalred": "#ffff355e",
+    "wildwatermelon": "#fffd5b78",
+    "outrageousorange": "#ffff6037",
+    "atomictangerine": "#ffff9966",
+    "neoncarrot": "#ffff9933",
+    "sunglow": "#ffffcc33",
+    "laserlemon": "#ffffff66",
+    "electriclime": "#ffccff00",
+    "screamingreen": "#ff66ff66",
+    "magicmint": "#ffaaf0d1",
+    "blizzardblue": "#ff50bfe6",
+    "shockingpink": "#ffff6eff",
+    "razzledazzlerose": "#ffee34d2",
+    "hotmagenta": "#ffff00cc"
 }

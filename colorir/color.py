@@ -17,7 +17,7 @@ Examples:
 
     Compare the perceived distance between two colors:
 
-    >>> perceived_dist(sRGB(255, 0, 0), sRGB(255, 255, 0))
+    >>> perceived_dist(HexRGB("#ff0000"), HexRGB("#ff0000"))
     2.0
 
 References:
