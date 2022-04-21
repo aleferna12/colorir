@@ -1,8 +1,8 @@
 """Palettes to hold collections of colors that can be shared between projects.
 
-The :class:`Palette` class provides an easy way to create and manage your favorite colors in
-different projects. In this context, a palette should be understood as any collection of colors that
-can be grouped due to a common feature, not only colors that necessarily look good together.
+The :class:`Palette` class provides an easy way to manage your favorite colors in different
+projects. In this context, a palette should be understood as any collection of colors that
+can be grouped due to a common feature, not only colors that necessarily "look good" together.
 
 Examples:
     Create a palette with the additive elementary colors and call it 'elementary':
@@ -14,66 +14,96 @@ Examples:
 
     Following CSS color-naming conventions, our color names are all lowercase with no
     underscores, but you may name a color as you wish as long as it complies with python's
-    syntax for attribute names
+    syntax for attribute names.
 
-    Add subtractive elementary colors from their hex codes:
+    We can add colors by providing a name and a color-like object to the :meth:`Palette.add()`
+    method:
 
     >>> palette.add("cyansub", "#00ffff")
-    >>> palette.add("magentasub", "#ff00ff")
-    >>> palette.add("yellowsub", "#ffff00")
+    >>> palette.add("yellowsub", (255, 0, 255))
+    >>> palette.add("magentasub", HSL(300, 1, 0.5))
 
-    Now suppose we want to use the colors we added to our palette.
+    Note that in how we didn't have to specify the tuple as a color system for "yellowsub".
+    This is because this palette already contains sRGB objects (the additive elementary colors
+    that we used to create the palette) and therefore knows to interpret any format as such!
 
-    For that we can call them individually as attributes of the palette:
+    Conversely, although we specified "magentasub" as an HSL color, it will be converted to sRGB
+    internally. This implicit conversion becomes very useful when we want to store colors in a
+    particular color system but only have their values in another color system, or when we want to
+    modify colors based on attributes such as saturation, luminance etc.
 
-    >>> palette.magentasub
-    sRGB(255, 0, 255)
+    For more details on how color-like objects are interpreted, visit the documentation for
+    :class:`Palette` and :meth:`ColorFormat.format()`.
 
-    Or we can get them all at once with the :attr:`Palette.color` attribute:
+    To then modify a color after it has been added, use the :meth:`Palette.update()` method:
+
+    >>> palette.update("magentasub", "#ff11ff") # Mix some green component into the magenta
+
+    Now suppose we want to finally use the colors we added to our palette. For that we can get them
+    individually as attributes of the palette:
+
+    >>> palette.cyansub
+    sRGB(0.0, 255.0, 255.0)
+
+    Or we can get them all at once with the :attr:`Palette.color` property:
 
     >>> palette.colors
-    [sRGB(255, 0, 0), sRGB(0, 255, 0), sRGB(0, 0, 255), sRGB(0, 255, 255), sRGB(255, 0, 255), \
-sRGB(255, 255, 0)]
+    [sRGB(255.0, 0.0, 0.0), sRGB(0.0, 255.0, 0.0), sRGB(0.0, 0.0, 255.0), sRGB(0.0, 255.0, 255.0), \
+sRGB(255, 0, 255), sRGB(255.0, 17.0, 255.0)]
 
-    Since we are done using our palette for now, let's save it to the default palette directory
-    so that we can load it latter with :meth:`Palette.load()` when needed:
+    Since we are done using our palette for now, let's save it to the default palette directory:
 
     >>> palette.save()
 
-    To load the palette latter:
+    We can then latter load the palette (even from other projects if we wish!):
 
     >>> palette = Palette.load("elementary")
 
-    When loading or instantiating a palette, an :class:`ColorFormat` may be passed to the
-    function:
+    When loading or instantiating a palette, a :class:`ColorFormat` may be passed to the
+    constructor to specify how we want the color to be represented:
 
     >>> c_format = ColorFormat(color_sys=HexRGB, uppercase=True)
     >>> css = Palette.load("css", color_format=c_format)
     >>> css.red
     HexRGB(#FF0000)
 
-    You can also temporarily change the default color format system-wide so that new palettes
-    default to it:
+    We can also change the format of all colors in a palette at any time by re-assigning its
+    :attr:`Palette.color_format` property:
 
-    >>> from colorir import config
-    >>> from colorir.color_format import WEB_COLOR_FORMAT, PYGAME_COLOR_FORMAT
-    >>> config.DEFAULT_COLOR_FORMAT = WEB_COLOR_FORMAT
-    >>> web_palette = Palette.load("css")
-    >>> web_palette.red
-    HexRGB(#ff0000)
-    >>> config.DEFAULT_COLOR_FORMAT = PYGAME_COLOR_FORMAT
-    >>> pygame_palette = Palette.load("rainbow")
+    >>> css.color_format = ColorFormat(color_sys=sRGB)
+    >>> css.red
+    sRGB(255.0, 0.0, 0.0)
+
+    Alternatively, we can temporarily change the default color format system-wide so that new
+    palettes (that don't already hold :class:`ColorBase` objects) default to it:
+
+    >>> from colorir import config, KIVY_COLOR_FORMAT
+    >>> config.DEFAULT_COLOR_FORMAT = KIVY_COLOR_FORMAT # Change default format to Kivy-compatible
+    >>> kivy_palette = Palette(red="#ff0000")
+    >>> kivy_palette.red
+    sRGB(1.0, 0.0, 0.0, 1)
+
+    By default, the default color format is similar to the ine used by PyGame (RGB, 256 colors).
+
+    >>> from colorir import config, PYGAME_COLOR_FORMAT
+    >>> config.DEFAULT_COLOR_FORMAT = PYGAME_COLOR_FORMAT # Change default format back to PyGame
+    >>> pygame_palette = Palette(red=(255, 0, 0))
     >>> pygame_palette.red
     sRGB(255, 0, 0)
+
+    It is woth noting that all color classes inherit either ``tuple`` os ``str``, meaning that
+    no conversion is needed when passing them to other frameworks such as PyGame, Kivy and HTML
+    embedding templates like Jinja.
 """
 
 import json
 from pathlib import Path
-from typing import Dict, Union, List, Tuple
-from logging import warning
-import config
-from color import ColorBase, ColorLike, sRGB, HexRGB
-from color_format import ColorFormat
+from typing import Dict, Union, List
+from warnings import warn
+
+from . import config, HSL
+from .color import ColorBase, ColorLike, sRGB, HexRGB, perceived_dist
+from .color_format import ColorFormat
 
 _throw_exception = object()
 _builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
@@ -82,6 +112,21 @@ _builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
 class Palette:
     """Class that holds colors values associated with names.
 
+    Examples:
+        >>> palette = Palette(red=(255, 0, 0)) # Uses default color format
+        >>> palette.red
+        sRGB(255, 0, 0)
+
+        For more examples see the documentation of the :mod:`palette` module.
+
+    Args:
+        name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+            If the `palettes` parameter is a single string, defaults to that.
+        color_format: Color format specifying how the colors of this :class:`Palette` should be
+            stored. Defaults to the format of the colors in the `colors` parameters if they are
+            :class:`ColorBase` objects, or to the value specified in
+            :data:`config.DEFAULT_COLOR_FORMAT` if they are not.
+        colors: Colors that will be stored in this palette.
 
     Attributes:
         name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
@@ -133,7 +178,7 @@ class Palette:
                 parameter will be loaded. Defaults to the value specified in
                 :data:`config.DEFAULT_PALETTES_DIR`.
             search_builtins: Whether `palettes` also includes built-in palettes such as 'css' or
-                'rainbow'. Set to ``False`` to ensure only palette files found in `palettes_dir` are
+                'basic'. Set to ``False`` to ensure only palette files found in `palettes_dir` are
                 loaded.
             name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
                 If the `palettes` parameter is a single string, defaults to that.
@@ -147,9 +192,9 @@ class Palette:
 
             >>> css_palette = Palette.load('css')
 
-            Loads both the rainbow and fluorescent palettes into a new palette called 'colorful':
+            Loads both the basic and fluorescent palettes into a new palette called 'colorful':
 
-            >>> colorful = Palette.load(['rainbow', 'fluorescent'], name='colorful')
+            >>> colorful = Palette.load(['basic', 'fluorescent'], name='colorful')
         """
         if palettes_dir is None:
             search_dirs = config.DEFAULT_PALETTES_DIR
@@ -181,7 +226,7 @@ class Palette:
                 new_color = palette_obj.color_format._from_rgba(c_rgba)
                 old_color = palette_obj.get_color(c_name, new_color)
                 if new_color != old_color and warnings:
-                    warning(
+                    warn(
                         f"a discrepancy was detected when adding color '{c_name}' "
                         f"({new_color}) from palette named '{palette_name}': '{c_name}' is "
                         f"already present with a different value ({old_color})")
@@ -235,22 +280,33 @@ class Palette:
         arg_str += ", ".join(f"{c_name}={c_val}" for c_name, c_val in self._color_dict.items())
         return f"{self.__class__.__name__}({arg_str})"
 
-    def get_color(self, name: str, fallback=_throw_exception) -> ColorBase:
-        """Retrieves a color from the :class:`Palette` given its name.
+    def get_color(self,
+                  name: Union[str, List[str]],
+                  fallback=_throw_exception) -> Union[ColorBase, List[ColorBase]]:
+        """Retrieves one or more colors from the :class:`Palette` given their names.
 
         Args:
-            name: Name of the color to be retrieved.
-            fallback: What to return in case the color is not present in the palette. By default,
-                throws an exception.
+            name: One or more names of colors in this palette.
+            fallback: What to return instead of colors that are not found in the palette. By
+                default, throws an exception.
 
         Examples:
-            >>> palette = Palette(red=sRGB(255, 0, 0))
+            >>> palette = Palette(red=(255, 0, 0), blue=(0, 0, 255))
             >>> palette.get_color("red")
             sRGB(255, 0, 0)
+            >>> palette.get_color(["red", "blue"])
+            [sRGB(255, 0, 0), sRGB(0, 0, 255)]
+
+        Returns:
+            A list of
         """
         if fallback is _throw_exception:
-            return self._color_dict[name]
-        return self._color_dict.get(name, fallback)
+            if isinstance(name, str):
+                return self._color_dict[name]
+            return [self._color_dict[name_i] for name_i in name]
+        if isinstance(name, str):
+            return self._color_dict.get(name, fallback)
+        return [self._color_dict.get(name_i, fallback) for name_i in name]
 
     def get_names(self, color: ColorLike) -> list:
         """Finds the names of the provided color in this :class:`Palette`.
@@ -259,7 +315,7 @@ class Palette:
         names of the colors that are equivalent to the one provided.
 
         Args:
-            color: The value of the color to be created. Can be an instance of any
+            color: The value of the color to be searched for. Can be an instance of any
                 :doc:`color class <color>` or, alternatively, a color-like object that resembles
                 the color you want to search for.
 
@@ -271,6 +327,10 @@ class Palette:
             ['red']
             >>> palette.get_names("#ff0000")
             ['red']
+
+        Returns:
+            A single :class:`ColorBase` if `name` is a string or a list of :class:`ColorBase`s if
+            `name` is a list of strings.
         """
         color = self.color_format.format(color)
         color_list = []
@@ -279,9 +339,34 @@ class Palette:
                 color_list.append(name)
         return color_list
 
-    # TODO
-    def find_closest(self, color: ColorLike) -> Tuple[str, ColorBase]:
-        pass
+    def most_similar(self, color: ColorLike, n=1):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        For more details on the algorithm implemented to calculate similarity, see
+        :func:`perceived_dist()` documentation.
+
+        Args:
+            color: The value of the color of reference. Can be an instance of any
+                :doc:`color class <color>` or, alternatively, a color-like object that resembles
+                the color to which others will be compared in search of similar results.
+            n: How many similar colors to be retrieved.
+
+        Examples:
+            >>> palette = Palette(red=(255, 0, 0), blue=(0, 0, 255))
+            >>> palette.most_similar((247, 0, 0))
+            sRGB(255, 0, 0)
+
+        Returns:
+            A single :class:`ColorBase` if `n` == 1 or a list of :class:`ColorBase`s if n > 1. If
+            the return type is a list, the colors will be ordered from most similar to least.
+        """
+        color = self.color_format.format(color)
+        closest = sorted(self.colors, key=lambda color2: perceived_dist(color, color2))
+        if n == 1:
+            return closest[0]
+        elif n > 1:
+            return closest[:n]
+        raise ValueError("'n' must be a positive integer")
 
     def add(self, name: str, color: ColorLike):
         """Adds a color to a palette.
@@ -325,7 +410,7 @@ class Palette:
         Examples:
             Create a slightly dark shade of red:
             
-            >>> palette = Palette(myred=sRGB(250, 0, 0))
+            >>> palette = Palette(myred=(250, 0, 0))
             >>> palette.myred
             sRGB(250, 0, 0)
             
@@ -364,9 +449,9 @@ class Palette:
         :meth:`remove`, the modifications on the palette will not be permanent.
 
         Examples:
-            Loads both the rainbow and fluorescent palettes into a new palette called 'colorful':
+            Loads both the basic and fluorescent palettes into a new palette called 'colorful':
 
-            >>> colorful = Palette.load(['rainbow', 'fluorescent'], name='colorful')
+            >>> colorful = Palette.load(['basic', 'fluorescent'], name='colorful')
 
             Save the palette to the default palette directory:
 

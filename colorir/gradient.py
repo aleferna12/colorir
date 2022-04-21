@@ -1,35 +1,52 @@
-"""Classes to create gradients between colors.
+"""Gradients between colors.
 
 For now only the RGB linear gradient is available.
+
+Examples:
+    Get purple inbetween red and blue:
+
+    >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255), sRGB(255, 255, 255)])
+    >>> grad.perc(0.25)
+    sRGB(127.5, 0.0, 127.5)
+
+    Get 2 colors interspaced in the gradient:
+
+    >>> grad.n_colors(3)
+    [sRGB(127.5, 0.0, 127.5), sRGB(0.0, 0.0, 255.0), sRGB(127.5, 127.5, 255.0)]
 """
 from typing import Iterable
 from math import pow
-import config
-from color import ColorBase
+from . import config
+from .color import ColorBase, sRGB
 
 
 class RGBLinearGrad:
-    """Poly-linear interpolation gradient using the `RGB color space`_.
-
-    Although `RGB color space`_ is used for interpolation, any :mod:`color classes <color>`
-    can be used as inputs.
+    """Poly-linear interpolation gradient using the RGB color space [1]_.
 
     Args:
-        colors: List of colors that compose the gradient.
+        colors: List of colors that compose the gradient There can be more than two colors in this
+            list.
         color_format: Color format of the
-        use_linear_RGB: Whether to use `linear RGB`_ rather than sRGB to create the gradient.
+        use_linear_RGB: Whether to use linear RGB rather than sRGB to create the gradient.
 
-    .. _linear RGB: https://aykevl.nl/2019/12/colors
+    Notes:
+        Often using linear RGB may result in a gradient that looks more natural to the human eye
+        [2]_
+
+    References:
+        .. [1] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
+        .. [2] Ayke van Laethem at https://aykevl.nl/2019/12/colors
     """
 
     def __init__(self, colors: Iterable[ColorBase], color_format=None, use_linear_RGB=False):
-        self.colors = list(colors)
+        colors = list(colors)
         if color_format is None:
-            if self.colors and isinstance(self.colors[0], ColorBase):
-                color_format = self.colors[0].get_format()
+            if colors and isinstance(colors[0], ColorBase):
+                color_format = colors[0].get_format()
             else:
                 color_format = config.DEFAULT_COLOR_FORMAT
         self.color_format = color_format
+        self.colors = [self.color_format.format(color) for color in colors]
         self.use_linear_RGB = use_linear_RGB
 
     def perc(self, p: float) -> ColorBase:
@@ -40,11 +57,16 @@ class RGBLinearGrad:
                 drawn.
 
         Examples:
-            >>> cdict = ColorDict()
-            >>> grad = RGBLinearGrad([cdict.red, cdict.blue])
-            >>> grad.perc(0.5) # Get purple inbetween red and blue
+            Get purple inbetween red and blue:
+
+            >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
+            >>> grad.perc(0.5)
             sRGB(127.5, 0.0, 127.5)
-            >>> grad.perc(0.2) # Get very "reddish" purple
+
+            Get a very "reddish" purple:
+
+            >>> grad.perc(0.2)
+            sRGB(204.0, 0.0, 51.0)
         """
 
         i = int(p * (len(self.colors) - 1))
@@ -55,12 +77,21 @@ class RGBLinearGrad:
         )
         return self.color_format._from_rgba(new_rgba)
 
-    def n_colors(self, n: int, stripped=True):
+    def n_colors(self, n: int, no_ends=True):
+        """Return `n` interspaced colors from the gradient.
+
+        Args:
+            n: Number of colors to retrieve.
+            no_ends: By default, color values returned by this method will never include the very
+                extremes of the gradient. This allows sampling a small number of colors (such as
+                two) without having it return the same colors that were used to create the
+                gradient in the first place.
+        """
         colors = []
-        sub = 1 if stripped else -1
+        sub = 1 if no_ends else -1
         for i in range(n):
-            p = (i + stripped) / (n + sub)
-            colors.append(self.color_format._from_rgba(self.perc(p)))
+            p = (i + no_ends) / (n + sub)
+            colors.append(self.perc(p))
         return colors
 
     def _linear_interp(self, color_1: ColorBase, color_2: ColorBase, p: float):

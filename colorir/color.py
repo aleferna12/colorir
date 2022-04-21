@@ -1,16 +1,33 @@
-"""Color classes that allow for easy conversion between color spaces.
+"""Common color spaces and systems.
 
-This module contains different classes that represent a few of the most common `color spaces`_.
+This module contains different classes that represent a few of the most common color spaces [1]_.
+Colors can be compared, converted to and passed as arguments to different classes.
 
-Although these classes may be used individually, they were originally designed to be used within
-a :doc:`ColorDict <cdict>` object.
+Examples:
+    Create some colors and compare them:
 
-.. _color spaces: https://en.wikipedia.org/wiki/Color_model
+    >>> sRGB(255, 0, 0) == HSL(0, 1 , 0.5)
+    True
+
+    Convert an RGB color to CMYK:
+
+    >>> rgb_red = sRGB(255, 0, 0)
+    >>> rgb_red.cmyk()
+    CMYK(0.0, 1.0, 1.0, 0.0)
+
+    Compare the perceived distance between two colors:
+
+    >>> perceived_dist(sRGB(255, 0, 0), sRGB(255, 255, 0))
+    2.0
+
+References:
+    .. [1] Wikipedia at https://en.wikipedia.org/wiki/Color_model.
 """
 import colorsys
 import abc
+from math import sqrt
 from typing import Union
-import color_format
+import colorir
 
 ColorLike = Union["ColorBase", str, tuple]
 
@@ -18,8 +35,7 @@ ColorLike = Union["ColorBase", str, tuple]
 class ColorBase(metaclass=abc.ABCMeta):
     """Base class from which all color classes inherit.
 
-    .. note::
-
+    Notes:
         This class is abstract and should not be instantiated.
     """
 
@@ -35,7 +51,7 @@ class ColorBase(metaclass=abc.ABCMeta):
     def get_format(self):
         """Returns a :clas:`ColorFormat` representing the format of this color object."""
         format_ = {k: v for k, v in self.__dict__.items() if k != "_rgba"}
-        return color_format.ColorFormat(self.__class__, **format_)
+        return colorir.color_format.ColorFormat(self.__class__, **format_)
 
     @classmethod
     @abc.abstractmethod
@@ -101,8 +117,7 @@ class ColorBase(metaclass=abc.ABCMeta):
 class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
     """Base class from which all color classes that are represented by tuples inherit.
 
-    .. note::
-
+    Notes:
         This class is abstract and should not be instantiated.
     """
 
@@ -131,9 +146,10 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
 
 
 class sRGB(ColorTupleBase):
-    """Represents a color in the `RGB color space`_.
+    """Represents a color in the RGB color space [1]_.
 
-    .. _RGB color space: https://en.wikipedia.org/wiki/SRGB
+    References:
+        .. [1] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
 
     Args:
         r: Red component of the color.
@@ -152,7 +168,7 @@ class sRGB(ColorTupleBase):
     """
 
     def __new__(cls, r: float, g: float, b: float, a: float = None, max_rgba=255, include_a=False,
-                round_to=0):
+                round_to=-1):
         if a is None:
             a = max_rgba
 
@@ -163,13 +179,13 @@ class sRGB(ColorTupleBase):
         obj = super().__new__(cls,
                               (r, g, b, a),
                               (r / max_rgba, g / max_rgba, b / max_rgba, a / max_rgba),
-                              include_a=False,
+                              include_a=include_a,
                               round_to=round_to)
         obj.max_rgba = max_rgba
         return obj
 
     @classmethod
-    def _from_rgba(cls, rgba, max_rgba=255, include_a=False, round_to=0):
+    def _from_rgba(cls, rgba, max_rgba=255, include_a=False, round_to=-1):
         rgba_ = [spec * max_rgba for spec in rgba]
         obj = super().__new__(cls,
                               rgba_,
@@ -181,9 +197,9 @@ class sRGB(ColorTupleBase):
 
 
 class HSL(ColorTupleBase):
-    """Represents a color in the `HSL color space`_.
+    """Represents a color in the HSL color space [1]_.
 
-    .. _HSL color space: https://en.wikipedia.org/wiki/HSL_and_HSV
+    .. [1] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
 
     Args:
         h: HUE component of the color.
@@ -240,9 +256,10 @@ class HSL(ColorTupleBase):
 
 
 class HSV(ColorTupleBase):
-    """Represents a color in the `HSV color space`_.
+    """Represents a color in the HSV color space [1]_.
 
-    .. _HSV color space: https://en.wikipedia.org/wiki/HSL_and_HSV
+    References:
+        .. [1] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
 
     Args:
         h: HUE component of the color.
@@ -299,9 +316,10 @@ class HSV(ColorTupleBase):
 
 
 class CMYK(ColorTupleBase):
-    """Represents a color in the `CMYK color space`_.
+    """Represents a color in the CMYK color space [1]_.
 
-    .. _CMYK color space: https://en.wikipedia.org/wiki/CMYK_color_model
+    References:
+        .. [1] Wikipedia at https://en.wikipedia.org/wiki/CMYK_color_model.
 
     Args:
         c: Cyan component of the color.
@@ -366,9 +384,10 @@ class CMYK(ColorTupleBase):
 
 
 class CMY(ColorTupleBase):
-    """Represents a color in the `CMY color space`_.
+    """Represents a color in the CMY color space [1]_.
 
-    .. _CMY color space: https://en.wikipedia.org/wiki/CMY_color_model
+    References:
+        .. [1] Wikipedia at https://en.wikipedia.org/wiki/CMY_color_model.
 
 
     Args:
@@ -419,22 +438,24 @@ class CMY(ColorTupleBase):
 
 
 class HexRGB(ColorBase, str):
-    """Represents a color in the `RGB color space`_ as a hexadecimal string.
+    """Represents a color in the RGB color space [1]_ as a hexadecimal string.
 
-    Is mostly used for representing `colors in web applications`_.
+    Is mostly used for representing colors in web applications [2]_.
 
-    .. _color_dict in web applications: https://en.wikipedia.org/wiki/Web_colors
+    References:
+        .. [1] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
+        .. [2] Wikipedia at https://en.wikipedia.org/wiki/Web_colors
 
     Args:
         hex_str: Hexadecimal string from which the :class:`HexRGB` instance will be built.
             May or may not include a "#" character in its beginning.
-        uppercase: TODO
+        uppercase: Whether the color will be represented in uppercase or lowercase.
         include_a: Whether to include the opacity parameter `a` in the constructed string.
             Setting it to ``True`` may result in an object such as :code:`HexRGB('#ffffff00')`
             instead of :code:`HexRGB('#ffff00')`, for exemple.
     """
 
-    def __new__(cls, hex_str: str, uppercase=False, include_a=False):
+    def __new__(cls, hex_str: str, uppercase=False, include_hash=True, include_a=False):
         hex_str = hex_str.lstrip("#")
         if len(hex_str) == 6:
             a = 1
@@ -448,7 +469,11 @@ class HexRGB(ColorBase, str):
                int(hex_str[-4:-2], 16) / 255,
                int(hex_str[-2:], 16) / 255)
 
-        obj = str.__new__(cls, hex_str if not uppercase else hex_str.upper())
+        if uppercase:
+            hex_str = hex_str.upper()
+        if include_hash:
+            hex_str = '#' + hex_str
+        obj = str.__new__(cls, hex_str)
         obj._rgba = rgb + (a,)
         obj.uppercase = uppercase
         obj.include_a = include_a
@@ -462,16 +487,43 @@ class HexRGB(ColorBase, str):
                                                                                              other)
 
     @classmethod
-    def _from_rgba(cls, rgba, uppercase=False, include_a=False):
+    def _from_rgba(cls, rgba, uppercase=False, include_hash=True, include_a=False):
         rgba_ = tuple([int(spec * 255) for spec in rgba])
         hex_str = '%02x%02x%02x' % rgba_[:3]
-        if not include_a:
-            hex_str = '#' + hex_str
-        else:
-            hex_str = '#%02x' % rgba_[-1] + hex_str
 
-        obj = str.__new__(cls, hex_str if not uppercase else hex_str.upper())
+        if include_a:
+            hex_str = '%02x' % rgba_[-1] + hex_str
+        if uppercase:
+            hex_str = hex_str.upper()
+        if include_hash:
+            hex_str = '#' + hex_str
+
+        obj = str.__new__(cls, hex_str)
         obj.uppercase = uppercase
         obj.include_a = include_a
         obj._rgba = tuple(rgba)
         return obj
+
+
+def perceived_dist(color1: ColorBase, color2: ColorBase):
+    """Calculates the perceived distance between two colors.
+
+    Although there are many methods to approach the similarity of colors mathematically, the
+    algorithm implemented in this function [1]_ tries to provide balance between a fast and
+    efficient computation.
+
+    However, the distance that results from such calculations does not hold any particular
+    mathematical meaning, and is therefore mostly useful in comparisons.
+
+    References:
+        .. [1] Colour metric by Thiadmer Riemersma. Available on
+            https://www.compuphase.com/cmetric.htm.
+    """
+    rgba1, rgba2 = color1._rgba, color2._rgba
+    avg_r = (rgba1[0] + rgba2[0]) / 2
+    d_r = rgba1[0] - rgba2[0]
+    d_g = rgba1[1] - rgba2[1]
+    d_b = rgba1[2] - rgba2[2]
+    return sqrt((2 + avg_r) * d_r**2
+                + 4 * d_g**2
+                + (2 + 1 - avg_r) * d_b**2)
