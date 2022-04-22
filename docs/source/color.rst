@@ -1,5 +1,5 @@
-Color Classes
-=============
+Color
+=====
 
 .. automodule:: colorir.color
 	:members:

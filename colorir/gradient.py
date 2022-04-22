@@ -1,6 +1,6 @@
 """Gradients between colors.
 
-For now only the RGB linear gradient is available.
+For now only an RGB linear gradient is available.
 
 Examples:
     Get purple inbetween red and blue:
@@ -26,7 +26,7 @@ class RGBLinearGrad:
     Args:
         colors: List of colors that compose the gradient There can be more than two colors in this
             list.
-        color_format: Color format of the
+        color_format: Color format specifying how to store and create colors.
         use_linear_RGB: Whether to use linear RGB rather than sRGB to create the gradient.
 
     Notes:

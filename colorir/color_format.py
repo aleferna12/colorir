@@ -11,17 +11,18 @@ frameworks can be imported from this module, such as :const:`PYGAME_COLOR_FORMAT
 :const:`WEB_COLOR_FORMAT`.
 
 Examples:
-    Import basic colors into a palette to work in a web project:
+    Import basic colors into a palette to work in a PyGame project:
+
+    >>> from colorir import config, Palette, PYGAME_COLOR_FORMAT
+    >>> config.DEFAULT_COLOR_FORMAT = PYGAME_COLOR_FORMAT
+    >>> basic_colors = Palette.load("basic") # Loads colors as RGB values
+    >>> # ... code
+
+    Import the same colors but to work in a web project:
 
     >>> from colorir import config, Palette, WEB_COLOR_FORMAT
     >>> config.DEFAULT_COLOR_FORMAT = WEB_COLOR_FORMAT
     >>> basic_colors = Palette.load("basic") # Loads colors as hex codes
-    >>> # ... code
-
-    Import the same colors but to work in a PyGame project:
-    >>> from colorir import config, Palette, PYGAME_COLOR_FORMAT
-    >>> config.DEFAULT_COLOR_FORMAT = PYGAME_COLOR_FORMAT
-    >>> basic_colors = Palette.load("basic") # Loads colors as RGB values
     >>> # ... code
 
     Create our own color format to work with HSL colors:
@@ -104,9 +105,9 @@ class ColorFormat:
         """Tries to format a color-like object into this color format.
 
         Because there are multiple implementations of tuple-based color systems, the `color`
-        parameter is always allowed to be a subclass of :class:`ColorBase` or a hex string, but can
-        only be a tuple if :attr:`ColorFormat.color_sys` is a tuple-based color system, such as
-        :class:`sRGB` for example.
+        parameter is always allowed to be a subclass of :class:`~colorir.colorColorBase` or a hex
+        string, but can only be a tuple if :attr:`ColorFormat.color_sys` is a tuple-based color
+        system, such as :class:`~colorir.color.sRGB` for example.
 
         Examples:
             >>> rgb_format = ColorFormat(sRGB, round_to=0)
@@ -124,7 +125,7 @@ class ColorFormat:
 
         Args:
             color: The value of the color to be formatted. Can be an instance of any
-                :mod:`color class <colordict.color>` or, alternatively, a color-like object that
+                :mod:`~colorir.color` class or, alternatively, a color-like object that
                 resembles the format of the color you want to format.
         """
         if isinstance(color, ColorBase):

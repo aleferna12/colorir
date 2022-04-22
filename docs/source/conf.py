@@ -12,12 +12,12 @@
 #
 import os
 import sys
-sys.path.insert(0, "../../colordict")
+sys.path.insert(0, "../../colorir")
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'colordict'
+project = 'colorir'
 copyrimaght = '2021, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
@@ -32,12 +32,11 @@ release = '1.3'
 # ones.
 import sphinx_rtd_theme
 extensions = [
-	'sphinx.ext.duration',
-	'sphinx.ext.doctest',
-	'sphinx.ext.autodoc',
-	'sphinx.ext.autosummary',
-	'sphinx.ext.napoleon',
-	"sphinx_rtd_theme"
+    'sphinx.ext.duration',
+    'sphinx.ext.doctest',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.napoleon'
 ]
 
 default_role = "py:obj"

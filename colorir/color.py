@@ -1,6 +1,6 @@
 """Common color spaces and systems.
 
-This module contains different classes that represent a few of the most common color spaces [1]_.
+This module contains different classes that represent a few of the most common color spaces [#]_.
 Colors can be compared, converted to and passed as arguments to different classes.
 
 Examples:
@@ -17,11 +17,11 @@ Examples:
 
     Compare the perceived distance between two colors:
 
-    >>> perceived_dist(HexRGB("#ff0000"), HexRGB("#ff0000"))
+    >>> perceived_dist(HexRGB("#ff0000"), HexRGB("#ffff00"))
     2.0
 
 References:
-    .. [1] Wikipedia at https://en.wikipedia.org/wiki/Color_model.
+    .. [#] Wikipedia at https://en.wikipedia.org/wiki/Color_model.
 """
 import colorsys
 import abc
@@ -49,7 +49,8 @@ class ColorBase(metaclass=abc.ABCMeta):
         return self._rgba == other._rgba if isinstance(other, ColorBase) else False
 
     def get_format(self):
-        """Returns a :clas:`ColorFormat` representing the format of this color object."""
+        """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
+        color object."""
         format_ = {k: v for k, v in self.__dict__.items() if k != "_rgba"}
         return colorir.color_format.ColorFormat(self.__class__, **format_)
 
@@ -146,10 +147,10 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
 
 
 class sRGB(ColorTupleBase):
-    """Represents a color in the RGB color space [1]_.
+    """Represents a color in the RGB color space [#]_.
 
     References:
-        .. [1] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
+        .. [#] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
 
     Args:
         r: Red component of the color.
@@ -163,7 +164,7 @@ class sRGB(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`sRGB(255, 255, 0,
             255)` instead of :code:`sRGB(255, 255, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting this
-            parameter to 0 ensures that the components will be of type :class:`int`. -1
+            parameter to 0 ensures that the components will be of type ``int``. -1
             means that the components won't be rounded at all.
     """
 
@@ -197,9 +198,9 @@ class sRGB(ColorTupleBase):
 
 
 class HSL(ColorTupleBase):
-    """Represents a color in the HSL color space [1]_.
+    """Represents a color in the HSL color space [#]_.
 
-    .. [1] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
+    .. [#] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
 
     Args:
         h: HUE component of the color.
@@ -215,7 +216,7 @@ class HSL(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`HSL(360, 1, 0,
             1)` instead of :code:`HSL(360, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting this
-            parameter to 0 ensures that the components will be of type `int`. -1
+            parameter to 0 ensures that the components will be of type ``int``. -1
             means that the components won't be rounded at all.
     """
 
@@ -256,10 +257,10 @@ class HSL(ColorTupleBase):
 
 
 class HSV(ColorTupleBase):
-    """Represents a color in the HSV color space [1]_.
+    """Represents a color in the HSV color space [#]_.
 
     References:
-        .. [1] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
+        .. [#] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
 
     Args:
         h: HUE component of the color.
@@ -275,7 +276,7 @@ class HSV(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`HSV(360, 1, 0,
             1)` instead of :code:`HSV(360, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting this
-            parameter to 0 ensures that the components will be of type `int`. -1
+            parameter to 0 ensures that the components will be of type ``int``. -1
             means that the components won't be rounded at all.
     """
 
@@ -316,10 +317,10 @@ class HSV(ColorTupleBase):
 
 
 class CMYK(ColorTupleBase):
-    """Represents a color in the CMYK color space [1]_.
+    """Represents a color in the CMYK color space [#]_.
 
     References:
-        .. [1] Wikipedia at https://en.wikipedia.org/wiki/CMYK_color_model.
+        .. [#] Wikipedia at https://en.wikipedia.org/wiki/CMYK_color_model.
 
     Args:
         c: Cyan component of the color.
@@ -334,7 +335,7 @@ class CMYK(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`CMYK(1, 1, 0,
             1)` instead of :code:`CMYK(1, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting
-            this parameter to 0 ensures that the components will be of type `int`. The default,
+            this parameter to 0 ensures that the components will be of type ``int``. The default,
             -1, means that the components won't be rounded at all.
     """
 
@@ -384,10 +385,10 @@ class CMYK(ColorTupleBase):
 
 
 class CMY(ColorTupleBase):
-    """Represents a color in the CMY color space [1]_.
+    """Represents a color in the CMY color space [#]_.
 
     References:
-        .. [1] Wikipedia at https://en.wikipedia.org/wiki/CMY_color_model.
+        .. [#] Wikipedia at https://en.wikipedia.org/wiki/CMY_color_model.
 
 
     Args:
@@ -402,7 +403,7 @@ class CMY(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`CMY(1, 1, 0,
             1)` instead of :code:`CMY(1, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting
-            this parameter to 0 ensures that the components will be of type `int`. The default,
+            this parameter to 0 ensures that the components will be of type ``int``. The default,
             -1, means that the components won't be rounded at all.
     """
 
@@ -438,13 +439,13 @@ class CMY(ColorTupleBase):
 
 
 class HexRGB(ColorBase, str):
-    """Represents a color in the RGB color space [1]_ as a hexadecimal string.
+    """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 
-    Is mostly used for representing colors in web applications [2]_.
+    Is mostly used for representing colors in web applications [#]_.
 
     References:
-        .. [1] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
-        .. [2] Wikipedia at https://en.wikipedia.org/wiki/Web_colors
+        .. [#] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
+        .. [#] Wikipedia at https://en.wikipedia.org/wiki/Web_colors
 
     Args:
         hex_str: Hexadecimal string from which the :class:`HexRGB` instance will be built.
@@ -509,14 +510,14 @@ def perceived_dist(color1: ColorBase, color2: ColorBase):
     """Calculates the perceived distance between two colors.
 
     Although there are many methods to approach the similarity of colors mathematically, the
-    algorithm implemented in this function [1]_ tries to provide balance between a fast and
+    algorithm implemented in this function [#]_ tries to provide balance between a fast and
     efficient computation.
 
     However, the distance that results from such calculations does not hold any particular
     mathematical meaning, and is therefore mostly useful in comparisons.
 
     References:
-        .. [1] Colour metric by Thiadmer Riemersma. Available on
+        .. [#] Colour metric by Thiadmer Riemersma. Available on
             https://www.compuphase.com/cmetric.htm.
     """
     rgba1, rgba2 = color1._rgba, color2._rgba

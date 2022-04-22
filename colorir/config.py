@@ -4,7 +4,7 @@ Examples:
     Create a new color format and make it default:
 
     >>> from colorir import config, ColorFormat
-    >>> config.DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB, max_rgba=1)
+    >>> config.DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB, uppercase=True)
 
     Change the default locations from which palettes are loaded and to which they are saved:
 
@@ -12,14 +12,13 @@ Examples:
 
 Attributes:
     DEFAULT_PALETTES_DIR (str): Default directory from which palettes will be loaded and to which
-        they will be saved (respectively by the :meth:`Palette.load()` and :meth:`Palette.save()`
-        methods).
-    DEFAULT_COLOR_FORMAT (ColorFormat): Default color format used when initializing or loading
-        :class:`Palette` objects.
+        they will be saved.
+    DEFAULT_COLOR_FORMAT (ColorFormat): Default color format used by different objects in this
+        package.
 """
 from os import path
 from .color_format import ColorFormat
 from .color import HexRGB
 
 DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
-DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB, round_to=0)
+DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB)

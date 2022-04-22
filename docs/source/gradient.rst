@@ -1,7 +1,7 @@
-Gradient Classes
-================
+Gradient
+========
 
-.. automodule:: colorir.gradients
+.. automodule:: colorir.gradient
 	:members:
 	:undoc-members:
 	:show-inheritance:

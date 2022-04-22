@@ -1,5 +1,5 @@
-Palette Class
-======================
+Palette
+=======
 
 .. automodule:: colorir.palette
 	:members:

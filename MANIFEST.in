@@ -1,1 +1,1 @@
-recursive-include colordict *.json
+recursive-include colorir/builtin_palettes *.palette
