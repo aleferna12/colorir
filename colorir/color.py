@@ -17,7 +17,7 @@ Examples:
 
     Compare the perceived distance between two colors:
 
-    >>> perceived_dist(HexRGB("#ff0000"), HexRGB("#ffff00"))
+    >>> simplified_dist(HexRGB("#ff0000"), HexRGB("#ffff00"))
     2.0
 
 References:
@@ -515,15 +515,12 @@ class HexRGB(ColorBase, str):
         return obj
 
 
-def perceived_dist(color1: ColorBase, color2: ColorBase):
+def simplified_dist(color1: ColorBase, color2: ColorBase):
     """Calculates the perceived distance between two colors.
 
     Although there are many methods to approach the similarity of colors mathematically, the
     algorithm implemented in this function [#]_ tries to provide balance between a fast and
     efficient computation.
-
-    However, the distance that results from such calculations does not hold any particular
-    mathematical meaning, and is therefore mostly useful in comparisons.
 
     References:
         .. [#] Colour metric by Thiadmer Riemersma. Available on

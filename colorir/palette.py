@@ -44,8 +44,8 @@ from pathlib import Path
 from typing import Dict, Union, List
 from warnings import warn
 
-from . import config, HSL
-from .color import ColorBase, ColorLike, sRGB, HexRGB, perceived_dist
+from . import config
+from .color import ColorBase, ColorLike, sRGB, HexRGB, simplified_dist
 from .color_format import ColorFormat
 
 _throw_exception = object()
@@ -158,16 +158,13 @@ class Palette:
             palette_files = path.glob("*.palette")
             for palette_file in palette_files:
                 palette_name = palette_file.name.replace(".palette", '')
-                found_palettes[palette_name] = palette_file
+                found_palettes[palette_name] = json.loads(palette_file.read_text())
 
         palette_obj = cls(name=name, color_format=color_format)
         if palettes is None: palettes = list(found_palettes)
         # Reiterates based on user input order
         for palette_name in palettes:
-            palette_file = found_palettes[palette_name]
-            with open(palette_file) as file:
-                palette = json.load(file)
-            for c_name, c_rgba in palette.items():
+            for c_name, c_rgba in found_palettes[palette_name].items():
                 c_rgba = (int(c_rgba[3:5], 16) / 255,
                           int(c_rgba[5:7], 16) / 255,
                           int(c_rgba[7:9], 16) / 255,
@@ -298,36 +295,6 @@ class Palette:
                 color_list.append(name)
         return color_list
 
-    def most_similar(self, color: ColorLike, n=1):
-        """Finds the `n` most similar colors to `color` in this palette.
-
-        For more details on the algorithm implemented to calculate similarity, see
-        :func:`color.perceived_dist() <colorir.color.perceived_dist()>` documentation.
-
-        Args:
-            color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
-                the color to which others will be compared in search of similar results.
-            n: How many similar colors to be retrieved.
-
-        Examples:
-            >>> palette = Palette(red="#ff0000", blue="#0000ff")
-            >>> palette.most_similar("#880000")
-            HexRGB(#ff0000)
-
-        Returns:
-            A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color.ColorBase` if n > 1. If the return type is a list, the colors
-            will be ordered from most similar to least.
-        """
-        color = self.color_format.format(color)
-        closest = sorted(self.colors, key=lambda color2: perceived_dist(color, color2))
-        if n == 1:
-            return closest[0]
-        elif n > 1:
-            return closest[:n]
-        raise ValueError("'n' must be a positive integer")
-
     def add(self, name: str, color: ColorLike):
         """Adds a color to a palette.
 
@@ -400,7 +367,7 @@ class Palette:
         else:
             raise ValueError(f"provided 'name' parameter is not a color stored in this 'Palette'")
 
-    def save(self, directory: str = None):
+    def save(self, palettes_dir: str = None):
         """Saves the changes made to this :class:`Palette` instance.
 
         If this method is not called after modifications made by :meth:`Palette.add()`,
@@ -419,12 +386,31 @@ class Palette:
         if self.name is None:
             raise AttributeError(
                 "the 'name' attribute of a 'Palette' instance must be defined to save it")
-        if directory is None:
-            directory = config.DEFAULT_PALETTES_DIR
-        with open(Path(directory) / (self.name + ".palette"), "w") as file:
+        if palettes_dir is None:
+            palettes_dir = config.DEFAULT_PALETTES_DIR
+        with open(Path(palettes_dir) / (self.name + ".palette"), "w") as file:
             formatted_colors = {}
             for c_name, c_val in self._color_dict.items():
                 c_rgba = tuple(round(spec * 255) for spec in c_val._rgba)
                 c_rgba = "#%02x" % c_rgba[-1] + "%02x%02x%02x" % c_rgba[:3]
                 formatted_colors[c_name] = c_rgba
             json.dump(formatted_colors, file, indent=4)
+
+
+def find_palettes(palettes_dir: str = None, search_builtins=True):
+    """Returns the names of the palettes found in `directory`. If `search_builtins` is ``True``,
+    also includes builtin_palettes.
+    """
+    if palettes_dir is None:
+        palettes_dir = config.DEFAULT_PALETTES_DIR
+    if isinstance(palettes_dir, str):
+        palettes_dir = [palettes_dir]
+    if search_builtins:
+        palettes_dir.append(_builtin_palettes_dir)
+
+    palettes = []
+    for path in palettes_dir:
+        path = Path(path)
+        for file in path.glob("*.palette"):
+            palettes.append(file.name.replace(".palette", ""))
+    return palettes

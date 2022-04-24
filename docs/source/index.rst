@@ -8,6 +8,7 @@ API
 
 	api
 	examples
+	builtin_palettes
 
 What is colorir?
 ----------------

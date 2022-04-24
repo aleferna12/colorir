@@ -1,2 +1,3 @@
 include colorir/builtin_palettes/*.palette
 include colorir/palettes/.empty
+exclude build_palette_pngs.py
