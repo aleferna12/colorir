@@ -1,7 +1,7 @@
 Built-in Palettes
 =================
 
-The following palettes come builtin with colorir and can be loaded with the :meth:`Palette.load() <colorir.palette.Palette.load()>` method.
+The following palettes come built in colorir and can be loaded with the :meth:`Palette.load() <colorir.palette.Palette.load()>` method.
 
 The ellipsis symbol indicates the palette is bigger but couldn't fit here.
 
