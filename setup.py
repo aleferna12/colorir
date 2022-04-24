@@ -15,6 +15,6 @@ setup(
     description="A python package for easy management of colors and palettes.",
     long_description=README,
     long_description_content_type="text/x-rst",
-    # TODO project_urls={"Documentation": ""},
+    project_urls={"Documentation": "https://colorir.readthedocs.io/en/latest/"},
     include_package_data=True
 )

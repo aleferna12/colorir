@@ -127,3 +127,8 @@ HexRGB(#ff0000)
 
 It is woth noting that all color classes inherit either ``tuple`` or ``str``, meaning that
 no conversion is needed when passing them to other frameworks such as PyGame, Kivy and HTML embedding templates like Jinja.
+
+Documentation and Examples
+--------------------------
+
+The full documentation (including use-case examples) for colorir is available `here <https://colorir.readthedocs.io/en/latest/>`_.
