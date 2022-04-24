@@ -9,6 +9,7 @@ With colorir you can:
 - Use these colors directly as input for other graphical or web frameworks;
 - Easily convert between different color systems and formats;
 - Create gradients between colors and sample from them;
+- Pick from hundreds of colors with the built-in color picker;
 - And much more!
 
 colorir was designed to be your best friend when dealing with colors so that you won't ever need to write this kind of code again:
@@ -38,9 +39,9 @@ Quick-Start
 Create a palette with the additive elementary colors and call it 'elementary':
 
 >>> palette = Palette(name="elementary",
-...                   redadd=HexRGB("#ff0000"),
-...                   greenadd=HexRGB("00ff00"), # No need to include the # symbol
-...                   blueadd=HexRGB("#0000ff"))
+...                   red=HexRGB("#ff0000"),
+...                   green=HexRGB("00ff00"), # No need to include the # symbol
+...                   blue=HexRGB("#0000ff"))
 
 Following CSS color-naming conventions, our color names are all lowercase with no
 underscores, but you may name a color as you wish as long as it complies with python's
@@ -49,15 +50,15 @@ syntax for attribute names.
 We can add colors by providing a name and a color-like object to the ``Palette.add()``
 method:
 
->>> palette.add("cyansub", "#00ffff")
->>> palette.add("yellowsub", "#ffff00")
->>> palette.add("magentasub", HSL(300, 1, 0.5))
+>>> palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
 
 Note how in how we passed hex strings as arguments without initializing
 ``HexRGB`` colors this time. Most objects in the colorir package can
 interpret strings and tuples as colors implicitly!
 
-We also passed an ``HSL`` object for "magentasub". Because we initialized
+We also passed an ``HSL`` object for "magenta". Because we initialized
 the palette with ``HexRGB`` colors, the HSL value will be internally
 converted to a ``HexRGB``, which can be useful if we don't know the hex code
 of a color or want to modify attributes exposed in other color systems, such as saturation or
@@ -68,12 +69,12 @@ For more details on how color-like objects are interpreted, visit the documentat
 
 To then modify a color after it has been added, use the ``Palette.update()`` method:
 
->>> palette.update("magentasub", "#ff11ff") # Mix some green component into the magenta
+>>> palette.update("magenta", "#ff11ff") # Mix some green component into the magenta
 
 Now suppose we want to finally use the colors we added to our palette. For that we can get them
 individually as attributes of the palette:
 
->>> palette.cyansub
+>>> palette.cyan
 HexRGB(#00ffff)
 
 Or we can get them all at once with the ``Palette.colors`` property:

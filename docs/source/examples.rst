@@ -14,8 +14,8 @@ Where `app` is one of:
 - `simple_pygame`_
 - `color_picker`_
 
-Simple example: Sharing a colors between Turtle and PyGame projects
--------------------------------------------------------------------
+Simple example: Sharing colors between Turtle and PyGame projects
+-----------------------------------------------------------------
 
 In this example we will combine python's turtle package with colorir to draw basic shapes.
 
@@ -36,7 +36,7 @@ That's it! We are done and ready to use our basic colors:
 
 You should now hopefully see a red square in your screen.
 
-Let's modify our example to add some of our personal favorite colors to our `colors` palette:
+Let's modify our example to add some personal colors to our `colors` object:
 
 .. code-block:: python
 
@@ -65,7 +65,7 @@ Ok! We are done with the turtles for right now. We should save our colors so we 
 
 A few weeks latter we suddenly have a brilliant idea: what if we could draw actual turtles, instead of a weird arrow we've been pretending to be a turtle?
 
-But we also would like to keep our colors from the last project since we took so long choosing turtle-fitting colors.
+But we also would like to keep the colors from our last project since we took so long choosing turtle-fitting colors.
 
 Let's put that on paper with PyGame:
 
