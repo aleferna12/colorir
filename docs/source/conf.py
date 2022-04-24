@@ -19,7 +19,7 @@ sys.path.insert(0, "../..")
 # -- Project information -----------------------------------------------------
 
 project = 'colorir'
-copyrimaght = '2021, Alexandre Fernandes'
+copyrimaght = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.napoleon'
 ]
 
+root_doc = "index"
 default_role = "py:obj"
 autodoc_member_order = 'bysource'
 autodoc_typehints = "description"

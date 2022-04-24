@@ -1,1 +1,0 @@
-TODO: create the palette folder when installing the module (in setup.py)
