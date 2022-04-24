@@ -136,5 +136,5 @@ working with web development or matplotlib.
 >>> web_palette.red
 HexRGB(#ff0000)
 
-It is woth noting that all color classes inherit either ``tuple`` or ``str``, meaning that
+It is worth noting that all color classes inherit either ``tuple`` or ``str``, meaning that
 no conversion is needed when passing them to other frameworks such as PyGame, Kivy and HTML embedding templates like Jinja.
