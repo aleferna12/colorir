@@ -2,11 +2,13 @@ import argparse
 import sys
 from importlib import import_module
 from pathlib import Path
+from colorir import config
 
 
 def run_example_app(example):
-    example_path = str(Path(__file__).resolve().parent.parent / "examples")
-    sys.path.append(example_path)
+    example_path = Path(__file__).resolve().parent.parent / "examples"
+    sys.path.append(str(example_path))
+    config.DEFAULT_PALETTES_DIR = str(example_path / "ex_palettes")
     import_module(example)
 
 

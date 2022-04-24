@@ -45,11 +45,11 @@ from typing import Dict, Union, List
 from warnings import warn
 
 from . import config
-from .color import ColorBase, ColorLike, sRGB, HexRGB, simplified_dist
+from .color import ColorBase, ColorLike, sRGB, HexRGB
 from .color_format import ColorFormat
 
 _throw_exception = object()
-_builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
+_builtin_palettes_dir = Path(__file__).resolve().parent.parent / "builtin_palettes"
 
 
 class Palette:

@@ -1,8 +1,3 @@
-# Setup
-from colorir import config
-config.DEFAULT_PALETTES_DIR = "ex_palettes"
-
-# Code
 import turtle
 from colorir import Palette
 

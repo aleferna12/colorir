@@ -32,7 +32,6 @@ That's it! We are done and ready to use our basic colors:
 .. _simple_turtle_1:
 
 .. literalinclude:: ../../examples/simple_turtle_1.py
-	:start-after: # Code
 
 You should now hopefully see a red square in your screen.
 
@@ -50,7 +49,6 @@ This should be enough, now instead of a red square we can draw more interesting 
 .. _simple_turtle_2:
 
 .. literalinclude:: ../../examples/simple_turtle_2.py
-	:start-after: # Code
 
 You should see something resembling this (but with no text):
 
@@ -73,7 +71,6 @@ Let's put that on paper with PyGame:
 .. _simple_pygame:
 
 .. literalinclude:: ../../examples/simple_pygame.py
-	:start-after: # Code
 
 .. image:: images/simple_pygame.png
 	:width: 300px
