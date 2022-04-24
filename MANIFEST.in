@@ -1,2 +1,4 @@
 include colorir/builtin_palettes/*.palette
 include colorir/palettes/.empty
+include examples/*
+include tests/*

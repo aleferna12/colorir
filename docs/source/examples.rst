@@ -1,6 +1,18 @@
 Examples
 ========
 
+After installing colorir, example applications can be executed from the shell with:
+
+.. code-block:: shell
+
+	$ python -m colorir <app>
+
+Where `app` is one of:
+
+- `simple_turtle_1`_
+- `simple_turtle_2`_
+- `simple_pygame`_
+
 Simple example: Sharing a colors between Turtle and PyGame projects
 -------------------------------------------------------------------
 
@@ -17,6 +29,8 @@ The "basic" palette contains colors like blue, green, black etc.
 
 That's it! We are done and ready to use our basic colors:
 
+.. _simple_turtle_1:
+
 .. literalinclude:: ../../examples/simple_turtle_1.py
 	:start-after: # Code
 
@@ -32,6 +46,8 @@ Let's modify our example to add some of our personal favorite colors to our `col
 	colors.add("woodbrown", "#8c6941")
 
 This should be enough, now instead of a red square we can draw more interesting stuff:
+
+.. _simple_turtle_2:
 
 .. literalinclude:: ../../examples/simple_turtle_2.py
 	:start-after: # Code
@@ -53,6 +69,8 @@ A few weeks latter we suddenly have a brilliant idea: what if we could draw actu
 But we also would like to keep our colors from the last project since we took so long choosing turtle-fitting colors.
 
 Let's put that on paper with PyGame:
+
+.. _simple_pygame:
 
 .. literalinclude:: ../../examples/simple_pygame.py
 	:start-after: # Code
