@@ -10,17 +10,20 @@ Essentials
 
 Palettes that provide access to commonly used colors.
 
-basic:
+basic
++++++
 
 .. image:: images/palettes/basic.png
     :height: 25px
 
-rainbow:
+rainbow
++++++++
 
 .. image:: images/palettes/rainbow.png
     :height: 25px
     
-css:
+css
++++
 
 .. image:: images/palettes/css.png
     :height: 25px
@@ -30,37 +33,44 @@ Crayons
 
 Palettes that have been release as crayon sets in the past.
     
-fluorescent:
+fluorescent
++++++++++++
 
 .. image:: images/palettes/fluorescent.png
     :height: 25px
     
-gem_tones:
+gem_tones
++++++++++
 
 .. image:: images/palettes/gem_tones.png
     :height: 25px
     
-heads_n_tails:
+heads_n_tails
++++++++++++++
 
 .. image:: images/palettes/heads_n_tails.png
     :height: 25px
     
-magic_scent:
+magic_scent
++++++++++++
 
 .. image:: images/palettes/magic_scent.png
     :height: 25px
     
-metallic_fx:
+metallic_fx
++++++++++++
 
 .. image:: images/palettes/metallic_fx.png
     :height: 25px
     
-silly_scents:
+silly_scents
+++++++++++++
 
 .. image:: images/palettes/silly_scents.png
     :height: 25px
     
-silver_swirls:
+silver_swirls
++++++++++++++
 
 .. image:: images/palettes/silver_swirls.png
     :height: 25px
@@ -70,17 +80,20 @@ Other
 
 Palettes that don't necessarily fit a category.
 
-world_flags:
+world_flags
++++++++++++
 
 .. image:: images/palettes/world_flags.png
     :height: 25px
 
-mystic_forest:
+mystic_forest
++++++++++++++
 
 .. image:: images/palettes/mystic_forest.png
     :height: 25px
 
-pantone_years:
+pantone_years
++++++++++++++
 
 .. image:: images/palettes/pantone_years.png
     :height: 25px

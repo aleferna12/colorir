@@ -25,6 +25,7 @@ References:
 """
 import colorsys
 import abc
+import math
 from math import sqrt
 from typing import Union
 import colorir

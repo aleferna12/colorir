@@ -21,6 +21,7 @@ With colorir you can:
 - Use these colors directly as input for other graphical or web frameworks;
 - Easily convert between different color systems and formats;
 - Create gradients between colors and sample from them;
+- Pick from hundreds of colors with the built-in :ref:`color_picker`;
 - And much more!
 
 colorir was designed to be your best friend when dealing with colors so that you won't ever need to write this kind of code again:

@@ -12,6 +12,7 @@ Where `app` is one of:
 - `simple_turtle_1`_
 - `simple_turtle_2`_
 - `simple_pygame`_
+- `color_picker`_
 
 Simple example: Sharing a colors between Turtle and PyGame projects
 -------------------------------------------------------------------
@@ -78,3 +79,19 @@ Let's put that on paper with PyGame:
 Ha! And Mom said I wouldn't make money with NFTs...
 
 Anyway, I hope you could get I very basic idea of how to use colorir. For more examples and insights on how to use this package, see the documentation of each module and the other examples bellow.
+
+.. _color_picker:
+
+Color picker with Tkinter
+-------------------------
+
+A simple color picker that shows all the palettes available on our default palette directory (+ the built-in palettes) and copies the names of a color to the clipboard when we click on it.
+
+Just like with any other example, the color picker can be executed with:
+
+.. code-block:: shell
+
+	$ python -m colorir color_picker
+
+.. literalinclude:: ../../examples/color_picker.py
+

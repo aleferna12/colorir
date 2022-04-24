@@ -1,7 +1,4 @@
-try:
-    from PIL import Image, ImageDraw
-except ImportError:
-    raise ImportError("PIL/Pillow is required to build the palettes png files")
+from PIL import Image, ImageDraw
 from colorir import Palette, find_palettes
 import os
 from glob import glob
@@ -29,10 +26,5 @@ for pal_name in pal_files:
         ellipsis_png = Image.open(ellipsis_dir)
         ellipsis_png = ellipsis_png.resize((IMG_HEIGHT, IMG_HEIGHT))
         im.paste(ellipsis_png, (x + IMG_HEIGHT, 0))
-    draw.line((0, 0, x + IMG_HEIGHT - 1, 0), fill="#000000")
-    draw.line((0, 0, 0, IMG_HEIGHT - 1), fill="#000000")
-    draw.line((0, IMG_HEIGHT - 1, x + IMG_HEIGHT - 1, IMG_HEIGHT - 1), fill="#000000")
-    draw.line((x + IMG_HEIGHT - 1, 0, x + IMG_HEIGHT - 1, IMG_HEIGHT - 1),
-              fill="#000000")
     png_file = f"{pal_pngs_dir}/{pal_name}.png"
     im.save(png_file, "PNG")
