@@ -26,6 +26,7 @@ Examples:
     >>> # ... code
 
     Create our own color format to work with HSL colors:
+
     >>> hsl_format = ColorFormat(HSL, max_h=100, max_sla=100, round_to=0)
 
     We can then pass the `hsl_format` to a palette or create colors directly with it:
@@ -34,9 +35,10 @@ Examples:
     HSL(30, 70, 70)
 
 Attributes:
-    PYGAME_COLOR_FORMAT (ColorFormat): Color format compatible with PyGame standards.
     WEB_COLOR_FORMAT (ColorFormat): Color format compatible with HTML and CSS standards.
+    MATPLOTLIB_COLOR_FORMAT (ColorFormat): Color format compatible with Matplotlib.
     TKINTER_COLOR_FORMAT (ColorFormat): Color format compatible with Tkinter standards.
+    PYGAME_COLOR_FORMAT (ColorFormat): Color format compatible with PyGame standards.
     KIVY_COLOR_FORMAT (ColorFormat): Color format compatible with Kivy standards.
 
 References:
@@ -105,7 +107,7 @@ class ColorFormat:
         """Tries to format a color-like object into this color format.
 
         Because there are multiple implementations of tuple-based color systems, the `color`
-        parameter is always allowed to be a subclass of :class:`~colorir.colorColorBase` or a hex
+        parameter is always allowed to be a subclass of :class:`~colorir.color.ColorBase` or a hex
         string, but can only be a tuple if :attr:`ColorFormat.color_sys` is a tuple-based color
         system, such as :class:`~colorir.color.sRGB` for example.
 
@@ -146,4 +148,4 @@ class ColorFormat:
 
 PYGAME_COLOR_FORMAT = ColorFormat(color_sys=sRGB, max_rgba=255, round_to=0)
 KIVY_COLOR_FORMAT = ColorFormat(color_sys=sRGB, max_rgba=1, include_a=True)
-WEB_COLOR_FORMAT = TKINTER_COLOR_FORMAT = ColorFormat(color_sys=HexRGB, include_a=False)
+WEB_COLOR_FORMAT = TKINTER_COLOR_FORMAT = MATPLOTLIB_COLOR_FORMAT = ColorFormat(color_sys=HexRGB)

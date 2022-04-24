@@ -443,6 +443,15 @@ class HexRGB(ColorBase, str):
 
     Is mostly used for representing colors in web applications [#]_.
 
+    Be aware that printing objects of this class with ``print()`` makes it look like the object
+    is a ``str``.
+
+    >>> red = HexRGB("#ff0000")
+    >>> print(red)
+    #ff0000
+    >>> red # red is NOT a simple string, but a subclass of it
+    HexRGB(#ff0000)
+
     References:
         .. [#] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
         .. [#] Wikipedia at https://en.wikipedia.org/wiki/Web_colors

@@ -1,14 +1,3 @@
-Welcome to colorir's documentation!
-=====================================
-
-API
----
-
-.. toctree::
-
-	api
-	examples
-
 What is colorir?
 ----------------
 
@@ -57,7 +46,7 @@ Following CSS color-naming conventions, our color names are all lowercase with n
 underscores, but you may name a color as you wish as long as it complies with python's
 syntax for attribute names.
 
-We can add colors by providing a name and a color-like object to the :meth:`Palette.add() <colorir.palette.Palette.add()>`
+We can add colors by providing a name and a color-like object to the ``Palette.add()``
 method:
 
 >>> palette.add("cyansub", "#00ffff")
@@ -65,19 +54,19 @@ method:
 >>> palette.add("magentasub", HSL(300, 1, 0.5))
 
 Note how in how we passed hex strings as arguments without initializing
-:class:`~colorir.color.HexRGB` colors this time. Most objects in the colorir package can
+``HexRGB`` colors this time. Most objects in the colorir package can
 interpret strings and tuples as colors implicitly!
 
-We also passed an :class:`~colorir.color.HSL` object for "magentasub". Because we initialized
-the palette with :class:`~colorir.color.HexRGB` colors, the HSL value will be internally
-converted to a :class:`~colorir.color.HexRGB`, which can be useful if we don't know the hex code
+We also passed an ``HSL`` object for "magentasub". Because we initialized
+the palette with ``HexRGB`` colors, the HSL value will be internally
+converted to a ``HexRGB``, which can be useful if we don't know the hex code
 of a color or want to modify attributes exposed in other color systems, such as saturation or
 luminance.
 
 For more details on how color-like objects are interpreted, visit the documentation of
-:class:`~colorir.palette.Palette` and :meth:`ColorFormat.format() <colorir.color_format.ColorFormat.format()>`.
+``Palette`` and ``ColorFormat.format()``.
 
-To then modify a color after it has been added, use the :meth:`Palette.update() <colorir.palette.Palette.update()>` method:
+To then modify a color after it has been added, use the ``Palette.update()`` method:
 
 >>> palette.update("magentasub", "#ff11ff") # Mix some green component into the magenta
 
@@ -87,7 +76,7 @@ individually as attributes of the palette:
 >>> palette.cyansub
 HexRGB(#00ffff)
 
-Or we can get them all at once with the :attr:`Palette.colors <colorir.palette.Palette.colors>` property:
+Or we can get them all at once with the ``Palette.colors`` property:
 
 >>> palette.colors
 [HexRGB(#ff0000), HexRGB(#00ff00), HexRGB(#0000ff), HexRGB(#00ffff), HexRGB(#ffff00), \
@@ -101,7 +90,7 @@ We can then latter load the palette (even from other projects if we wish!):
 
 >>> palette = Palette.load("elementary")
 
-When loading or instantiating a palette, a :class:`~colorir.color_format.ColorFormat` may be
+When loading or instantiating a palette, a ``ColorFormat`` may be
 passed to the constructor to specify how we want the color to be represented:
 
 >>> c_format = ColorFormat(color_sys=HSL)
@@ -110,14 +99,14 @@ passed to the constructor to specify how we want the color to be represented:
 HSL(0.0, 1.0, 0.5)
 
 We can also change the format of all colors in a palette at any time by re-assigning its
-:attr:`Palette.color_format <colorir.palette.Palette.color_format>` property:
+``Palette.color_format`` property:
 
 >>> css.color_format = ColorFormat(color_sys=sRGB, max_rgba=1)
 >>> css.red
 sRGB(1.0, 0.0, 0.0)
 
 Alternatively, we can temporarily change the default color format system-wide so that new
-palettes (that don't already hold any :mod:`~colorir.color` objects) default to it:
+palettes (that don't already hold any ``color`` objects) default to it:
 
 >>> from colorir import config, PYGAME_COLOR_FORMAT
 >>> config.DEFAULT_COLOR_FORMAT = PYGAME_COLOR_FORMAT # Change default format to PyGame

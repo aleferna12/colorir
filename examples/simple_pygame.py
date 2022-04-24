@@ -1,3 +1,8 @@
+# Setup
+from colorir import config
+config.DEFAULT_PALETTES_DIR = "ex_palettes"
+
+# Code
 import pygame as pg
 from colorir import Palette, PYGAME_COLOR_FORMAT
 # Since pygame doesn't accept hex strings, we will change the color format of our palette to match

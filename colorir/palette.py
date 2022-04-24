@@ -222,15 +222,22 @@ class Palette:
             f"{type(item).__name__}")
 
     def __iter__(self):
-        return iter(self._color_dict.values())
+        for c_val in self._color_dict.values():
+            yield c_val
 
     def __getattr__(self, item):
         return self._color_dict[item]
 
     def __repr__(self):
-        arg_str = f"{self.name.__repr__()}, " if self.name is not None else ""
-        arg_str += ", ".join(f"{c_name}={c_val}" for c_name, c_val in self._color_dict.items())
-        return f"{self.__class__.__name__}({arg_str})"
+        opener_str = f"{self.__class__.__name__}("
+        joint = ",\n" + ' ' * len(opener_str)
+        name_str = f"{self.name.__repr__()}{joint}" if self.name is not None else ""
+        color_strs = [f"{c_name}={self._color_dict[c_name].__repr__()}"
+                      for c_name in self._color_dict]
+        if len(color_strs) <= 10:
+            return opener_str + name_str + joint.join(color_strs) + ")"
+        return opener_str + name_str + joint.join(color_strs[:5]) \
+               + f"{joint}...{joint.lstrip(',')}" + joint.join(color_strs[-5:]) + ")"
 
     def get_color(self,
                   name: Union[str, List[str]],

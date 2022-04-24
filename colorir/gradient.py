@@ -9,7 +9,7 @@ Examples:
     >>> grad.perc(0.25)
     sRGB(127.5, 0.0, 127.5)
 
-    Get 2 colors interspaced in the gradient:
+    Get 3 colors interspaced in the gradient:
 
     >>> grad.n_colors(3)
     [sRGB(127.5, 0.0, 127.5), sRGB(0.0, 0.0, 255.0), sRGB(127.5, 127.5, 255.0)]

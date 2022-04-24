@@ -1,1 +1,2 @@
-recursive-include colorir/builtin_palettes *.palette
+include colorir/builtin_palettes/*.palette
+include colorir/palettes/.empty
