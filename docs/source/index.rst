@@ -67,7 +67,7 @@ method:
 >>> palette.add("yellow", "#ffff00")
 >>> palette.add("magenta", HSL(300, 1, 0.5))
 
-Note how in how we passed hex strings as arguments without initializing :class:`~colorir.color.HexRGB` colors this time. This is because objects that hold colors in the colorir package can interpret strings and tuples as colors implicitly!
+Note how we passed hex strings as arguments without initializing :class:`~colorir.color.HexRGB` colors this time. This is because objects that hold colors in the colorir package can interpret strings and tuples as colors implicitly!
 
 We also passed an :class:`~colorir.color.HSL` object for "magenta". By default, colors passed into a palette are converted to :class:`~colorir.color.HexRGB`, but we will see in a bit how to change this behaviour to work with other color formats.
 
