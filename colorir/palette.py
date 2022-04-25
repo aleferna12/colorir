@@ -44,8 +44,8 @@ from pathlib import Path
 from typing import Dict, Union, List
 from warnings import warn
 
-from . import config
-from .color import ColorBase, ColorLike, sRGB, HexRGB
+from . import config, HSL
+from .color import ColorBase, ColorLike, sRGB
 from .color_format import ColorFormat
 
 _throw_exception = object()
@@ -270,8 +270,9 @@ class Palette:
                 the color you want to search for.
 
         Examples:
-            >>> palette = Palette("#ff0000")
-            >>> palette.get_names(HexRGB("#ff0000"))
+            >>> palette = Palette(red="#ff0000")
+            >>> palette.get_names(HSL(0, 1, 0.5))
+            ['red']
 
         Returns:
             A single :class:`~colorir.color.ColorBase` if `name` is a string or a list of

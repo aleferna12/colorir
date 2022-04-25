@@ -23,7 +23,7 @@ copyrimaght = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
-release = '1.3'
+release = '1.0.3'
 
 
 # -- General configuration ---------------------------------------------------
@@ -47,6 +47,7 @@ autodoc_typehints = "description"
 autodoc_typehints_description_target = "documented"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+rst_prolog = """\n.. include:: <s5defs.txt>\n"""
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -65,3 +66,4 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
+# html_css_files = ['css/text_colors.css']

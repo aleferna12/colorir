@@ -3,7 +3,7 @@
     "orange": "#ffffa500",
     "yellow": "#ffffff00",
     "green": "#ff008000",
-    "cyan": "#ff00ffff",
     "blue": "#ff0000ff",
-    "indigo": "#ff4b0082"
+    "indigo": "#ff4b0082",
+    "violet": "#ffee82ee"
 }
