@@ -7,7 +7,7 @@ README = (HERE/"README.rst").read_text()
 # Build with "python setup.py sdist" (wheels are complicated with data files)
 setup(
     name="colorir",
-    version="1.0.4",
+    version="1.0.5",
     packages=["colorir"],
     url="https://github.com/aleferna12/colorir",
     license="MIT",
