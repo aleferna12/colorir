@@ -25,7 +25,6 @@ References:
 """
 import colorsys
 import abc
-import math
 from math import sqrt
 from typing import Union
 import colorir
@@ -520,8 +519,8 @@ def simplified_dist(color1: ColorBase, color2: ColorBase):
     """Calculates the perceived distance between two colors.
 
     Although there are many methods to approach the similarity of colors mathematically, the
-    algorithm implemented in this function [#]_ tries to provide balance between a fast and
-    efficient computation.
+    algorithm implemented in this function [#]_ tries to provide balance between efficiency and
+    accuracy.
 
     References:
         .. [#] Colour metric by Thiadmer Riemersma. Available on

@@ -13,8 +13,9 @@ Where `app` is one of:
 - `simple_turtle_2`_
 - `simple_pygame`_
 - `color_picker`_
+- `color_wheel`_
 
-Simple example: Sharing colors between Turtle and PyGame projects
+Simple Example: Sharing Colors Between Turtle and PyGame Projects
 -----------------------------------------------------------------
 
 In this example we will combine python's turtle package with colorir to draw basic shapes.
@@ -82,7 +83,7 @@ Anyway, I hope you could get I very basic idea of how to use colorir. For more e
 
 .. _color_picker:
 
-Color picker with Tkinter
+Color Picker with Tkinter
 -------------------------
 
 A simple color picker that shows all the palettes available on our default palette directory (+ the built-in palettes) and copies the names of a color to the clipboard when we click on it.
@@ -95,3 +96,14 @@ Just like with any other example, the color picker can be executed with:
 
 .. literalinclude:: ../../examples/color_picker.py
 
+.. _color_wheel:
+
+Color Wheel with Kivy
+---------------------
+
+A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.RGBLinearGrad`.
+
+.. literalinclude:: ../../examples/color_wheel.py
+
+.. image:: images/color_wheel.png
+	:width: 300px

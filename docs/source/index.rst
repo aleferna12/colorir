@@ -66,25 +66,15 @@ method:
 >>> palette.add("yellow", "#ffff00")
 >>> palette.add("magenta", HSL(300, 1, 0.5))
 
-Note how in how we passed hex strings as arguments without initializing
-:class:`~colorir.color.HexRGB` colors this time. Most objects in the colorir package can
-interpret strings and tuples as colors implicitly!
+Note how in how we passed hex strings as arguments without initializing :class:`~colorir.color.HexRGB` colors this time. This is because objects that hold colors in the colorir package can interpret strings and tuples as colors implicitly!
 
-We also passed an :class:`~colorir.color.HSL` object for "magenta". Because we initialized
-the palette with :class:`~colorir.color.HexRGB` colors, the HSL value will be internally
-converted to a :class:`~colorir.color.HexRGB`, which can be useful if we don't know the hex code
-of a color or want to modify attributes exposed in other color systems, such as saturation or
-luminance.
-
-For more details on how color-like objects are interpreted, visit the documentation of
-:class:`~colorir.palette.Palette` and :meth:`ColorFormat.format() <colorir.color_format.ColorFormat.format()>`.
+We also passed an :class:`~colorir.color.HSL` object for "magenta". By default, colors passed into a palette are converted to :class:`~colorir.color.HexRGB`, but we will see in a bit how to change this behaviour to work with other color formats.
 
 To then modify a color after it has been added, use the :meth:`Palette.update() <colorir.palette.Palette.update()>` method:
 
 >>> palette.update("magenta", "#ff11ff") # Mix some green component into the magenta
 
-Now suppose we want to finally use the colors we added to our palette. For that we can get them
-individually as attributes of the palette:
+Now suppose we want to finally use the colors we added to our palette. For that we can get them individually as attributes of the palette:
 
 >>> palette.cyan
 HexRGB(#00ffff)

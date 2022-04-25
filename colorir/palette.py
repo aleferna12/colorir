@@ -66,10 +66,8 @@ class Palette:
         name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
             If the `palettes` parameter is a single string, defaults to that.
         color_format: Color format specifying how the colors of this :class:`Palette` should be
-            stored. Defaults to the format of the colors in the `colors` parameters if they are
-            :mod:`~colorir.color` objects, or to the value specified in
-            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>` if they are
-            not.
+            stored. Defaults to the value specified in
+            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
 
     Attributes:
@@ -81,11 +79,7 @@ class Palette:
                  color_format: ColorFormat = None,
                  **colors: Dict[str, ColorLike]):
         if color_format is None:
-            c_vals = tuple(colors.values())
-            if c_vals and isinstance(c_vals[0], ColorBase):
-                color_format = c_vals[0].get_format()
-            else:
-                color_format = config.DEFAULT_COLOR_FORMAT
+            color_format = config.DEFAULT_COLOR_FORMAT
 
         self.name = name
         self._color_format = color_format

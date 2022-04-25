@@ -41,10 +41,7 @@ class RGBLinearGrad:
     def __init__(self, colors: Iterable[ColorBase], color_format=None, use_linear_RGB=False):
         colors = list(colors)
         if color_format is None:
-            if colors and isinstance(colors[0], ColorBase):
-                color_format = colors[0].get_format()
-            else:
-                color_format = config.DEFAULT_COLOR_FORMAT
+            color_format = config.DEFAULT_COLOR_FORMAT
         self.color_format = color_format
         self.colors = [self.color_format.format(color) for color in colors]
         self.use_linear_RGB = use_linear_RGB
