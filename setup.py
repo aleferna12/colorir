@@ -4,6 +4,7 @@ from setuptools import setup
 HERE = pathlib.Path(__file__).parent
 README = (HERE/"README.rst").read_text()
 
+# Build with "python setup.py sdist" (wheels are complicated with data files)
 setup(
     name="colorir",
     version="1.0.4",

@@ -16,9 +16,7 @@ def main(example):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="python -m colorir",
                                      description="Execute example applications.")
-    examples_choices = [file.name.replace(".py", "") for file in example_path.glob("*py")]
     parser.add_argument("app",
-                        help="which example application to execute (e.g.: simple_turtle_2)",
-                        choices=examples_choices)
+                        help="which example application to execute (e.g.: simple_turtle_2)")
     args = parser.parse_args()
     main(args.app)
