@@ -23,7 +23,7 @@ copyrimaght = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.5'
+release = '1.0.6'
 
 
 # -- General configuration ---------------------------------------------------
@@ -47,7 +47,6 @@ autodoc_typehints = "description"
 autodoc_typehints_description_target = "documented"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-rst_prolog = """\n.. include:: <s5defs.txt>\n"""
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

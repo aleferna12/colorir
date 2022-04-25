@@ -4,10 +4,9 @@ from setuptools import setup
 HERE = pathlib.Path(__file__).parent
 README = (HERE/"README.rst").read_text()
 
-# Build with "python setup.py sdist" (wheels are complicated with data files)
 setup(
     name="colorir",
-    version="1.0.5",
+    version="1.0.6",
     packages=["colorir"],
     url="https://github.com/aleferna12/colorir",
     license="MIT",

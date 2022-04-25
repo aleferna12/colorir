@@ -49,7 +49,7 @@ from .color import ColorBase, ColorLike, sRGB
 from .color_format import ColorFormat
 
 _throw_exception = object()
-_builtin_palettes_dir = Path(__file__).resolve().parent.parent / "builtin_palettes"
+_builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
 
 
 class Palette:

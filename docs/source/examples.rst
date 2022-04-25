@@ -33,7 +33,7 @@ That's it! We are done and ready to use our basic colors:
 
 .. _simple_turtle_1:
 
-.. literalinclude:: ../../examples/simple_turtle_1.py
+.. literalinclude:: ../../colorir/examples/simple_turtle_1.py
 
 You should now hopefully see a red square in your screen.
 
@@ -50,7 +50,7 @@ This should be enough, now instead of a red square we can draw more interesting 
 
 .. _simple_turtle_2:
 
-.. literalinclude:: ../../examples/simple_turtle_2.py
+.. literalinclude:: ../../colorir/examples/simple_turtle_2.py
 
 You should see something resembling this (but with no text):
 
@@ -72,7 +72,7 @@ Let's put that on paper with PyGame:
 
 .. _simple_pygame:
 
-.. literalinclude:: ../../examples/simple_pygame.py
+.. literalinclude:: ../../colorir/examples/simple_pygame.py
 
 .. image:: images/simple_pygame.png
 	:width: 300px
@@ -94,7 +94,7 @@ Just like with any other example, the color picker can be executed with:
 
 	$ python -m colorir color_picker
 
-.. literalinclude:: ../../examples/color_picker.py
+.. literalinclude:: ../../colorir/examples/color_picker.py
 
 .. _color_wheel:
 
@@ -103,7 +103,7 @@ Color Wheel with Kivy
 
 A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.RGBLinearGrad`.
 
-.. literalinclude:: ../../examples/color_wheel.py
+.. literalinclude:: ../../colorir/examples/color_wheel.py
 
 .. image:: images/color_wheel.png
 	:width: 300px

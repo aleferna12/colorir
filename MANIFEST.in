@@ -1,4 +1,4 @@
-include builtin_palettes/*.palette
-include palettes/.empty
-include examples/*
-include tests/*
+include colorir/builtin_palettes/*.palette
+include colorir/palettes/.empty
+include colorir/examples/*
+include colorir/examples/ex_palettes/*

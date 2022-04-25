@@ -1,16 +1,12 @@
 import argparse
-import sys
+from os import path
 from importlib import import_module
-from pathlib import Path
-from colorir import config
-
-example_path = Path(__file__).resolve().parent.parent / "examples"
+from . import config
+config.DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "examples/ex_palettes")
 
 
 def main(example):
-    sys.path.append(str(example_path))
-    config.DEFAULT_PALETTES_DIR = str(example_path / "ex_palettes")
-    import_module(example)
+    import_module("colorir.examples." + example)
 
 
 if __name__ == "__main__":
