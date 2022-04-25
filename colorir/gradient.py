@@ -7,12 +7,12 @@ Examples:
 
     >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255), sRGB(255, 255, 255)])
     >>> grad.perc(0.25)
-    sRGB(127.5, 0.0, 127.5)
+    HexRGB(#7f007f)
 
     Get 3 colors interspaced in the gradient:
 
     >>> grad.n_colors(3)
-    [sRGB(127.5, 0.0, 127.5), sRGB(0.0, 0.0, 255.0), sRGB(127.5, 127.5, 255.0)]
+    [HexRGB(#7f007f), HexRGB(#0000ff), HexRGB(#7f7fff)]
 """
 from typing import Iterable
 from math import pow
@@ -58,12 +58,12 @@ class RGBLinearGrad:
 
             >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
             >>> grad.perc(0.5)
-            sRGB(127.5, 0.0, 127.5)
+            HexRGB(#7f007f)
 
             Get a very "reddish" purple:
 
             >>> grad.perc(0.2)
-            sRGB(204.0, 0.0, 51.0)
+            HexRGB(#cc0033)
         """
 
         i = int(p * (len(self.colors) - 1))

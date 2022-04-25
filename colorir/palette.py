@@ -270,13 +270,8 @@ class Palette:
                 the color you want to search for.
 
         Examples:
-            >>> palette = Palette(red=sRGB(255, 0, 0))
+            >>> palette = Palette("#ff0000")
             >>> palette.get_names(HexRGB("#ff0000"))
-            ['red']
-            >>> palette.get_names((255, 0, 0))
-            ['red']
-            >>> palette.get_names("#ff0000")
-            ['red']
 
         Returns:
             A single :class:`~colorir.color.ColorBase` if `name` is a string or a list of
