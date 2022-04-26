@@ -44,7 +44,7 @@ from pathlib import Path
 from typing import Dict, Union, List
 from warnings import warn
 
-from .color import ColorBase, ColorLike, sRGB, HSL
+from .color import ColorBase, ColorLike, sRGB, HSL, simplified_dist
 from .color_format import ColorFormat
 from . import config
 
@@ -284,6 +284,37 @@ class Palette:
             if self.get_color(name) == color:
                 color_list.append(name)
         return color_list
+
+    def most_similar(self, color: ColorLike, n=1):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        For more details on the algorithm implemented to calculate similarity, see
+        :func:`color.perceived_dist() <colorir.color.perceived_dist()>` documentation.
+
+        Args:
+            color: The value of the color of reference. Can be an instance of any
+                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
+                the color to which others will be compared in search of similar results.
+            n: How many similar colors to be retrieved. -1 means all colors from the palette will
+                be returned from most similar to least.
+
+        Examples:
+            >>> palette = Palette(red="#ff0000", blue="#0000ff")
+            >>> palette.most_similar("#880000")
+            HexRGB(#ff0000)
+
+        Returns:
+            A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
+            :class:`~colorir.color.ColorBase` if n != 1. If the return type is a list, the colors
+            will be ordered from most similar to least.
+        """
+        color = self.color_format.format(color)
+        closest = sorted(self.colors, key=lambda color2: simplified_dist(color, color2))
+        if n == 1:
+            return closest[0]
+        elif n < 0:
+            n = len(self)
+        return closest[:n]
 
     def add(self, name: str, color: ColorLike):
         """Adds a color to a palette.

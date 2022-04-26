@@ -62,9 +62,9 @@ class ColorFormat:
         color system and can be consulted in their respective documentations.
 
     Examples:
-        >>> c_format = ColorFormat(colorir.color.sRGB, max_rgba=1, include_a=True)
+        >>> c_format = ColorFormat(colorir.color.sRGB, max_rgb=1)
         >>> c_format.new_color(1, 0, 0)
-        sRGB(1, 0, 0, 1)
+        sRGB(1, 0, 0)
 
         For more examples see the documentation of the :mod:`color_format` module.
     """
@@ -95,7 +95,10 @@ class ColorFormat:
         provided arguments.
 
         Examples:
-            >>> c_format = ColorFormat(colorir.color.sRGB, max_rgba=1, include_a=True)
+            >>> c_format = ColorFormat(colorir.color.sRGB,
+            ...                        max_rgb=1,
+            ...                        max_a=1,
+            ...                        include_a=True)
             >>> c_format.new_color(1, 0, 0)
             sRGB(1, 0, 0, 1)
         """
@@ -153,8 +156,8 @@ class ColorFormat:
                              "ColorFormat")
 
 
-PYGAME_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgba=255, round_to=0)
-KIVY_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgba=1, include_a=True)
+PYGAME_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgb=255, max_a=255, round_to=0)
+KIVY_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgb=1, max_a=1, include_a=True)
 WEB_COLOR_FORMAT = TKINTER_COLOR_FORMAT = MATPLOTLIB_COLOR_FORMAT = ColorFormat(
     color_sys=colorir.color.HexRGB
 )

@@ -159,7 +159,9 @@ class sRGB(ColorTupleBase):
         b: Blue component of the color.
         a: Opacity component of the color. Defaults to ``None``, which means it will be the same
             as the `max_rgba` parameter.
-        max_rgba: What is the maximum value for the `r`, `g`, `b`, and `a` components. Some common
+        max_rgb: What is the maximum value for the `r`, `g` and `b` components. Some common
+            values for this parameter would be 255 or 1.
+        max_a : What is the maximum value for the `a` component. Some common
             values for this parameter would be 255 or 1.
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
             Setting it to ``True`` may result in an object such as :code:`sRGB(255, 255, 0,
@@ -169,32 +171,40 @@ class sRGB(ColorTupleBase):
             means that the components won't be rounded at all.
     """
 
-    def __new__(cls, r: float, g: float, b: float, a: float = None, max_rgba=255, include_a=False,
+    def __new__(cls, r: float,
+                g: float,
+                b: float,
+                a: float = None,
+                max_rgb=255,
+                max_a=255,
+                include_a=False,
                 round_to=-1):
         if a is None:
-            a = max_rgba
+            a = max_a
 
-        if any(spec > max_rgba for spec in (r, g, b, a)):
+        if any(spec > max_rgb for spec in (r, g, b)) or a > max_a:
             raise ValueError("'r', 'g', 'b' and 'a' parameters of sRGB can't be larger then the "
                              "defined 'max_rgba' parameter'")
 
         obj = super().__new__(cls,
                               (r, g, b, a),
-                              (r / max_rgba, g / max_rgba, b / max_rgba, a / max_rgba),
+                              (r / max_rgb, g / max_rgb, b / max_rgb, a / max_a),
                               include_a=include_a,
                               round_to=round_to)
-        obj.max_rgba = max_rgba
+        obj.max_rgb = max_rgb
+        obj.max_a = max_a
         return obj
 
     @classmethod
-    def _from_rgba(cls, rgba, max_rgba=255, include_a=False, round_to=-1):
-        rgba_ = [spec * max_rgba for spec in rgba]
+    def _from_rgba(cls, rgba, max_rgb=255, max_a=255, include_a=False, round_to=-1):
+        rgba_ = [spec * max_rgb for spec in rgba[:3]] + [rgba[-1] * max_a]
         obj = super().__new__(cls,
                               rgba_,
                               rgba,
                               include_a=include_a,
                               round_to=round_to)
-        obj.max_rgba = max_rgba
+        obj.max_rgb = max_rgb
+        obj.max_a = max_a
         return obj
 
 
