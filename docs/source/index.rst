@@ -1,6 +1,6 @@
 .. note::
 
-	Please note that colorir is still in its early days and that slight modifications to the code may happen between versions
+	Please note that colorir is still in its early days and that slight modifications to the code may happen between versions.
 
 Welcome to colorir's documentation!
 =====================================
