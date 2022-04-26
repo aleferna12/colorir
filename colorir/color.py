@@ -464,8 +464,8 @@ class HexRGB(ColorBase, str):
         include_a: Whether to include the opacity parameter `a` in the constructed string.
             Setting it to ``True`` may result in an object such as :code:`HexRGB('#ffffff00')`
             instead of :code:`HexRGB('#ffff00')`, for exemple.
-        tail_a: Whether the alpha component will be included in the tail or head of the hex string
-            in the case `include_a` is True.
+        tail_a: Whether the alpha component is present in the tail or head of the hex string. Used
+            only if `hex_str` includes an alpha component or `include_a` is ``True``.
 
     Examples:
         >>> HexRGB("#ff0000")
@@ -478,51 +478,34 @@ class HexRGB(ColorBase, str):
         HexRGB(#ff0000ff)
     """
 
-    def __new__(cls, hex_str: str,
+    def __new__(cls,
+                hex_str: str,
                 uppercase=False,
                 include_hash=True,
                 include_a=False,
                 tail_a=False):
         hex_str = hex_str.lstrip("#")
-        if not tail_a:
-            if len(hex_str) == 6:
-                a = 255
-                if include_a:
-                    hex_str = '%02x' % a + hex_str
-            elif len(hex_str) == 8:
-                a = int(hex_str[:2], 16) / 255
-            else:
-                raise ValueError(
-                    "'hex_str' parameter of 'HexRGB' class should be either 6 or 8 characters long "
-                    "(disregarding the '#' at the begging)")
-            rgb = (int(hex_str[-6:-4], 16) / 255,
-                    int(hex_str[-4:-2], 16) / 255,
-                    int(hex_str[-2:], 16) / 255)
+        if not (6 <= len(hex_str) <= 9):
+            raise ValueError("'hex_str' length must be between 6 and 9 (inclusive)")
+        if len(hex_str) < 8:
+            i = 0
+            a = 1
+        elif tail_a:
+            i = 0
+            a = int(hex_str[-2:], 16) / 255
         else:
-            if len(hex_str) == 6:
-                a = 255
-                if include_a:
-                    hex_str += '%02x' % a
-            elif len(hex_str) == 8:
-                a = int(hex_str[6:], 16) / 255
-            else:
-                raise ValueError(
-                    "'hex_str' parameter of 'HexRGB' class should be either 6 or 8 characters long "
-                    "(disregarding the '#' at the begging)")
-            rgb = (int(hex_str[0:2], 16) / 255,
-                    int(hex_str[2:4], 16) / 255,
-                    int(hex_str[4:6], 16) / 255)
-        if uppercase:
-            hex_str = hex_str.upper()
-        else:
-            hex_str = hex_str.lower()
-        if include_hash:
-            hex_str = '#' + hex_str
-        obj = str.__new__(cls, hex_str)
-        obj._rgba = rgb + (a / 255,)
-        obj.uppercase = uppercase
-        obj.include_a = include_a
-        return obj
+            i = 2
+            a = int(hex_str[:2], 16) / 255
+        rgb = (int(hex_str[i:i + 2], 16) / 255,
+               int(hex_str[i + 2:i + 4], 16) / 255,
+               int(hex_str[i + 4:i + 6], 16) / 255)
+        # Rather than modifying the stored string to suit the format specifications we just
+        # delegate that to the _from_rgba method
+        return cls._from_rgba(rgb + (a,),
+                              uppercase=uppercase,
+                              include_hash=include_hash,
+                              include_a=include_a,
+                              tail_a=tail_a)
 
     @classmethod
     def _from_rgba(cls, rgba, uppercase=False, include_hash=True, include_a=False, tail_a=False):
