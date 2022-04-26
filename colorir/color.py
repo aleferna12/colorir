@@ -581,7 +581,7 @@ def random_color(random_a=False,
 
     Args:
         random_a: Whether to randomize the alpha attribute as well or just make it 1.
-            color_format: Specifies the format of the output color. Defaults to
+        color_format: Specifies the format of the output color. Defaults to
             :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAt>`.
 
     Examples:
