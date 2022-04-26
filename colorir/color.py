@@ -26,6 +26,7 @@ References:
 import colorsys
 import abc
 from math import sqrt
+from random import random
 from typing import Union
 import colorir
 
@@ -45,20 +46,20 @@ class ColorBase(metaclass=abc.ABCMeta):
         obj._rgba = tuple(rgba)
         return obj
 
-    def __eq__(self, other):
-        return self._rgba == other._rgba if isinstance(other, ColorBase) else False
-
-    def get_format(self):
-        """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
-        color object."""
-        format_ = {k: v for k, v in self.__dict__.items() if k != "_rgba"}
-        return colorir.color_format.ColorFormat(self.__class__, **format_)
-
     @classmethod
     @abc.abstractmethod
     def _from_rgba(cls, rgba, **kwargs):
         # Factory method to be called when reading the palette files or reconstructing colors
         pass
+
+    def __eq__(self, other):
+        return self._rgba == other._rgba if isinstance(other, ColorBase) else False
+
+    def get_format(self) -> "colorir.color_format.ColorFormat":
+        """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
+        color object."""
+        format_ = {k: v for k, v in self.__dict__.items() if k != "_rgba"}
+        return colorir.color_format.ColorFormat(self.__class__, **format_)
 
     def hex(self, **kwargs) -> "HexRGB":
         """Converts the current color to a hexadecimal representation.
@@ -463,46 +464,77 @@ class HexRGB(ColorBase, str):
         include_a: Whether to include the opacity parameter `a` in the constructed string.
             Setting it to ``True`` may result in an object such as :code:`HexRGB('#ffffff00')`
             instead of :code:`HexRGB('#ffff00')`, for exemple.
+        tail_a: Whether the alpha component will be included in the tail or head of the hex string
+            in the case `include_a` is True.
+
+    Examples:
+        >>> HexRGB("#ff0000")
+        HexRGB(#ff0000)
+
+        >>> HexRGB("#FF0000", include_hash=False)
+        HexRGB(ff0000)
+
+        >>> HexRGB("ff0000", include_a=True, tail_a=True)
+        HexRGB(#ff0000ff)
     """
 
-    def __new__(cls, hex_str: str, uppercase=False, include_hash=True, include_a=False):
+    def __new__(cls, hex_str: str,
+                uppercase=False,
+                include_hash=True,
+                include_a=False,
+                tail_a=False):
         hex_str = hex_str.lstrip("#")
-        if len(hex_str) == 6:
-            a = 1
-        elif len(hex_str) == 8:
-            a = int(hex_str[:2], 16) / 255
+        if not tail_a:
+            if len(hex_str) == 6:
+                a = 255
+                if include_a:
+                    hex_str = '%02x' % a + hex_str
+            elif len(hex_str) == 8:
+                a = int(hex_str[:2], 16) / 255
+            else:
+                raise ValueError(
+                    "'hex_str' parameter of 'HexRGB' class should be either 6 or 8 characters long "
+                    "(disregarding the '#' at the begging)")
+            rgb = (int(hex_str[-6:-4], 16) / 255,
+                    int(hex_str[-4:-2], 16) / 255,
+                    int(hex_str[-2:], 16) / 255)
         else:
-            raise ValueError(
-                "'hex_str' parameter of 'HexRGB' class should be either 6 or 8 characters long "
-                "(disregarding the '#' at the begging)")
-        rgb = (int(hex_str[-6:-4], 16) / 255,
-               int(hex_str[-4:-2], 16) / 255,
-               int(hex_str[-2:], 16) / 255)
-
+            if len(hex_str) == 6:
+                a = 255
+                if include_a:
+                    hex_str += '%02x' % a
+            elif len(hex_str) == 8:
+                a = int(hex_str[6:], 16) / 255
+            else:
+                raise ValueError(
+                    "'hex_str' parameter of 'HexRGB' class should be either 6 or 8 characters long "
+                    "(disregarding the '#' at the begging)")
+            rgb = (int(hex_str[0:2], 16) / 255,
+                    int(hex_str[2:4], 16) / 255,
+                    int(hex_str[4:6], 16) / 255)
         if uppercase:
             hex_str = hex_str.upper()
+        else:
+            hex_str = hex_str.lower()
         if include_hash:
             hex_str = '#' + hex_str
         obj = str.__new__(cls, hex_str)
-        obj._rgba = rgb + (a,)
+        obj._rgba = rgb + (a / 255,)
         obj.uppercase = uppercase
         obj.include_a = include_a
         return obj
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}({str(self)})"
-
-    def __eq__(self, other):
-        return ColorBase.__eq__(self, other) if isinstance(other, ColorBase) else str.__eq__(self,
-                                                                                             other)
-
     @classmethod
-    def _from_rgba(cls, rgba, uppercase=False, include_hash=True, include_a=False):
+    def _from_rgba(cls, rgba, uppercase=False, include_hash=True, include_a=False, tail_a=False):
         rgba_ = tuple([int(spec * 255) for spec in rgba])
         hex_str = '%02x%02x%02x' % rgba_[:3]
 
         if include_a:
-            hex_str = '%02x' % rgba_[-1] + hex_str
+            a = '%02x' % rgba_[-1]
+            if not tail_a:
+                hex_str = a + hex_str
+            else:
+                hex_str += a
         if uppercase:
             hex_str = hex_str.upper()
         if include_hash:
@@ -513,6 +545,13 @@ class HexRGB(ColorBase, str):
         obj.include_a = include_a
         obj._rgba = tuple(rgba)
         return obj
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({str(self)})"
+
+    def __eq__(self, other):
+        return ColorBase.__eq__(self, other) if isinstance(other, ColorBase) else str.__eq__(self,
+                                                                                             other)
 
 
 def simplified_dist(color1: ColorBase, color2: ColorBase):
@@ -531,6 +570,29 @@ def simplified_dist(color1: ColorBase, color2: ColorBase):
     d_r = rgba1[0] - rgba2[0]
     d_g = rgba1[1] - rgba2[1]
     d_b = rgba1[2] - rgba2[2]
-    return sqrt((2 + avg_r) * d_r**2
-                + 4 * d_g**2
-                + (2 + 1 - avg_r) * d_b**2)
+    return sqrt((2 + avg_r) * d_r ** 2
+                + 4 * d_g ** 2
+                + (2 + 1 - avg_r) * d_b ** 2)
+
+
+def random_color(random_a=False,
+                 color_format: "colorir.color_format.ColorFormat" = None):
+    """Generates a new random color.
+
+    Args:
+        random_a: Whether to randomize the alpha attribute as well or just make it 1.
+        color_format: Specifies the format of the output color. Defaults to
+        :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAt>`.
+
+    Examples:
+        >>> random_color()  # doctest: +SKIP
+        HexRGB(#304fcc)
+    """
+    if color_format is None:
+        color_format = colorir.config.DEFAULT_COLOR_FORMAT
+    if random_a:
+        a = random()
+    else:
+        a = 1
+    rgba = (random(), random(), random(), a)
+    return color_format._from_rgba(rgba)

@@ -27,11 +27,15 @@ Examples:
 
     Create our own color format to work with HSL colors:
 
-    >>> hsl_format = ColorFormat(HSL, max_h=100, max_sla=100, round_to=0)
+    >>> hsl_format = ColorFormat(colorir.color.HSL, max_h=100, max_sla=100, round_to=0)
 
-    We can then pass the `hsl_format` to a palette or create colors directly with it:
+    We can then pass the `hsl_format` to a palette or create colors directly with it using the
+    :meth:`ColorFormat.new_color()` and :meth:`ColorFormat.format()` methods:
 
     >>> hsl_format.new_color(30, 70, 70)
+    HSL(30, 70, 70)
+
+    >>> hsl_format.format((30, 70, 70))
     HSL(30, 70, 70)
 
 Attributes:
@@ -46,8 +50,7 @@ References:
     .. [2] PyGame library at https://www.pygame.org/.
 """
 from typing import Type
-
-from .color import sRGB, HexRGB, HSL, ColorBase, ColorLike
+import colorir
 
 
 class ColorFormat:
@@ -59,13 +62,13 @@ class ColorFormat:
         color system and can be consulted in their respective documentations.
 
     Examples:
-        >>> c_format = ColorFormat(sRGB, max_rgba=1, include_a=True)
+        >>> c_format = ColorFormat(colorir.color.sRGB, max_rgba=1, include_a=True)
         >>> c_format.new_color(1, 0, 0)
         sRGB(1, 0, 0, 1)
 
         For more examples see the documentation of the :mod:`color_format` module.
     """
-    def __init__(self, color_sys: Type["ColorBase"], **kwargs):
+    def __init__(self, color_sys: Type["colorir.color.ColorBase"], **kwargs):
         self.color_sys = color_sys
         self._format_params = kwargs
 
@@ -87,12 +90,12 @@ class ColorFormat:
             arguments_str += f",\n{' ' * len(opener_str)}{param}={param_v.__repr__()}"
         return f"{opener_str}{arguments_str})"
 
-    def new_color(self, *args, **kwargs) -> "ColorBase":
+    def new_color(self, *args, **kwargs) -> "colorir.color.ColorBase":
         """Creates a new color by filling the remaining parameters of a color constructor with the
         provided arguments.
 
         Examples:
-            >>> c_format = ColorFormat(sRGB, max_rgba=1, include_a=True)
+            >>> c_format = ColorFormat(colorir.color.sRGB, max_rgba=1, include_a=True)
             >>> c_format.new_color(1, 0, 0)
             sRGB(1, 0, 0, 1)
         """
@@ -103,7 +106,7 @@ class ColorFormat:
         # Factory method to be called when reading the palette files or reconstructing colors
         return self.color_sys._from_rgba(rgba, **self._format_params)
 
-    def format(self, color: ColorLike) -> "ColorBase":
+    def format(self, color: "colorir.color.ColorLike") -> "colorir.color.ColorBase":
         """Tries to format a color-like object into this color format.
 
         Because there are multiple implementations of tuple-based color systems, the `color`
@@ -112,12 +115,12 @@ class ColorFormat:
         system, such as :class:`~colorir.color.sRGB` for example.
 
         Examples:
-            >>> rgb_format = ColorFormat(sRGB, round_to=0)
+            >>> rgb_format = ColorFormat(colorir.color.sRGB, round_to=0)
             >>> rgb_format.format("#ff0000")
             sRGB(255, 0, 0)
             >>> rgb_format.format((255, 0, 0))
             sRGB(255, 0, 0)
-            >>> hex_format = ColorFormat(HexRGB)
+            >>> hex_format = ColorFormat(colorir.color.HexRGB)
             >>> hex_format.format("#ff0000")
             HexRGB(#ff0000)
             >>> hex_format.format((255, 0, 0)) # Can't know how to parse this tuple
@@ -130,15 +133,19 @@ class ColorFormat:
                 :mod:`~colorir.color` class or, alternatively, a color-like object that
                 resembles the format of the color you want to format.
         """
-        if isinstance(color, ColorBase):
+        if isinstance(color, colorir.color.ColorBase):
             return self._from_rgba(color._rgba)
         elif isinstance(color, str):
             # Try to preserve input options (none implemented now but who knows)
-            if self.color_sys == HexRGB:
+            if self.color_sys == colorir.color.HexRGB:
                 return self.new_color(color)
-            # Fallback to HexRGB default args
-            return self._from_rgba(HexRGB(color)._rgba)
-        if self.color_sys != HexRGB:
+            # No alpha in the string, safe to interpret with HexRGB
+            if len(color) < 8:
+                # Fallback to HexRGB default args
+                return self._from_rgba(colorir.color.HexRGB(color)._rgba)
+            raise ValueError("tried to interpret a string-formatted color that contains an alpha"
+                             "component with a non-HexRGB ColorFormat")
+        if self.color_sys != colorir.color.HexRGB:
             # Assume that the color system is tuple-based
             return self.new_color(*color)
         else:
@@ -146,6 +153,8 @@ class ColorFormat:
                              "ColorFormat")
 
 
-PYGAME_COLOR_FORMAT = ColorFormat(color_sys=sRGB, max_rgba=255, round_to=0)
-KIVY_COLOR_FORMAT = ColorFormat(color_sys=sRGB, max_rgba=1, include_a=True)
-WEB_COLOR_FORMAT = TKINTER_COLOR_FORMAT = MATPLOTLIB_COLOR_FORMAT = ColorFormat(color_sys=HexRGB)
+PYGAME_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgba=255, round_to=0)
+KIVY_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgba=1, include_a=True)
+WEB_COLOR_FORMAT = TKINTER_COLOR_FORMAT = MATPLOTLIB_COLOR_FORMAT = ColorFormat(
+    color_sys=colorir.color.HexRGB
+)

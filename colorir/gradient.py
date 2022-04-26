@@ -26,7 +26,8 @@ class RGBLinearGrad:
     Args:
         colors: List of colors that compose the gradient There can be more than two colors in this
             list.
-        color_format: Color format specifying how to store and create colors.
+        color_format: Color format specifying how to store and create colors. Defaults to
+            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAt>`.
         use_linear_RGB: Whether to use linear RGB rather than sRGB to create the gradient.
 
     Notes:

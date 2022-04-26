@@ -44,9 +44,9 @@ from pathlib import Path
 from typing import Dict, Union, List
 from warnings import warn
 
-from . import config, HSL
-from .color import ColorBase, ColorLike, sRGB
+from .color import ColorBase, ColorLike, sRGB, HSL
 from .color_format import ColorFormat
+from . import config
 
 _throw_exception = object()
 _builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
