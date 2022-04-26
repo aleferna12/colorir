@@ -162,7 +162,7 @@ class sRGB(ColorTupleBase):
         max_rgb: What is the maximum value for the `r`, `g` and `b` components. Some common
             values for this parameter would be 255 or 1.
         max_a : What is the maximum value for the `a` component. Some common
-            values for this parameter would be 255 or 1.
+            values for this parameter would be 100 or 1.
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
             Setting it to ``True`` may result in an object such as :code:`sRGB(255, 255, 0,
             255)` instead of :code:`sRGB(255, 255, 0)`, for exemple.
@@ -176,7 +176,7 @@ class sRGB(ColorTupleBase):
                 b: float,
                 a: float = None,
                 max_rgb=255,
-                max_a=255,
+                max_a=1,
                 include_a=False,
                 round_to=-1):
         if a is None:
@@ -196,7 +196,7 @@ class sRGB(ColorTupleBase):
         return obj
 
     @classmethod
-    def _from_rgba(cls, rgba, max_rgb=255, max_a=255, include_a=False, round_to=-1):
+    def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=-1):
         rgba_ = [spec * max_rgb for spec in rgba[:3]] + [rgba[-1] * max_a]
         obj = super().__new__(cls,
                               rgba_,
