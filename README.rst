@@ -1,6 +1,6 @@
 .. note::
 
-	Please note that colorir is still in its early days and that slight modifications to the code may happen between versions.
+	Please note that colorir is still in its early days and that slight modifications to the API may happen between versions.
 
 What is colorir?
 ----------------
@@ -35,7 +35,11 @@ To install colorir with pip use following command:
 
 .. code-block:: shell
 
-	$ python -m pip install colorir
+	$ python -m pip install --user colorir
+
+.. important::
+
+	It's strongly recommended to install colorir in user mode. Not following this recommendation is the most common source of errors associated with permissions when saving palettes.
 
 Quick-Start
 -----------
