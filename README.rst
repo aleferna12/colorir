@@ -31,15 +31,15 @@ colorir was designed to be your best friend when dealing with colors so that you
 Installation
 ------------
 
-.. important::
+.. note::
 
-	It's strongly recommended to install colorir in user mode. Not following this recommendation is the most common source of errors associated with permissions when saving palettes.
+	If you encounter permission errors when using colorir, please consider re-installing the package in user mode (by including the :code:`--user` flag in the pip install command).
 
 To install colorir with pip use following command:
 
 .. code-block:: shell
 
-	$ python -m pip install --user colorir
+	$ python -m pip install colorir
 
 Quick-Start
 -----------
