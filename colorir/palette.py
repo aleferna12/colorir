@@ -34,14 +34,14 @@ Examples:
     >>> palette.name = "single_blue"
     >>> palette.save()
 
-    Load it again from elsewhere latter:
+    Load it again from elsewhere later:
 
     >>> palette = Palette.load("single_blue")
 """
 
 import json
 from pathlib import Path
-from typing import Dict, Union, List
+from typing import Union, List
 from warnings import warn
 
 from .color import ColorBase, ColorLike, sRGB, HSL, simplified_dist
@@ -73,11 +73,10 @@ class Palette:
     Attributes:
         name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
     """
-
     def __init__(self,
                  name: str = None,
                  color_format: ColorFormat = None,
-                 **colors: Dict[str, ColorLike]):
+                 **colors: ColorLike):
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
 
@@ -213,8 +212,7 @@ class Palette:
             f"{type(item).__name__}")
 
     def __iter__(self):
-        for c_val in self._color_dict.values():
-            yield c_val
+        return iter(self._color_dict.values())
 
     def __getattr__(self, item):
         return self._color_dict[item]
