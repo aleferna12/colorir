@@ -98,7 +98,7 @@ Since we are done using our palette for now, let's save it to the default palett
 
 >>> palette.save()
 
-We can then latter load the palette (even from other projects if we wish!):
+We can then later load the palette (even from other projects if we wish!):
 
 >>> palette = Palette.load("elementary")
 

@@ -64,7 +64,7 @@ Ok! We are done with the turtles for right now. We should save our colors so we 
 	colors.name = "turtles" # First we give the palette a name
 	colors.save() # Then save it
 
-A few weeks latter we suddenly have a brilliant idea: what if we could draw actual turtles, instead of a weird arrow we've been pretending to be a turtle?
+A few weeks later we suddenly have a brilliant idea: what if we could draw actual turtles, instead of a weird arrow we've been pretending to be a turtle?
 
 But we also would like to keep the colors from our last project since we took so long choosing turtle-fitting colors.
 
