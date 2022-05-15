@@ -18,7 +18,7 @@ Examples:
     Compare the perceived distance between two colors:
 
     >>> simplified_dist(HexRGB("#ff0000"), HexRGB("#ffff00"))
-    2.0
+    510.0
 
 References:
     .. [#] Wikipedia at https://en.wikipedia.org/wiki/Color_model.
@@ -26,7 +26,7 @@ References:
 import colorsys
 import abc
 from math import sqrt
-from random import random
+from random import randint
 from typing import Union
 import colorir
 
@@ -132,7 +132,7 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         elif round_to > 0:
             iterable = [round(val, round_to) for val in iterable]
         obj = tuple.__new__(cls, iterable)
-        obj._rgba = tuple(rgba)
+        obj._rgba = tuple(round(spec) for spec in rgba)
         obj.include_a = include_a
         obj.round_to = round_to
 
@@ -176,28 +176,30 @@ class sRGB(ColorTupleBase):
                 b: float,
                 a: float = None,
                 max_rgb=255,
-                max_a=1,
+                max_a=255,
                 include_a=False,
                 round_to=-1):
         if a is None:
             a = max_a
 
         if any(spec > max_rgb for spec in (r, g, b)) or a > max_a:
-            raise ValueError("'r', 'g', 'b' and 'a' parameters of sRGB can't be larger then the "
+            raise ValueError("'r', 'g', 'b' and 'a' parameters of sRGB can't be larger than the "
                              "defined 'max_rgba' parameter'")
 
-        obj = super().__new__(cls,
-                              (r, g, b, a),
-                              (r / max_rgb, g / max_rgb, b / max_rgb, a / max_a),
-                              include_a=include_a,
-                              round_to=round_to)
+        obj = super().__new__(
+            cls,
+            (r, g, b, a),
+            (r / max_rgb * 255, g / max_rgb * 255, b / max_rgb * 255, a / max_a * 255),
+            include_a=include_a,
+            round_to=round_to
+        )
         obj.max_rgb = max_rgb
         obj.max_a = max_a
         return obj
 
     @classmethod
-    def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=-1):
-        rgba_ = [spec * max_rgb for spec in rgba[:3]] + [rgba[-1] * max_a]
+    def _from_rgba(cls, rgba, max_rgb=255, max_a=255, include_a=False, round_to=-1):
+        rgba_ = [spec / 255 * max_rgb for spec in rgba[:3]] + [rgba[-1] / 255 * max_a]
         obj = super().__new__(cls,
                               rgba_,
                               rgba,
@@ -239,13 +241,14 @@ class HSL(ColorTupleBase):
 
         if h > max_h:
             raise ValueError(
-                "'h' parameter of HSL can't be larger then the defined 'max_h' parameter'")
+                "'h' parameter of HSL can't be larger than the defined 'max_h' parameter'")
         if any(spec > max_sla for spec in (s, l, a)):
             raise ValueError(
-                "'s', 'l' and 'a' parameters of HSL can't be larger then the defined 'max_sla' "
+                "'s', 'l' and 'a' parameters of HSL can't be larger than the defined 'max_sla' "
                 "parameter'")
 
         rgba = colorsys.hls_to_rgb(h / max_h, l / max_sla, s / max_sla) + (a / max_sla,)
+        rgba = [spec * 255 for spec in rgba]
         obj = super().__new__(cls, (h, s, l, a), rgba, include_a=include_a, round_to=round_to)
         obj.max_h = max_h
         obj.max_sla = max_sla
@@ -254,8 +257,8 @@ class HSL(ColorTupleBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_h=360, max_sla=1, include_a=False, round_to=-1):
-        hls = colorsys.rgb_to_hls(*rgba[:-1])
-        hsla = (hls[0] * max_h, hls[2] * max_sla, hls[1] * max_sla, rgba[-1] * max_sla)
+        hls = colorsys.rgb_to_hls(*[spec / 255 for spec in rgba[:-1]])
+        hsla = (hls[0] * max_h, hls[2] * max_sla, hls[1] * max_sla, rgba[-1] / 255 * max_sla)
 
         obj = super().__new__(cls,
                               hsla,
@@ -299,13 +302,14 @@ class HSV(ColorTupleBase):
 
         if h > max_h:
             raise ValueError(
-                "'h' parameter of HSL can't be larger then the defined 'max_h' parameter'")
+                "'h' parameter of HSL can't be larger than the defined 'max_h' parameter'")
         if any(spec > max_sva for spec in (s, v, a)):
             raise ValueError(
-                "'s', 'v' and 'a' parameters of HSL can't be larger then the defined 'max_sva' "
+                "'s', 'v' and 'a' parameters of HSL can't be larger than the defined 'max_sva' "
                 "parameter'")
 
         rgba = colorsys.hsv_to_rgb(h / max_h, s / max_sva, v / max_sva) + (a / max_sva,)
+        rgba = [spec * 255 for spec in rgba]
         obj = super().__new__(cls, (h, s, v, a), rgba, include_a=include_a, round_to=round_to)
         obj.max_h = max_h
         obj.max_sva = max_sva
@@ -314,8 +318,8 @@ class HSV(ColorTupleBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_h=360, max_sva=1, include_a=False, round_to=-1):
-        hsv = colorsys.rgb_to_hsv(*rgba[:-1])
-        hsva = (hsv[0] * max_h, hsv[1] * max_sva, hsv[2] * max_sva, rgba[-1] * max_sva)
+        hsv = colorsys.rgb_to_hsv(*[spec / 255 for spec in rgba[:-1]])
+        hsva = (hsv[0] * max_h, hsv[1] * max_sva, hsv[2] * max_sva, rgba[-1] / 255 * max_sva)
 
         obj = super().__new__(cls,
                               hsva,
@@ -357,14 +361,16 @@ class CMYK(ColorTupleBase):
             a = max_cmyka
 
         if any(spec > max_cmyka for spec in (c, m, y, k, a)):
-            raise ValueError("'c', 'm', 'y', 'k' and 'a' parameters of CMYK can't be larger then"
+            raise ValueError("'c', 'm', 'y', 'k' and 'a' parameters of CMYK can't be larger than"
                              " the defined 'max' parameter'")
 
-        r = (1 - c / max_cmyka) * (1 - k / max_cmyka)
-        g = (1 - m / max_cmyka) * (1 - k / max_cmyka)
-        b = (1 - y / max_cmyka) * (1 - k / max_cmyka)
+        r = (1 - c / max_cmyka) * (1 - k / max_cmyka) * 255
+        g = (1 - m / max_cmyka) * (1 - k / max_cmyka) * 255
+        b = (1 - y / max_cmyka) * (1 - k / max_cmyka) * 255
 
-        obj = super().__new__(cls, (c, m, y, k, a), (r, g, b, a / max_cmyka), include_a=include_a,
+        obj = super().__new__(cls, (c, m, y, k, a),
+                              (r, g, b, a / max_cmyka * 255),
+                              include_a=include_a,
                               round_to=round_to)
         obj.max_cmyka = max_cmyka
 
@@ -373,18 +379,18 @@ class CMYK(ColorTupleBase):
     @classmethod
     def _from_rgba(cls, rgba, max_cmyka=1, include_a=False, round_to=-1):
         if sum(rgba[:-1]) == 0:
-            cmyka = (0, 0, 0, max_cmyka, rgba[-1] * max_cmyka)
+            cmyka = (0.0, 0.0, 0.0, max_cmyka, rgba[-1] / 255 * max_cmyka)
 
         else:
-            c = 1 - rgba[0]
-            m = 1 - rgba[1]
-            y = 1 - rgba[2]
+            c = 1 - rgba[0] / 255
+            m = 1 - rgba[1] / 255
+            y = 1 - rgba[2] / 255
 
             k = min(c, m, y)
             c = (c - k) / (1 - k)
             m = (m - k) / (1 - k)
             y = (y - k) / (1 - k)
-            cmyka = [spec * max_cmyka for spec in (c, m, y, k, rgba[-1])]
+            cmyka = [spec * max_cmyka for spec in (c, m, y, k, rgba[-1] / 255)]
 
         obj = super().__new__(cls,
                               cmyka,
@@ -424,14 +430,20 @@ class CMY(ColorTupleBase):
             a = max_cmya
 
         if any(spec > max_cmya for spec in (c, m, y, a)):
-            raise ValueError("'c', 'm', 'y' and 'a' parameters of CMY can't be larger then"
+            raise ValueError("'c', 'm', 'y' and 'a' parameters of CMY can't be larger than"
                              " the defined 'max' parameter'")
 
-        obj = super().__new__(cls,
-                              (c, m, y, a),
-                              (1 - c / max_cmya, 1 - m / max_cmya, 1 - y / max_cmya, a / max_cmya),
-                              include_a=include_a,
-                              round_to=round_to)
+        obj = super().__new__(
+            cls,
+            (c, m, y, a),
+            (
+                255 - c / max_cmya * 255,
+                255 - m / max_cmya * 255,
+                255 - y / max_cmya * 255,
+                a / max_cmya
+            ),
+            include_a=include_a,
+            round_to=round_to)
         obj.max_cmya = max_cmya
 
         return obj
@@ -440,8 +452,8 @@ class CMY(ColorTupleBase):
     def _from_rgba(cls, rgba, max_cmya=1, include_a=False, round_to=-1):
 
         obj = super().__new__(cls,
-                              [spec * max_cmya for spec in
-                               (1 - rgba[0], 1 - rgba[1], 1 - rgba[2], rgba[-1])],
+                              [spec / 255 * max_cmya for spec in
+                               (255 - rgba[0], 255 - rgba[1], 255 - rgba[2], rgba[-1])],
                               rgba,
                               include_a=include_a,
                               round_to=round_to)
@@ -499,16 +511,16 @@ class HexRGB(ColorBase, str):
             raise ValueError("'hex_str' length must be between 6 and 9 (inclusive)")
         if len(hex_str) < 8:
             i = 0
-            a = 1
+            a = 255
         elif tail_a:
             i = 0
-            a = int(hex_str[-2:], 16) / 255
+            a = int(hex_str[-2:], 16)
         else:
             i = 2
-            a = int(hex_str[:2], 16) / 255
-        rgb = (int(hex_str[i:i + 2], 16) / 255,
-               int(hex_str[i + 2:i + 4], 16) / 255,
-               int(hex_str[i + 4:i + 6], 16) / 255)
+            a = int(hex_str[:2], 16)
+        rgb = (int(hex_str[i:i + 2], 16),
+               int(hex_str[i + 2:i + 4], 16),
+               int(hex_str[i + 4:i + 6], 16))
         # Rather than modifying the stored string to suit the format specifications we just
         # delegate that to the _from_rgba method
         return cls._from_rgba(rgb + (a,),
@@ -519,11 +531,10 @@ class HexRGB(ColorBase, str):
 
     @classmethod
     def _from_rgba(cls, rgba, uppercase=False, include_hash=True, include_a=False, tail_a=False):
-        rgba_ = tuple([int(spec * 255) for spec in rgba])
-        hex_str = '%02x%02x%02x' % rgba_[:3]
+        hex_str = '%02x%02x%02x' % rgba[:3]
 
         if include_a:
-            a = '%02x' % rgba_[-1]
+            a = '%02x' % rgba[-1]
             if not tail_a:
                 hex_str = a + hex_str
             else:
@@ -563,9 +574,9 @@ def simplified_dist(color1: ColorBase, color2: ColorBase):
     d_r = rgba1[0] - rgba2[0]
     d_g = rgba1[1] - rgba2[1]
     d_b = rgba1[2] - rgba2[2]
-    return sqrt((2 + avg_r) * d_r ** 2
+    return sqrt((2 + avg_r / 255) * d_r ** 2
                 + 4 * d_g ** 2
-                + (2 + 1 - avg_r) * d_b ** 2)
+                + (2 + (255 - avg_r) / 255) * d_b ** 2)
 
 
 def random_color(random_a=False,
@@ -584,8 +595,12 @@ def random_color(random_a=False,
     if color_format is None:
         color_format = colorir.config.DEFAULT_COLOR_FORMAT
     if random_a:
-        a = random()
+        a = randint(0, 255)
     else:
-        a = 1
-    rgba = (random(), random(), random(), a)
-    return color_format._from_rgba(rgba)
+        a = 255
+    # randint divided by 255 has to be used to avoid floating point errors when rounding a random
+    # float
+    return color_format._from_rgba((randint(0, 255),
+                                    randint(0, 255),
+                                    randint(0, 255),
+                                    a))

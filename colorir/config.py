@@ -13,6 +13,8 @@ Examples:
 Attributes:
     DEFAULT_PALETTES_DIR (str): Default directory from which palettes will be loaded and to which
         they will be saved.
+    DEFAULT_SWPALETTES_DIR (str): Default directory from which swatch palettes will be loaded and to
+        which they will be saved.
     DEFAULT_COLOR_FORMAT (ColorFormat): Default color format used by different objects in this
         package.
 """
@@ -21,4 +23,5 @@ from .color_format import ColorFormat
 from .color import HexRGB
 
 DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
+DEFAULT_SWPALETTES_DIR = path.join(path.dirname(__file__), "swpalettes")
 DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB)
