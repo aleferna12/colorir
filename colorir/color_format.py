@@ -84,8 +84,11 @@ class ColorFormat:
         return self.new_color(*args, **kwargs)
 
     def __repr__(self):
-        param_str = [f"{param}={val.__repr__()}" for param, val in self._format_params.items()]
-        return f"{self.__class__.__name__}(color_sys={self.color_sys}, {', '.join(param_str)})"
+        param_strs = [f"{param}={val.__repr__()}" for param, val in self._format_params.items()]
+        color_sys_str = f"color_sys={self.color_sys.__name__}"
+        if param_strs:
+            color_sys_str += ", "
+        return f"{self.__class__.__name__}({color_sys_str}{', '.join(param_strs)})"
 
     def new_color(self, *args, **kwargs) -> "colorir.color.ColorBase":
         """Creates a new color by filling the remaining parameters of a color constructor with the

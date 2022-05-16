@@ -10,6 +10,10 @@ config.DEFAULT_SWPALETTES_DIR = str(Path(__file__).resolve().parent / "test_swpa
 
 
 class TestPalette(unittest.TestCase):
+    def test_add_op(self):
+        pal = Palette(c1="ffffff") + Palette(c2="000000")
+        self.assertEqual(pal, Palette(c1="ffffff", c2="000000"))
+
     def test_save_load(self):
         colors = {f"c{i}": "%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for i in range(250)}
@@ -24,6 +28,10 @@ class TestPalette(unittest.TestCase):
 
 
 class TestSwatchPalette(unittest.TestCase):
+    def test_add_op(self):
+        swpal = SwatchPalette(None, None, "ffffff") + SwatchPalette(None, None, "000000")
+        self.assertEqual(swpal, SwatchPalette(None, None, "ffffff", "000000"))
+
     def test_save_load(self):
         colors = ["%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for _ in range(250)]

@@ -219,6 +219,11 @@ class Palette:
     def __eq__(self, other):
         return (self.name == other.name) and (self._color_dict == other._color_dict)
 
+    def __add__(self, other):
+        for c_name in other.color_names:
+            self.add(c_name, other.get_color(c_name))
+        return self
+
     def get_color(self,
                   name: Union[str, List[str]],
                   fallback=_throw_exception) -> Union[ColorBase, List[ColorBase]]:
@@ -566,6 +571,11 @@ class SwatchPalette:
 
     def __eq__(self, other):
         return (self.name == other.name) and (self._color_stack == other._color_stack)
+
+    def __add__(self, other):
+        for color in other:
+            self.add(color)
+        return self
 
     # TODO: doc
     def add(self, color: ColorLike):

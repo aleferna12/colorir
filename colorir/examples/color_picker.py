@@ -2,10 +2,10 @@ import tkinter as tk
 from functools import partial
 from colorir import Palette, find_palettes
 
-colors = Palette.load()
+colors = Palette.load(palettes_dir=".")
 palettes = {"all": colors}
 palettes.update({
-    pal_name: Palette.load(pal_name) for pal_name in find_palettes()
+    pal_name: Palette.load(pal_name) for pal_name in find_palettes(palettes_dir=".")
 })
 
 
