@@ -7,12 +7,12 @@ Examples:
 
     >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255), sRGB(255, 255, 255)])
     >>> grad.perc(0.25)
-    HexRGB(#7f007f)
+    HexRGB(#800080)
 
     Get 3 colors interspaced in the gradient:
 
     >>> grad.n_colors(3)
-    [HexRGB(#7f007f), HexRGB(#0000ff), HexRGB(#7f7fff)]
+    [HexRGB(#800080), HexRGB(#0000ff), HexRGB(#8080ff)]
 """
 from typing import Iterable
 from math import pow
@@ -59,7 +59,7 @@ class RGBLinearGrad:
 
             >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
             >>> grad.perc(0.5)
-            HexRGB(#7f007f)
+            HexRGB(#800080)
 
             Get a very "reddish" purple:
 
@@ -100,7 +100,7 @@ class RGBLinearGrad:
             rgba_1 = color_1._rgba
             rgba_2 = color_2._rgba
 
-        new_rgba = [rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p for i in range(4)]
+        new_rgba = tuple(round(rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p) for i in range(4))
         return new_rgba if not self.use_linear_RGB else self._to_sRGB(new_rgba)
 
     # https://entropymine.com/imageworsener/srgbformula/
