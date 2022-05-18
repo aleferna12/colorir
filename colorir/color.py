@@ -472,7 +472,7 @@ class HexRGB(ColorBase, str):
     >>> red = HexRGB("#ff0000")
     >>> print(red)
     #ff0000
-    >>> red # red is NOT a simple string, but a subclass of it
+    >>> red # red is NOT a string, but a subclass of a string
     HexRGB(#ff0000)
 
     References:

@@ -4,6 +4,9 @@ The :class:`Palette` class provides an easy way to manage your favorite colors i
 projects. In this context, a palette should be understood as any collection of colors that
 can be grouped due to a common feature, not only colors that necessarily "look good" together.
 
+Every color in a :class:`Palette` has a name associated with it. If unnamed colors are better fit to
+your particular use case, you may want to use a :class:`SwatchPalette` instead.
+
 Examples:
     Create a palette with the color red:
 
@@ -65,7 +68,6 @@ class Palette:
 
     Args:
         name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
-            If the `palettes` parameter is a single string, defaults to that.
         color_format: Color format specifying how the colors of this :class:`Palette` should be
             stored. Defaults to the value specified in
             :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
@@ -73,6 +75,8 @@ class Palette:
 
     Attributes:
         name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+        color_format: Color format specifying how the colors of this :class:`Palette` are
+            stored.
     """
     def __init__(self,
                  name: str = None,
@@ -308,7 +312,7 @@ class Palette:
         return closest[:n]
 
     def add(self, name: str, color: ColorLike):
-        """Adds a color to a palette.
+        """Adds a color to the palette.
 
         Two colors with the same name but different values are invalid and can not coexist in a
         same :class:`Palette`. You should therefore avoid reusing names for already existing
@@ -363,7 +367,7 @@ class Palette:
             raise ValueError(f"provided 'name' parameter is not a color loaded in this 'Palette'")
 
     def remove(self, name):
-        """Removes a color from a palette.
+        """Removes a color from the palette.
 
         Args:
             name: Name of the color to be removed.
@@ -407,9 +411,34 @@ class Palette:
                 formatted_colors[c_name] = c_rgba
             json.dump(formatted_colors, file, indent=4)
 
+    def to_swpalette(self) -> "SwatchPalette":
+        """Converts this swatch palette into a :class:`SwatchPalette`."""
+        return SwatchPalette(self.name, self.color_format, *self._color_dict.values())
+
 
 class SwatchPalette:
-    """Class that handles anonymous indexed colors."""
+    """Class that handles anonymous indexed colors (called "swaches" in this context).
+
+    This class may be used as a replacement for :class:`Palette` when the name of the colors is irre
+    levant.
+
+    Examples:
+        >>> swpalette = SwatchPalette("elementary", None, "ff0000", "00ff00", "0000ff")
+        >>> swpalette[0]
+        HexRGB(#ff0000)
+
+    Args:
+        name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+        color_format: Color format specifying how the colors of this :class:`SwatchPalette` should
+            be stored. Defaults to the value specified in
+            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+        colors: Colors that will be stored in this palette.
+
+    Attributes:
+        name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+        color_format: Color format specifying how the colors of this :class:`Palette` are
+            stored.
+    """
 
     def __init__(self,
                  name: str = None,
@@ -437,6 +466,11 @@ class SwatchPalette:
         the '.swpalette' extension. You should not create such files manually but rather through the
         :meth:`SwatchPalette.save()` method.
 
+        Examples:
+            Load a swatch palette called "project_interface" from the default directory:
+
+            >>> swpalette = SwatchPalette.load("project_interface")  # doctest: +SKIP
+
         Args:
             palettes: List of swatch palettes located in the location represented by `palettes_dir`
                 that should be loaded by this :class:`SwatchPalette` instance. If this parameter is
@@ -451,9 +485,6 @@ class SwatchPalette:
             color_format: Color format specifying how the colors of this :class:`Palette` should be
                 stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
-
-        Examples:
-            TODO (use +SKIP directive)
         """
         if palettes_dir is None:
             palettes_dir = config.DEFAULT_SWPALETTES_DIR
@@ -480,13 +511,36 @@ class SwatchPalette:
                 palette_obj.add(new_color)
         return palette_obj
 
-    # TODO: doc
     @classmethod
     def new_complementary(cls,
                           n: int,
                           color: ColorLike = None,
                           name: str = None,
                           color_format: ColorFormat = None):
+        """Creates a new palette with 'n' complementary colors.
+
+        Colors are considered complementary if they are interspaced in the additive HUE color wheel.
+
+        Examples:
+             Make a palette from red and its complementary color, cyan:
+
+             >>> swpalette = SwatchPalette.new_complementary(2, sRGB(255, 0, 0))
+             >>> swpalette
+             SwatchPalette(HexRGB(#ff0000), HexRGB(#00ffff))
+
+             Make a tetradic palette of random colors:
+
+             >>> swpalette = SwatchPalette.new_complementary(4)
+
+        Args:
+            n: The number of colors in the new palette.
+            color: A color from which the others will be generated against. By default, a color is
+                randomly chosen.
+            name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+            color_format: Color format specifying how the colors of this :class:`SwatchPalette`
+                should be stored. Defaults to the value specified in
+                :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+        """
         swatches = cls(name=name, color_format=color_format)
         if color is None:
             hsv = random_color(color_format=ColorFormat(HSV, max_h=360))
@@ -499,7 +553,6 @@ class SwatchPalette:
             swatches.add(HSV(hue, hsv[1], hsv[2]))
         return swatches
 
-    # TODO: doc
     @classmethod
     def new_analogous(cls,
                       n: int,
@@ -508,6 +561,36 @@ class SwatchPalette:
                       color: ColorLike = None,
                       name: str = None,
                       color_format: ColorFormat = None):
+        """Creates a new palette with 'n' analogous colors.
+
+        Colors are considered analogous if they are side-by-side in the additive HUE color wheel.
+
+        Examples:
+             Make a palette from red and its analogous color, orange:
+
+             >>> swpalette = SwatchPalette.new_analogous(2, start=1, color=sRGB(255, 0, 0))
+             >>> swpalette
+             SwatchPalette(HexRGB(#ff0000), HexRGB(#ff8000))
+
+             Make a palette of four similar colors:
+
+             >>> swpalette = SwatchPalette.new_analogous(4, sections=24)
+
+        Args:
+            n: The number of colors in the new palette.
+            sections: The number of sections in which the additive HUE color wheel will be divided
+                before sampling colors. The bigger this number, the more similar the colors will be.
+            start: Where the color described in the 'color' parameter will be placed with respect to
+                the others. If '0', 'color' will be in the center of the generated palette, and
+                colors will be sampled from both its sides in the HUE wheel. If '1', colors will
+                be sampled clockwise from 'color'. If '-1', they will be sampled counter-clockwise.
+            color: A color from which the others will be generated against. By default, a color is
+                randomly chosen.
+            name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+            color_format: Color format specifying how the colors of this :class:`SwatchPalette`
+                should be stored. Defaults to the value specified in
+                :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+        """
         if n > sections:
             raise ValueError("'n' parameter cannot be larger than 'sections' parameter")
         if start == 0:
@@ -577,17 +660,83 @@ class SwatchPalette:
             self.add(color)
         return self
 
-    # TODO: doc
+    def swap(self, index1: int, index2: int):
+        """Swap the places of two colors in the palette.
+
+        Can be used to reorganize the palette if needed.
+
+        Examples:
+            >>> swpalette = SwatchPalette(None, None, "ff0000", "0000ff")
+            >>> swpalette
+            SwatchPalette(HexRGB(#ff0000), HexRGB(#0000ff))
+            >>> swpalette.swap(0, 1)
+            >>> swpalette
+            SwatchPalette(HexRGB(#0000ff), HexRGB(#ff0000))
+
+        Args:
+            index1: The index of the first color.
+            index2: The index of the second color.
+        """
+        c_temp = self._color_stack[index1]
+        self._color_stack[index1] = self._color_stack[index2]
+        self._color_stack[index2] = c_temp
+
     def add(self, color: ColorLike):
+        """Adds a color to the end of the swatch palette.
+
+        Colors can only be added to the last index of the swatch palette, just like in a stack.
+
+        Args:
+            color: The value of the color to be created. Can be an instance of any
+                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
+                the color you want to add.
+
+        Examples:
+            Adding a new blue color to the palette:
+
+            >>> swpalette = SwatchPalette()
+            >>> swpalette.add("4287f5")
+            >>> swpalette[0]
+            HexRGB(#4287f5)
+        """
         self._color_stack.append(self.color_format.format(color))
 
-    # TODO: doc
-    def remove(self):
-        self._color_stack.pop()
-
-    # TODO: doc
     def update(self, index: int, color: ColorLike):
+        """Updates a color to a new value.
+
+        Args:
+            index: Index of the color to be updated.
+            color: The value of the color to be updated. Can be an instance of any
+                :mod:`~colorir.color` class or, alternatively, a color-like object that
+                resembles the format of the color you want to update.
+
+        Examples:
+            Create a slightly dark shade of red:
+
+            >>> swpalette = SwatchPalette(None, None, "dd0000")
+            >>> swpalette[0]
+            HexRGB(#dd0000)
+
+            Change it to be even a bit darker:
+
+            >>> swpalette.update(0, "800000")
+            >>> swpalette[0]
+            HexRGB(#800000)
+        """
         self._color_stack[index] = self.color_format.format(color)
+
+    def remove(self):
+        """Removes a color from the end of the palette.
+
+        Colors can only be removed from the last index of the swatch palette, just like in a stack.
+
+        Examples:
+            >>> palette = Palette(red=sRGB(255, 0, 0))
+            >>> palette.remove("red")
+            >>> "red" in palette.color_names
+            False
+        """
+        self._color_stack.pop()
 
     def save(self, palettes_dir: str = None):
         """Saves the changes made to this :class:`SwatchPalette` instance.
@@ -597,7 +746,10 @@ class SwatchPalette:
         palette will not be permanent.
 
         Examples:
-            TODO
+            Create a new :class:`SwatchPalette` and save it to the current directory:
+
+            >>> swpalette = SwatchPalette("elementary", None, "ff0000", "00ff00", "0000ff")
+            >>> swpalette.save()
         """
         if self.name is None:
             raise AttributeError(
@@ -613,11 +765,29 @@ class SwatchPalette:
                 formatted_colors.append(c_rgba)
             json.dump(formatted_colors, file, indent=4)
 
+    def to_palette(self, names: List[str]) -> Palette:
+        """Converts this swatch palette into a :class:`Palette`.
 
-def find_palettes(palettes_dir: str = None, search_builtins=True):
+        Args:
+            names: Names that will be given to the colors in the same order they appear in this
+                swatch palette.
+        """
+        return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
+
+
+def find_palettes(palettes_dir: str = None,
+                  search_builtins=True,
+                  kind=(Palette, SwatchPalette)) -> List[str]:
     """Returns the names of the palettes found in `directory`.
 
-    If `search_builtins` is ``True``, also includes built-in palettes.
+    Args:
+        palettes_dir: The directory from which the palettes will be searched for. Defaults to the
+            value specified in
+            :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
+        search_builtins: Whether to also include built-in palettes such as 'css' or
+            'basic' in the search.
+        kind: The kinds of palettes to include in the search. Can be either :class:`Palette`,
+            :class:`SwatchPalette`, or a list of any of those.
     """
     if palettes_dir is None:
         palettes_dir = config.DEFAULT_PALETTES_DIR
@@ -625,12 +795,20 @@ def find_palettes(palettes_dir: str = None, search_builtins=True):
         palettes_dir = [palettes_dir]
     if search_builtins:
         palettes_dir.append(_builtin_palettes_dir)
+    globs = []
+    if not isinstance(kind, [tuple, list]):
+        kind = [kind]
+    if Palette in kind:
+        globs.append("*.palette")
+    elif SwatchPalette in kind:
+        globs.append("*.swpalette")
 
     palettes = []
     for path in palettes_dir:
         path = Path(path)
-        for file in path.glob("*.palette"):
-            palettes.append(file.name.replace(".palette", ""))
+        for glob in globs:
+            for file in path.glob(glob):
+                palettes.append(file.name[:file.name.index('.')])
     return palettes
 
 
@@ -649,4 +827,11 @@ def delete_palette(palette: str, palettes_dir: str = None):
     if palettes_dir is None:
         palettes_dir = config.DEFAULT_PALETTES_DIR
 
-    os.remove(Path(palettes_dir) / (palette + ".palette"))
+    path = Path(palettes_dir)
+    palettes = list(path.glob(f"{palette}.*"))
+    if len(palettes) == 1:
+        os.remove(path / palettes[0])
+    elif len(palettes) == 0:
+        raise ValueError(f"couldn't find palette '{palette}' in '{palettes_dir}'")
+    else:
+        raise ValueError(f"palette name '{palette}' is ambiguous (more than one palette share it)")

@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from random import randint
 
-from colorir import palette, config, Palette, SwatchPalette, ColorFormat, HSV
+from colorir import palette, config, Palette, SwatchPalette, HSV
 
 config.DEFAULT_PALETTES_DIR = str(Path(__file__).resolve().parent / "test_palettes")
 config.DEFAULT_SWPALETTES_DIR = str(Path(__file__).resolve().parent / "test_swpalettes")
