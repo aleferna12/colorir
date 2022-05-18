@@ -75,8 +75,6 @@ class Palette:
 
     Attributes:
         name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
-        color_format: Color format specifying how the colors of this :class:`Palette` are
-            stored.
     """
     def __init__(self,
                  name: str = None,
@@ -417,10 +415,10 @@ class Palette:
 
 
 class SwatchPalette:
-    """Class that handles anonymous indexed colors (called "swaches" in this context).
+    """Class that handles anonymous indexed colors (called "swatches" in this context).
 
-    This class may be used as a replacement for :class:`Palette` when the name of the colors is irre
-    levant.
+    This class may be used as a replacement for :class:`Palette` when the name of the colors is
+    irrelevant.
 
     Examples:
         >>> swpalette = SwatchPalette("elementary", None, "ff0000", "00ff00", "0000ff")
@@ -428,16 +426,16 @@ class SwatchPalette:
         HexRGB(#ff0000)
 
     Args:
-        name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+        name: Name of the palette which will be used to save it with the
+            :meth:`SwatchPalette.save()`.
         color_format: Color format specifying how the colors of this :class:`SwatchPalette` should
             be stored. Defaults to the value specified in
             :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
 
     Attributes:
-        name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
-        color_format: Color format specifying how the colors of this :class:`Palette` are
-            stored.
+        name: Name of the palette which will be used to save it with the
+            :meth:`SwatchPalette.save()`.
     """
 
     def __init__(self,
@@ -478,7 +476,7 @@ class SwatchPalette:
                 loads all palettes found in the specified directory.
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
-                :data:`config.DEFAULT_SWPALETTES_DIR <colorir.config.DEFAULT_SWPALETTES_DIR>`.
+                :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
             name: Name of the palette which will be used to save it with the
                 :meth:`SwatchPalette.save()`. If the `palettes` parameter is a single string,
                 defaults to that.
@@ -487,7 +485,7 @@ class SwatchPalette:
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         """
         if palettes_dir is None:
-            palettes_dir = config.DEFAULT_SWPALETTES_DIR
+            palettes_dir = config.DEFAULT_PALETTES_DIR
         if isinstance(palettes, str):
             if name is None:
                 name = palettes
@@ -536,7 +534,8 @@ class SwatchPalette:
             n: The number of colors in the new palette.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
-            name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+            name: Name of the palette which will be used to save it with the
+                :meth:`SwatchPalette.save()`.
             color_format: Color format specifying how the colors of this :class:`SwatchPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
@@ -586,7 +585,8 @@ class SwatchPalette:
                 be sampled clockwise from 'color'. If '-1', they will be sampled counter-clockwise.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
-            name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+            name: Name of the palette which will be used to save it with the
+                :meth:`SwatchPalette.save()`.
             color_format: Color format specifying how the colors of this :class:`SwatchPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
@@ -756,7 +756,7 @@ class SwatchPalette:
                 "the 'name' attribute of a 'SwatchPalette' instance must be defined to save it"
             )
         if palettes_dir is None:
-            palettes_dir = config.DEFAULT_SWPALETTES_DIR
+            palettes_dir = config.DEFAULT_PALETTES_DIR
         with open(Path(palettes_dir) / (self.name + ".swpalette"), "w") as file:
             formatted_colors = []
             for c_val in self._color_stack:
@@ -796,11 +796,11 @@ def find_palettes(palettes_dir: str = None,
     if search_builtins:
         palettes_dir.append(_builtin_palettes_dir)
     globs = []
-    if not isinstance(kind, [tuple, list]):
+    if not isinstance(kind, (tuple, list)):
         kind = [kind]
     if Palette in kind:
         globs.append("*.palette")
-    elif SwatchPalette in kind:
+    if SwatchPalette in kind:
         globs.append("*.swpalette")
 
     palettes = []

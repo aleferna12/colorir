@@ -2,11 +2,15 @@ import doctest
 import unittest
 from pathlib import Path
 from random import randint
+import re
 
-from colorir import palette, config, Palette, SwatchPalette, HSV
-
+from colorir import palette, config, Palette, SwatchPalette, HSV, find_palettes, delete_palette
 config.DEFAULT_PALETTES_DIR = str(Path(__file__).resolve().parent / "test_palettes")
-config.DEFAULT_SWPALETTES_DIR = str(Path(__file__).resolve().parent / "test_swpalettes")
+# Clear test palette directory
+for file in Path(config.DEFAULT_PALETTES_DIR).glob("*"):
+    # Keep original test files, remove others
+    if re.search(r"test\d", file.name) is None:
+        file.unlink()
 
 
 class TestPalette(unittest.TestCase):
@@ -17,9 +21,9 @@ class TestPalette(unittest.TestCase):
     def test_save_load(self):
         colors = {f"c{i}": "%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for i in range(250)}
-        pal = Palette("sl_test", None, **colors)
+        pal = Palette("test_sl", None, **colors)
         pal.save()
-        pal2 = Palette.load("sl_test")
+        pal2 = Palette.load("test_sl")
         self.assertEqual(pal, pal2)
 
     def test_load_warns(self):
@@ -35,9 +39,9 @@ class TestSwatchPalette(unittest.TestCase):
     def test_save_load(self):
         colors = ["%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for _ in range(250)]
-        swpal = SwatchPalette("sl_test", None, *colors)
+        swpal = SwatchPalette("test_sl", None, *colors)
         swpal.save()
-        swpal2 = SwatchPalette.load("sl_test")
+        swpal2 = SwatchPalette.load("test_sl")
         self.assertEqual(swpal, swpal2)
 
     def test_complementary(self):
@@ -57,6 +61,23 @@ class TestSwatchPalette(unittest.TestCase):
         # Larger hue wheel sections
         wide_swpal = SwatchPalette.new_analogous(3, sections=3, color=red)
         self.assertEqual(wide_swpal, SwatchPalette(None, None, HSV(240, 1, 1), red, HSV(120, 1, 1)))
+
+
+class TestOtherFunctions(unittest.TestCase):
+    def test_find_palettes(self):
+        all_pals = find_palettes(search_builtins=False)
+        self.assertEqual(all_pals, ['test1', 'test2', 'test3'])
+        pals = find_palettes(search_builtins=False, kind=Palette)
+        self.assertEqual(pals, ['test1', 'test2'])
+        swpals = find_palettes(search_builtins=False, kind=SwatchPalette)
+        self.assertEqual(swpals, ['test3'])
+
+    def test_delete_palette(self):
+        n_pal = Palette("test_del", red="ff0000")
+        n_pal.save()
+        self.assertIn("test_del", find_palettes())
+        delete_palette("test_del")
+        self.assertNotIn("test_del", find_palettes())
 
 
 def load_tests(loader, tests, ignore):

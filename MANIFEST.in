@@ -1,5 +1,4 @@
 include colorir/builtin_palettes/*.palette
 include colorir/palettes/.empty
-include colorir/swpalettes/.empty
 include colorir/examples/*
 include colorir/examples/ex_palettes/*
