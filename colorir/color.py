@@ -55,6 +55,9 @@ class ColorBase(metaclass=abc.ABCMeta):
     def __eq__(self, other):
         return self._rgba == other._rgba if isinstance(other, ColorBase) else False
 
+    def __hash__(self):
+        return hash(self._rgba)
+
     def get_format(self) -> "colorir.color_format.ColorFormat":
         """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
         color object."""
@@ -145,6 +148,9 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         if isinstance(other, ColorBase):
             return ColorBase.__eq__(self, other)
         return tuple.__eq__(self, other)
+
+    def __hash__(self):
+        return ColorBase.__hash__(self)
 
 
 class sRGB(ColorTupleBase):
@@ -556,6 +562,9 @@ class HexRGB(ColorBase, str):
     def __eq__(self, other):
         return ColorBase.__eq__(self, other) if isinstance(other, ColorBase) else str.__eq__(self,
                                                                                              other)
+
+    def __hash__(self):
+        return ColorBase.__hash__(self)
 
 
 def simplified_dist(color1: ColorBase, color2: ColorBase):
