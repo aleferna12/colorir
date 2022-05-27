@@ -5,11 +5,13 @@ from colorir import Palette, find_palettes
 colors = Palette.load(palettes_dir=".")
 palettes = {"all": colors}
 palettes.update({
-    pal_name: Palette.load(pal_name) for pal_name in find_palettes(palettes_dir=".")
+    pal_name: Palette.load(pal_name, palettes_dir=".")
+    for pal_name in find_palettes(palettes_dir=".")
 })
 
 
-# Sort all colors based on their hue and luminance so they look a bit nicer together
+# Sort all colors based on their hue and luminance so they
+# look a bit nicer together
 def hue_sort(c_names):
     hsl = colors.get_color(c_names).hsl(max_h=1, max_sla=1)
     return int(hsl[0] * 8), int(hsl[2] * 8)
