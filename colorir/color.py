@@ -600,7 +600,7 @@ def simplified_dist(color1: "colorir.color_format.ColorLike",
     if not isinstance(color1, ColorBase):
         color1 = color_format.format(color1)
     if not isinstance(color2, ColorBase):
-        color1 = color_format.format(color2)
+        color2 = color_format.format(color2)
     rgba1, rgba2 = color1._rgba, color2._rgba
     avg_r = (rgba1[0] + rgba2[0]) / 2
     d_r = rgba1[0] - rgba2[0]
