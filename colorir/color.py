@@ -583,12 +583,12 @@ def simplified_dist(color1: "colorir.color_format.ColorLike",
                     color2: "colorir.color_format.ColorLike"):
     """Calculates the perceived distance between two colors.
 
-    Although there are many methods to approach the similarity of colors mathematically, the
+    There are many methods to approach the similarity of colors mathematically. The
     algorithm implemented in this function [#]_ tries to provide balance between efficiency and
-    accuracy.
+    accuracy by using a weighted euclidian distance formula in the RGB color space.
 
     References:
-        .. [#] Colour metric by Thiadmer Riemersma. Available on
+        .. [#] Adapted from "Colour metric" by Thiadmer Riemersma. Available on
             https://www.compuphase.com/cmetric.htm.
 
     Args:
@@ -602,13 +602,13 @@ def simplified_dist(color1: "colorir.color_format.ColorLike",
     if not isinstance(color2, ColorBase):
         color2 = color_format.format(color2)
     rgba1, rgba2 = color1._rgba, color2._rgba
-    avg_r = (rgba1[0] + rgba2[0]) / 2
+    avg_r = (rgba1[0] + rgba2[0]) / (2 * 255)
     d_r = rgba1[0] - rgba2[0]
     d_g = rgba1[1] - rgba2[1]
     d_b = rgba1[2] - rgba2[2]
-    return sqrt((2 + avg_r / 255) * d_r ** 2
+    return sqrt((2 + avg_r) * d_r ** 2
                 + 4 * d_g ** 2
-                + (2 + (255 - avg_r) / 255) * d_b ** 2)
+                + (3 - avg_r) * d_b ** 2)
 
 
 def random_color(random_a=False,
