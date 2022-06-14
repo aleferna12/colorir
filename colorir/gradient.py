@@ -7,27 +7,27 @@ Examples:
 
     >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255), sRGB(255, 255, 255)])
     >>> grad.perc(0.25)
-    HexRGB(#800080)
+    HexRGB('#800080')
 
     Get 3 colors interspaced in the gradient:
 
     >>> grad.n_colors(3)
-    [HexRGB(#800080), HexRGB(#0000ff), HexRGB(#8080ff)]
+    [HexRGB('#800080'), HexRGB('#0000ff'), HexRGB('#8080ff')]
 """
 from typing import Iterable
-from math import pow
 from . import config
-from .color import ColorBase, sRGB
+from .color import sRGB, _to_sRGB, _to_linear_RGB
+from .color_format import ColorLike
 
 
 class RGBLinearGrad:
     """Poly-linear interpolation gradient using the RGB color space [1]_.
 
     Args:
-        colors: List of colors that compose the gradient There can be more than two colors in this
-            list.
+        colors: Iterable of colors that compose the gradient. There can be more than two colors in
+            this iterable.
         color_format: Color format specifying how to store and create colors. Defaults to
-            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAt>`.
+            :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         use_linear_RGB: Whether to use linear RGB rather than sRGB to create the gradient.
 
     Notes:
@@ -39,7 +39,7 @@ class RGBLinearGrad:
         .. [2] Ayke van Laethem at https://aykevl.nl/2019/12/colors
     """
 
-    def __init__(self, colors: Iterable[ColorBase], color_format=None, use_linear_RGB=False):
+    def __init__(self, colors: Iterable[ColorLike], color_format=None, use_linear_RGB=False):
         colors = list(colors)
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
@@ -47,7 +47,7 @@ class RGBLinearGrad:
         self.colors = [self.color_format.format(color) for color in colors]
         self.use_linear_RGB = use_linear_RGB
 
-    def perc(self, p: float) -> ColorBase:
+    def perc(self, p: float) -> ColorLike:
         """Returns the color placed in a given percentage of the gradient.
 
         Args:
@@ -59,12 +59,12 @@ class RGBLinearGrad:
 
             >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
             >>> grad.perc(0.5)
-            HexRGB(#800080)
+            HexRGB('#800080')
 
             Get a very "reddish" purple:
 
             >>> grad.perc(0.2)
-            HexRGB(#cc0033)
+            HexRGB('#cc0033')
         """
 
         i = int(p * (len(self.colors) - 1))
@@ -92,36 +92,15 @@ class RGBLinearGrad:
             colors.append(self.perc(p))
         return colors
 
-    def _linear_interp(self, color_1: ColorBase, color_2: ColorBase, p: float):
+    def _linear_interp(self, color_1: ColorLike, color_2: ColorLike, p: float):
         if self.use_linear_RGB:
-            rgba_1 = self._to_linear_RGB(color_1._rgba)
-            rgba_2 = self._to_linear_RGB(color_2._rgba)
+            rgba_1 = _to_linear_RGB(color_1._rgba)
+            rgba_2 = _to_linear_RGB(color_2._rgba)
         else:
             rgba_1 = color_1._rgba
             rgba_2 = color_2._rgba
 
         new_rgba = tuple(round(rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p) for i in range(4))
-        return new_rgba if not self.use_linear_RGB else self._to_sRGB(new_rgba)
-
-    # https://entropymine.com/imageworsener/srgbformula/
-    @staticmethod
-    def _to_linear_RGB(rgba):
-        rgba = list(rgba)
-        for i in range(3):
-            if rgba[i] <= 0.04045:
-                rgba[i] /= 12.92
-            else:
-                rgba[i] = pow(((rgba[i] + 0.055) / 1.055), 2.4)
-        return rgba
-
-    @staticmethod
-    def _to_sRGB(rgba):
-        rgba = list(rgba)
-        for i in range(3):
-            if rgba[i] <= 0.0031308:
-                rgba[i] *= 12.92
-            else:
-                rgba[i] = 1.055 * pow(rgba[i], 1/2.4) - 0.055
-        return rgba
+        return new_rgba if not self.use_linear_RGB else _to_sRGB(new_rgba)
 
 

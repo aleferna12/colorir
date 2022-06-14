@@ -6,7 +6,7 @@ colors = Palette.load(palettes_dir=".")
 palettes = {"all": colors}
 palettes.update({
     pal_name: Palette.load(pal_name, palettes_dir=".")
-    for pal_name in find_palettes(palettes_dir=".")
+    for pal_name in find_palettes(palettes_dir=".", kind=Palette)
 })
 
 

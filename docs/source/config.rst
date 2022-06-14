@@ -3,5 +3,7 @@ Config
 
 .. automodule:: colorir.config
 	:members:
-	:undoc-members:
-	:show-inheritance:
+	:exclude-members: DEFAULT_PALETTES_DIR
+
+	.. autodata:: DEFAULT_PALETTES_DIR
+		:no-value:

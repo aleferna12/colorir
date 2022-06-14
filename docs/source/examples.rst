@@ -37,7 +37,7 @@ That's it! We are done and ready to use our basic colors:
 
 You should now hopefully see a red square in your screen.
 
-Let's modify our example to add some personal colors to our `colors` object:
+Let's modify our example to add some personal favorite colors to our ``colors`` object:
 
 .. code-block:: python
 
@@ -46,7 +46,7 @@ Let's modify our example to add some personal colors to our `colors` object:
 	colors.add("swampgreen", "#096b1c")
 	colors.add("woodbrown", "#8c6941")
 
-This should be enough, now instead of a red square we can draw more interesting stuff:
+This should be enough. Now, instead of a red square, we can draw more interesting stuff:
 
 .. _simple_turtle_2:
 
@@ -64,7 +64,7 @@ Ok! We are done with the turtles for right now. We should save our colors so we 
 	colors.name = "turtles" # First we give the palette a name
 	colors.save() # Then save it
 
-A few weeks later we suddenly have a brilliant idea: what if we could draw actual turtles, instead of a weird arrow we've been pretending to be a turtle?
+A few weeks later we suddenly have a brilliant idea: what if we could draw actual turtles, instead of the stupid arrow we've been pretending to be a turtle?
 
 But we also would like to keep the colors from our last project since we took so long choosing turtle-fitting colors.
 
@@ -86,7 +86,7 @@ Anyway, I hope you could get I very basic idea of how to use colorir. For more e
 Color Picker with Tkinter
 -------------------------
 
-A simple color picker that shows all the palettes available on our default palette directory (+ the built-in palettes) and copies the names of a color to the clipboard when we click on it.
+A simple color picker that shows all the palettes available on our current directory (+ the built-in palettes) and copies the names of a color to the clipboard when we click on it.
 
 Just like with any other example, the color picker can be executed with:
 

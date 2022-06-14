@@ -4,8 +4,8 @@ The :class:`Palette` class provides an easy way to manage your favorite colors i
 projects. In this context, a palette should be understood as any collection of colors that
 can be grouped due to a common feature, not only colors that necessarily "look good" together.
 
-Every color in a :class:`Palette` has a name associated with it. If unnamed colors are better fit to
-your particular use case, you may want to use a :class:`SwatchPalette` instead.
+Every color in a :class:`Palette` has a name associated with it. If unnamed colors are better fit
+to your particular use case, you may want to use a :class:`StackPalette` instead.
 
 Examples:
     Create a palette with the color red:
@@ -19,7 +19,7 @@ Examples:
     Get the value for red:
 
     >>> palette.red
-    HexRGB(#ff0000)
+    HexRGB('#ff0000')
 
     Get names of all colors:
 
@@ -48,8 +48,8 @@ from pathlib import Path
 from typing import Union, List
 from warnings import warn
 
-from .color import ColorBase, ColorLike, sRGB, HSL, simplified_dist, random_color, HSV
-from .color_format import ColorFormat
+from .color import ColorBase, sRGB, HSL, simplified_dist, random_color, HSV, color_str
+from .color_format import ColorFormat, ColorLike
 from . import config
 
 _throw_exception = object()
@@ -62,7 +62,7 @@ class Palette:
     Examples:
         >>> palette = Palette(red="#ff0000") # Uses default color format
         >>> palette.red
-        HexRGB(#ff0000)
+        HexRGB('#ff0000')
 
         For more examples see the documentation of the :mod:`~colorir.palette` module.
 
@@ -70,7 +70,7 @@ class Palette:
         name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
         color_format: Color format specifying how the colors of this :class:`Palette` should be
             stored. Defaults to the value specified in
-            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+            :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
 
     Attributes:
@@ -110,23 +110,24 @@ class Palette:
 
         Args:
             palettes: List of palettes located in the location represented by `palettes_dir` that
-                should be loaded by this :class:`Palette` instance. Addtionally may include built-in
-                palettes such as 'css' if `search_builtins` is set to ``True``. If this parameter is
-                a string, the :attr:`Palettes.name` will be inferred from it. By default, loads all
-                palettes found in the specified directory.
+                should be loaded by this :class:`Palette` instance. Addtionally may include
+                built-in palettes such as 'css' if `search_builtins` is set to ``True``. If this
+                parameter is a string, the :attr:`Palettes.name` will be inferred from it. By
+                default, loads all palettes found in the specified directory.
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
                 :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
             search_builtins: Whether `palettes` also includes built-in palettes such as 'css' or
                 'basic'. Set to ``False`` to ensure only palette files found in `palettes_dir` are
                 loaded.
-            name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
-                If the `palettes` parameter is a single string, defaults to that.
+            name: Name of the palette which will be used to save it with the
+                :meth:`Palette.save()`. If the `palettes` parameter is a single string, defaults
+                to that.
             color_format: Color format specifying how the colors of this :class:`Palette` should be
                 stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
-            warnings: Whether to emit a warning if two colors with the same name but different color
-                values were found in the `palettes`.
+            warnings: Whether to emit a warning if two colors with the same name but different
+                color values were found in the `palettes`.
 
         Examples:
             Loads the default CSS palette:
@@ -239,9 +240,9 @@ class Palette:
         Examples:
             >>> palette = Palette(red="#ff0000", blue="#0000ff")
             >>> palette.get_color("red")
-            HexRGB(#ff0000)
+            HexRGB('#ff0000')
             >>> palette.get_color(["red", "blue"])
-            [HexRGB(#ff0000), HexRGB(#0000ff)]
+            [HexRGB('#ff0000'), HexRGB('#0000ff')]
 
         Returns:
             A single :class:`~colorir.color.ColorBase` if `name` is a string or a list of
@@ -294,7 +295,7 @@ class Palette:
         Examples:
             >>> palette = Palette(red="#ff0000", blue="#0000ff")
             >>> palette.most_similar("#880000")
-            HexRGB(#ff0000)
+            HexRGB('#ff0000')
 
         Returns:
             A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
@@ -328,7 +329,7 @@ class Palette:
             >>> palette = Palette()
             >>> palette.add("bestblue", "4287f5")
             >>> palette.bestblue
-            HexRGB(#4287f5)
+            HexRGB('#4287f5')
         """
         # Test to detect invalid color names
         if name in dir(self):
@@ -351,13 +352,13 @@ class Palette:
             
             >>> palette = Palette(myred="dd0000")
             >>> palette.myred
-            HexRGB(#dd0000)
+            HexRGB('#dd0000')
             
             Change it to be even a bit darker:
             
             >>> palette.update("myred", "800000")
             >>> palette.myred
-            HexRGB(#800000)
+            HexRGB('#800000')
         """
         if name in self._color_dict:
             self._color_dict[name] = self.color_format.format(color)
@@ -385,8 +386,8 @@ class Palette:
         """Saves the changes made to this :class:`Palette` instance.
 
         If this method is not called after modifications made by :meth:`Palette.add()`,
-        :meth:`Palette.update()` and :meth:`Palette.remove()`, the modifications on the palette will
-        not be permanent.
+        :meth:`Palette.update()` and :meth:`Palette.remove()`, the modifications on the palette
+        will not be permanent.
 
         Examples:
             Loads both the basic and fluorescent palettes into a new palette called 'colorful':
@@ -409,33 +410,33 @@ class Palette:
                 formatted_colors[c_name] = c_rgba
             json.dump(formatted_colors, file, indent=4)
 
-    def to_swpalette(self) -> "SwatchPalette":
-        """Converts this swatch palette into a :class:`SwatchPalette`."""
-        return SwatchPalette(self.name, self.color_format, *self._color_dict.values())
+    def to_spalette(self) -> "StackPalette":
+        """Converts this palette into a :class:`StackPalette`."""
+        return StackPalette(self.name, self.color_format, *self._color_dict.values())
 
 
-class SwatchPalette:
-    """Class that handles anonymous indexed colors (called "swatches" in this context).
+class StackPalette:
+    """Class that handles anonymous indexed colors stored as a stack.
 
     This class may be used as a replacement for :class:`Palette` when the name of the colors is
     irrelevant.
 
     Examples:
-        >>> swpalette = SwatchPalette("elementary", None, "ff0000", "00ff00", "0000ff")
-        >>> swpalette[0]
-        HexRGB(#ff0000)
+        >>> spalette = StackPalette("elementary", None, "ff0000", "00ff00", "0000ff")
+        >>> spalette[0]
+        HexRGB('#ff0000')
 
     Args:
         name: Name of the palette which will be used to save it with the
-            :meth:`SwatchPalette.save()`.
-        color_format: Color format specifying how the colors of this :class:`SwatchPalette` should
+            :meth:`StackPalette.save()`.
+        color_format: Color format specifying how the colors of this :class:`StackPalette` should
             be stored. Defaults to the value specified in
             :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
 
     Attributes:
         name: Name of the palette which will be used to save it with the
-            :meth:`SwatchPalette.save()`.
+            :meth:`StackPalette.save()`.
     """
 
     def __init__(self,
@@ -457,28 +458,28 @@ class SwatchPalette:
              palettes_dir: str = None,
              name: str = None,
              color_format: ColorFormat = None):
-        """Factory method that loads previously created swatch palettes into a
-        :class:`SwatchPalette` instance.
+        """Factory method that loads previously created stack palettes into a
+        :class:`StackPalette` instance.
 
-        A swatch palette is a file containing json-formatted information about colors that ends with
-        the '.swpalette' extension. You should not create such files manually but rather through the
-        :meth:`SwatchPalette.save()` method.
+        A stack palette is a file containing json-formatted information about colors that ends
+        with the '.spalette' extension. You should not create such files manually but rather
+        through the :meth:`StackPalette.save()` method.
 
         Examples:
-            Load a swatch palette called "project_interface" from the default directory:
+            Load a stack palette called "project_interface" from the default directory:
 
-            >>> swpalette = SwatchPalette.load("project_interface")  # doctest: +SKIP
+            >>> spalette = StackPalette.load("project_interface")  # doctest: +SKIP
 
         Args:
-            palettes: List of swatch palettes located in the location represented by `palettes_dir`
-                that should be loaded by this :class:`SwatchPalette` instance. If this parameter is
-                a string, the :attr:`SwatchPalettes.name` will be inferred from it. By default,
+            palettes: List of stack palettes located in the location represented by `palettes_dir`
+                that should be loaded by this :class:`StackPalette` instance. If this parameter is
+                a string, the :attr:`StackPalettes.name` will be inferred from it. By default,
                 loads all palettes found in the specified directory.
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
                 :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
             name: Name of the palette which will be used to save it with the
-                :meth:`SwatchPalette.save()`. If the `palettes` parameter is a single string,
+                :meth:`StackPalette.save()`. If the `palettes` parameter is a single string,
                 defaults to that.
             color_format: Color format specifying how the colors of this :class:`Palette` should be
                 stored. Defaults to the value specified in
@@ -492,8 +493,8 @@ class SwatchPalette:
             palettes = [palettes]
 
         found_palettes = {}
-        for palette_file in Path(palettes_dir).glob("*.swpalette"):
-            palette_name = palette_file.name.replace(".swpalette", '')
+        for palette_file in Path(palettes_dir).glob("*.spalette"):
+            palette_name = palette_file.name.replace(".spalette", '')
             found_palettes[palette_name] = json.loads(palette_file.read_text())
 
         palette_obj = cls(name=name, color_format=color_format)
@@ -517,40 +518,41 @@ class SwatchPalette:
                           color_format: ColorFormat = None):
         """Creates a new palette with 'n' complementary colors.
 
-        Colors are considered complementary if they are interspaced in the additive HUE color wheel.
+        Colors are considered complementary if they are interspaced in the additive HUE color
+        wheel.
 
         Examples:
              Make a palette from red and its complementary color, cyan:
 
-             >>> swpalette = SwatchPalette.new_complementary(2, sRGB(255, 0, 0))
-             >>> swpalette
-             SwatchPalette(HexRGB(#ff0000), HexRGB(#00ffff))
+             >>> spalette = StackPalette.new_complementary(2, sRGB(255, 0, 0))
+             >>> spalette
+             StackPalette(HexRGB('#ff0000'), HexRGB('#00ffff'))
 
              Make a tetradic palette of random colors:
 
-             >>> swpalette = SwatchPalette.new_complementary(4)
+             >>> spalette = StackPalette.new_complementary(4)
 
         Args:
             n: The number of colors in the new palette.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
             name: Name of the palette which will be used to save it with the
-                :meth:`SwatchPalette.save()`.
-            color_format: Color format specifying how the colors of this :class:`SwatchPalette`
+                :meth:`StackPalette.save()`.
+            color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         """
-        swatches = cls(name=name, color_format=color_format)
+        n_spalette = cls(name=name, color_format=color_format)
         if color is None:
             hsv = random_color(color_format=ColorFormat(HSV, max_h=360))
         else:
-            hsv = swatches.color_format.format(color).hsv(max_h=360)
+            hsv = n_spalette.color_format.format(color).hsv(max_h=360)
 
         step = 360 / n
         for i in range(n):
             hue = (hsv[0] + i * step) % 360
-            swatches.add(HSV(hue, hsv[1], hsv[2]))
-        return swatches
+            n_spalette.add(HSV(hue, hsv[1], hsv[2]))
+        return n_spalette
 
     @classmethod
     def new_analogous(cls,
@@ -567,27 +569,28 @@ class SwatchPalette:
         Examples:
              Make a palette from red and its analogous color, orange:
 
-             >>> swpalette = SwatchPalette.new_analogous(2, start=1, color=sRGB(255, 0, 0))
-             >>> swpalette
-             SwatchPalette(HexRGB(#ff0000), HexRGB(#ff8000))
+             >>> spalette = StackPalette.new_analogous(2, start=1, color=sRGB(255, 0, 0))
+             >>> spalette
+             StackPalette(HexRGB('#ff0000'), HexRGB('#ff8000'))
 
              Make a palette of four similar colors:
 
-             >>> swpalette = SwatchPalette.new_analogous(4, sections=24)
+             >>> spalette = StackPalette.new_analogous(4, sections=24)
 
         Args:
             n: The number of colors in the new palette.
             sections: The number of sections in which the additive HUE color wheel will be divided
-                before sampling colors. The bigger this number, the more similar the colors will be.
-            start: Where the color described in the 'color' parameter will be placed with respect to
-                the others. If '0', 'color' will be in the center of the generated palette, and
+                before sampling colors. The bigger this number, the more similar the colors will
+                be.
+            start: Where the color described in the 'color' parameter will be placed with respect
+                to the others. If '0', 'color' will be in the center of the generated palette, and
                 colors will be sampled from both its sides in the HUE wheel. If '1', colors will
                 be sampled clockwise from 'color'. If '-1', they will be sampled counter-clockwise.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
             name: Name of the palette which will be used to save it with the
-                :meth:`SwatchPalette.save()`.
-            color_format: Color format specifying how the colors of this :class:`SwatchPalette`
+                :meth:`StackPalette.save()`.
+            color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         """
@@ -603,31 +606,31 @@ class SwatchPalette:
         else:
             raise ValueError("'starting_point' must be either 0, 1 or -1")
 
-        swatches = cls(name=name, color_format=color_format)
+        n_spalette = cls(name=name, color_format=color_format)
         if color is None:
             hsv = random_color(color_format=ColorFormat(HSV, max_h=360))
         else:
-            hsv = swatches.color_format.format(color).hsv(max_h=360)
+            hsv = n_spalette.color_format.format(color).hsv(max_h=360)
 
         step = 360 / sections
         for index, i in enumerate(iterator):
             hue = (hsv[0] + i * step) % 360
-            swatches.add(HSV(hue, hsv[1], hsv[2]))
-        return swatches
+            n_spalette.add(HSV(hue, hsv[1], hsv[2]))
+        return n_spalette
 
     @property
     def colors(self):
-        """colors: A list of all color values currently stored in the :class:`SwatchPalette`."""
+        """colors: A list of all color values currently stored in the :class:`StackPalette`."""
         return list(self._color_stack)
 
     @property
     def color_format(self):
-        """color_format: Color format specifying how the colors of this :class:`SwatchPalette` are
+        """color_format: Color format specifying how the colors of this :class:`StackPalette` are
         stored.
         """
         return self._color_format
 
-    # color_format could be used to build a color on every SwatchPalette[color] call, but that is
+    # color_format could be used to build a color on every StackPalette[color] call, but that is
     # computationally intensive. That's why the colors are stored as ready objects and are
     # re-created if needed
     @color_format.setter
@@ -666,12 +669,12 @@ class SwatchPalette:
         Can be used to reorganize the palette if needed.
 
         Examples:
-            >>> swpalette = SwatchPalette(None, None, "ff0000", "0000ff")
-            >>> swpalette
-            SwatchPalette(HexRGB(#ff0000), HexRGB(#0000ff))
-            >>> swpalette.swap(0, 1)
-            >>> swpalette
-            SwatchPalette(HexRGB(#0000ff), HexRGB(#ff0000))
+            >>> spalette = StackPalette(None, None, "ff0000", "0000ff")
+            >>> spalette
+            StackPalette(HexRGB('#ff0000'), HexRGB('#0000ff'))
+            >>> spalette.swap(0, 1)
+            >>> spalette
+            StackPalette(HexRGB('#0000ff'), HexRGB('#ff0000'))
 
         Args:
             index1: The index of the first color.
@@ -682,9 +685,10 @@ class SwatchPalette:
         self._color_stack[index2] = c_temp
 
     def add(self, color: ColorLike):
-        """Adds a color to the end of the swatch palette.
+        """Adds a color to the end of the stack palette.
 
-        Colors can only be added to the last index of the swatch palette, just like in a stack.
+        Colors can only be added to the last index of the stack palette, just like in a normal
+        stack.
 
         Args:
             color: The value of the color to be created. Can be an instance of any
@@ -694,10 +698,10 @@ class SwatchPalette:
         Examples:
             Adding a new blue color to the palette:
 
-            >>> swpalette = SwatchPalette()
-            >>> swpalette.add("4287f5")
-            >>> swpalette[0]
-            HexRGB(#4287f5)
+            >>> spalette = StackPalette()
+            >>> spalette.add("4287f5")
+            >>> spalette[0]
+            HexRGB('#4287f5')
         """
         self._color_stack.append(self.color_format.format(color))
 
@@ -713,51 +717,54 @@ class SwatchPalette:
         Examples:
             Create a slightly dark shade of red:
 
-            >>> swpalette = SwatchPalette(None, None, "dd0000")
-            >>> swpalette[0]
-            HexRGB(#dd0000)
+            >>> spalette = StackPalette(None, None, "dd0000")
+            >>> spalette[0]
+            HexRGB('#dd0000')
 
             Change it to be even a bit darker:
 
-            >>> swpalette.update(0, "800000")
-            >>> swpalette[0]
-            HexRGB(#800000)
+            >>> spalette.update(0, "800000")
+            >>> spalette[0]
+            HexRGB('#800000')
         """
         self._color_stack[index] = self.color_format.format(color)
 
     def remove(self):
         """Removes a color from the end of the palette.
 
-        Colors can only be removed from the last index of the swatch palette, just like in a stack.
+        Colors can only be removed from the last index of the stack palette, just like in a normal
+        stack.
 
         Examples:
-            >>> palette = Palette(red=sRGB(255, 0, 0))
-            >>> palette.remove("red")
-            >>> "red" in palette.color_names
+            >>> spalette = StackPalette(None, None, "#ff0000")
+            >>> "#ff0000" in spalette
+            True
+            >>> spalette.remove()
+            >>> "#ff0000" in spalette
             False
         """
         self._color_stack.pop()
 
     def save(self, palettes_dir: str = None):
-        """Saves the changes made to this :class:`SwatchPalette` instance.
+        """Saves the changes made to this :class:`StackPalette` instance.
 
-        If this method is not called after modifications made by :meth:`SwatchPalette.add()`,
-        :meth:`SwatchPalette.update()` and :meth:`SwatchPalette.remove()`, the modifications on the
+        If this method is not called after modifications made by :meth:`StackPalette.add()`,
+        :meth:`StackPalette.update()` and :meth:`StackPalette.remove()`, the modifications on the
         palette will not be permanent.
 
         Examples:
-            Create a new :class:`SwatchPalette` and save it to the current directory:
+            Create a new :class:`StackPalette` and save it to the current directory:
 
-            >>> swpalette = SwatchPalette("elementary", None, "ff0000", "00ff00", "0000ff")
-            >>> swpalette.save()
+            >>> spalette = StackPalette("elementary", None, "ff0000", "00ff00", "0000ff")
+            >>> spalette.save()
         """
         if self.name is None:
             raise AttributeError(
-                "the 'name' attribute of a 'SwatchPalette' instance must be defined to save it"
+                "the 'name' attribute of a 'StackPalette' instance must be defined to save it"
             )
         if palettes_dir is None:
             palettes_dir = config.DEFAULT_PALETTES_DIR
-        with open(Path(palettes_dir) / (self.name + ".swpalette"), "w") as file:
+        with open(Path(palettes_dir) / (self.name + ".spalette"), "w") as file:
             formatted_colors = []
             for c_val in self._color_stack:
                 c_rgba = tuple(spec for spec in c_val._rgba)
@@ -766,18 +773,21 @@ class SwatchPalette:
             json.dump(formatted_colors, file, indent=4)
 
     def to_palette(self, names: List[str]) -> Palette:
-        """Converts this swatch palette into a :class:`Palette`.
+        """Converts this stack palette into a :class:`Palette`.
 
         Args:
             names: Names that will be given to the colors in the same order they appear in this
-                swatch palette.
+                stack palette.
         """
-        return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
+        if len(names) == len(set(names)) == len(self._color_stack):
+            return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
+        raise ValueError("'names' must have the same length as this 'StackPalette' and no "
+                         "duplicates")
 
 
 def find_palettes(palettes_dir: str = None,
                   search_builtins=True,
-                  kind=(Palette, SwatchPalette)) -> List[str]:
+                  kind=(Palette, StackPalette)) -> List[str]:
     """Returns the names of the palettes found in `directory`.
 
     Args:
@@ -787,7 +797,7 @@ def find_palettes(palettes_dir: str = None,
         search_builtins: Whether to also include built-in palettes such as 'css' or
             'basic' in the search.
         kind: The kinds of palettes to include in the search. Can be either :class:`Palette`,
-            :class:`SwatchPalette`, or a list of any of those.
+            :class:`StackPalette`, or a list of any of those.
     """
     if palettes_dir is None:
         palettes_dir = config.DEFAULT_PALETTES_DIR
@@ -800,8 +810,8 @@ def find_palettes(palettes_dir: str = None,
         kind = [kind]
     if Palette in kind:
         globs.append("*.palette")
-    if SwatchPalette in kind:
-        globs.append("*.swpalette")
+    if StackPalette in kind:
+        globs.append("*.spalette")
 
     palettes = []
     for path in palettes_dir:
@@ -835,3 +845,43 @@ def delete_palette(palette: str, palettes_dir: str = None):
         raise ValueError(f"couldn't find palette '{palette}' in '{palettes_dir}'")
     else:
         raise ValueError(f"palette name '{palette}' is ambiguous (more than one palette share it)")
+
+
+def swatch(obj: Union[ColorLike, List[ColorLike], Palette, StackPalette],
+           colored_text=True,
+           width=3,
+           height=1,
+           tabular=True):
+    """Prints swatches of `obj` in the terminal with colored text.
+
+    Each swatch consists of a rectangle of a color followed by its value (and name if known).
+
+    Args:
+        obj: What will be represented in the terminal. Is either a single color, a list of colors,
+            a :class:`Palette`, or a :class:`StackPalette`.
+        colored_text: Whether the text that follows the colored rectangles should also be colored.
+        width: The width (in space characters) of the colored rectangles.
+        height: The height (in number of lines) of the colored rectangles.
+        tabular: Whether the colored rectangle, color name and color value should be printed each
+            in its separate column. Only used if `obj` is a :class:`Palette`.
+    """
+    # Assume single ColorLike
+    if isinstance(obj, (ColorBase, str, tuple)):
+        obj = [obj]
+    if isinstance(obj, Palette):
+        longest_name = max([len(name) for name in obj.color_names])
+    # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
+    # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
+    os.system("")
+    for i, c_val in enumerate(obj):
+        rect_str = color_str(" " * width, c_val, background=True)
+        val_str = f" {c_val}"
+        if isinstance(obj, Palette):
+            name = obj.color_names[i]
+            spacing = tabular * " " * (longest_name - len(name))
+            val_str = ' ' + name + spacing + val_str
+        if colored_text:
+            val_str = color_str(val_str, c_val)
+        print(rect_str + val_str)
+        for _ in range(height - 1):
+            print(rect_str)

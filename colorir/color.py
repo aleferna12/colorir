@@ -27,10 +27,8 @@ import colorsys
 import abc
 from math import sqrt
 from random import randint
-from typing import Union
-import colorir
 
-ColorLike = Union["ColorBase", str, tuple]
+import colorir
 
 
 class ColorBase(metaclass=abc.ABCMeta):
@@ -63,6 +61,9 @@ class ColorBase(metaclass=abc.ABCMeta):
         color object."""
         format_ = {k: v for k, v in self.__dict__.items() if k != "_rgba"}
         return colorir.color_format.ColorFormat(self.__class__, **format_)
+
+    # TODO
+    # def grayscale(self):
 
     def hex(self, **kwargs) -> "HexRGB":
         """Converts the current color to a hexadecimal representation.
@@ -144,6 +145,11 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
     def __repr__(self):
         return f"{self.__class__.__name__}{tuple.__repr__(self)}"
 
+    # It would be very dangerous to change str conversion as the target framework could call it
+    # expecting (255, 0, 0) and get sRGB(255, 0, 0)
+    def __str__(self):
+        return tuple.__repr__(self)
+
     def __eq__(self, other):
         if isinstance(other, ColorBase):
             return ColorBase.__eq__(self, other)
@@ -172,8 +178,8 @@ class sRGB(ColorTupleBase):
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
             Setting it to ``True`` may result in an object such as :code:`sRGB(255, 255, 0,
             255)` instead of :code:`sRGB(255, 255, 0)`, for exemple.
-        round_to: Rounds the value of each color component to this many decimal places. Setting this
-            parameter to 0 ensures that the components will be of type ``int``. -1
+        round_to: Rounds the value of each color component to this many decimal places. Setting
+            this parameter to 0 ensures that the components will be of type ``int``. -1
             means that the components won't be rounded at all.
     """
 
@@ -234,8 +240,8 @@ class HSL(ColorTupleBase):
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
             Setting it to ``True`` may result in an object such as :code:`HSL(360, 1, 0,
             1)` instead of :code:`HSL(360, 1, 0)`, for exemple.
-        round_to: Rounds the value of each color component to this many decimal places. Setting this
-            parameter to 0 ensures that the components will be of type ``int``. -1
+        round_to: Rounds the value of each color component to this many decimal places. Setting
+            this parameter to 0 ensures that the components will be of type ``int``. -1
             means that the components won't be rounded at all.
     """
 
@@ -295,8 +301,8 @@ class HSV(ColorTupleBase):
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
             Setting it to ``True`` may result in an object such as :code:`HSV(360, 1, 0,
             1)` instead of :code:`HSV(360, 1, 0)`, for exemple.
-        round_to: Rounds the value of each color component to this many decimal places. Setting this
-            parameter to 0 ensures that the components will be of type ``int``. -1
+        round_to: Rounds the value of each color component to this many decimal places. Setting
+            this parameter to 0 ensures that the components will be of type ``int``. -1
             means that the components won't be rounded at all.
     """
 
@@ -479,7 +485,7 @@ class HexRGB(ColorBase, str):
     >>> print(red)
     #ff0000
     >>> red # red is NOT a string, but a subclass of a string
-    HexRGB(#ff0000)
+    HexRGB('#ff0000')
 
     References:
         .. [#] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
@@ -497,13 +503,13 @@ class HexRGB(ColorBase, str):
 
     Examples:
         >>> HexRGB("#ff0000")
-        HexRGB(#ff0000)
+        HexRGB('#ff0000')
 
         >>> HexRGB("#FF0000", include_hash=False)
-        HexRGB(ff0000)
+        HexRGB('ff0000')
 
         >>> HexRGB("ff0000", include_a=True, tail_a=True)
-        HexRGB(#ff0000ff)
+        HexRGB('#ff0000ff')
     """
 
     def __new__(cls,
@@ -557,17 +563,24 @@ class HexRGB(ColorBase, str):
         return obj
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({str(self)})"
+        return f"{self.__class__.__name__}({str.__repr__(self)})"
+
+    # It would be very dangerous to change str conversion as the target framework could call it
+    # expecting #ff0000 and get HexRGB('#ff0000')
+    def __str__(self):
+        return str.__str__(self)
 
     def __eq__(self, other):
-        return ColorBase.__eq__(self, other) if isinstance(other, ColorBase) else str.__eq__(self,
-                                                                                             other)
+        if isinstance(other, ColorBase):
+            return ColorBase.__eq__(self, other)
+        return str.__eq__(self, other)
 
     def __hash__(self):
         return ColorBase.__hash__(self)
 
 
-def simplified_dist(color1: ColorBase, color2: ColorBase):
+def simplified_dist(color1: "colorir.color_format.ColorLike",
+                    color2: "colorir.color_format.ColorLike"):
     """Calculates the perceived distance between two colors.
 
     Although there are many methods to approach the similarity of colors mathematically, the
@@ -577,7 +590,17 @@ def simplified_dist(color1: ColorBase, color2: ColorBase):
     References:
         .. [#] Colour metric by Thiadmer Riemersma. Available on
             https://www.compuphase.com/cmetric.htm.
+
+    Args:
+        color1: First color point.
+        color2: Second color point.
     """
+    color_format = colorir.config.DEFAULT_COLOR_FORMAT
+    # We only need the '._rgba's, so no need to convert if already ColorBase
+    if not isinstance(color1, ColorBase):
+        color1 = color_format.format(color1)
+    if not isinstance(color2, ColorBase):
+        color1 = color_format.format(color2)
     rgba1, rgba2 = color1._rgba, color2._rgba
     avg_r = (rgba1[0] + rgba2[0]) / 2
     d_r = rgba1[0] - rgba2[0]
@@ -599,7 +622,7 @@ def random_color(random_a=False,
 
     Examples:
         >>> random_color()  # doctest: +SKIP
-        HexRGB(#304fcc)
+        HexRGB('#304fcc')
     """
     if color_format is None:
         color_format = colorir.config.DEFAULT_COLOR_FORMAT
@@ -613,3 +636,34 @@ def random_color(random_a=False,
                                     randint(0, 255),
                                     randint(0, 255),
                                     a))
+
+
+def color_str(string: str, color: "colorir.color_format.ColorLike", background=False):
+    if not isinstance(color, ColorBase):
+        color = colorir.config.DEFAULT_COLOR_FORMAT.format(color)
+    if background:
+        layer_code = "48"
+    else:
+        layer_code = "38"
+    return f"\033[{layer_code};2;{color._rgba[0]};{color._rgba[1]};{color._rgba[2]}m{string}\33[0m"
+
+
+# https://entropymine.com/imageworsener/srgbformula/
+def _to_linear_RGB(rgba):
+    rgba = list(rgba)
+    for i in range(3):
+        if rgba[i] <= 0.04045:
+            rgba[i] /= 12.92
+        else:
+            rgba[i] = pow(((rgba[i] + 0.055) / 1.055), 2.4)
+    return rgba
+
+
+def _to_sRGB(rgba):
+    rgba = list(rgba)
+    for i in range(3):
+        if rgba[i] <= 0.0031308:
+            rgba[i] *= 12.92
+        else:
+            rgba[i] = 1.055 * pow(rgba[i], 1/2.4) - 0.055
+    return rgba

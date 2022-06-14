@@ -7,12 +7,12 @@ Color
 	:show-inheritance:
 	:exclude-members: ColorBase, ColorTupleBase
 
-.. autoclass:: colorir.color.ColorBase
+.. autoclass:: ColorBase
 	:members:
 	:undoc-members:
 	:show-inheritance:
 
-.. autoclass:: colorir.color.ColorTupleBase
+.. autoclass:: ColorTupleBase
 	:members:
 	:undoc-members:
 	:show-inheritance:
