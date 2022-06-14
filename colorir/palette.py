@@ -874,14 +874,14 @@ def swatch(obj: Union[ColorLike, List[ColorLike], Palette, StackPalette],
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
     os.system("")
     for i, c_val in enumerate(obj):
-        rect_str = color_str(" " * width, c_val, background=True)
+        rect_str = color_str(" " * width, bg_color=c_val)
         val_str = f" {c_val}"
         if isinstance(obj, Palette):
             name = obj.color_names[i]
             spacing = tabular * " " * (longest_name - len(name))
             val_str = ' ' + name + spacing + val_str
         if colored_text:
-            val_str = color_str(val_str, c_val)
+            val_str = color_str(val_str, fg_color=c_val)
         print(rect_str + val_str)
         for _ in range(height - 1):
             print(rect_str)

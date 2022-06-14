@@ -638,14 +638,29 @@ def random_color(random_a=False,
                                     a))
 
 
-def color_str(string: str, color: "colorir.color_format.ColorLike", background=False):
-    if not isinstance(color, ColorBase):
-        color = colorir.config.DEFAULT_COLOR_FORMAT.format(color)
-    if background:
-        layer_code = "48"
-    else:
-        layer_code = "38"
-    return f"\033[{layer_code};2;{color._rgba[0]};{color._rgba[1]};{color._rgba[2]}m{string}\33[0m"
+def color_str(string: str,
+              fg_color: "colorir.color_format.ColorLike" = None,
+              bg_color: "colorir.color_format.ColorLike" = None) -> str:
+    """Returns an ANSI-escaped [#]_ colored representation of `string`.
+
+    Examples:
+        >>> print(color_str("It's Christmas!", "#ff0000", "#00ff00"))  # doctest: +SKIP
+
+    Args:
+        string: String that will be colored.
+        fg_color: Color to be applied to the foreground of the text.
+        bg_color: Color to be applied to the background of the text.
+
+    References:
+        .. [#] Wikipedia at https://en.wikipedia.org/wiki/ANSI_escape_code#Colors.
+    """
+    if fg_color is not None:
+        rgba = colorir.config.DEFAULT_COLOR_FORMAT.format(fg_color)._rgba
+        string = f"\033[38;2;{rgba[0]};{rgba[1]};{rgba[2]}m" + string + "\33[0m"
+    if bg_color is not None:
+        rgba = colorir.config.DEFAULT_COLOR_FORMAT.format(bg_color)._rgba
+        string = f"\033[48;2;{rgba[0]};{rgba[1]};{rgba[2]}m" + string + "\33[0m"
+    return string
 
 
 # https://entropymine.com/imageworsener/srgbformula/
