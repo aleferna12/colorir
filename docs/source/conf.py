@@ -23,7 +23,7 @@ copyrimaght = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2.3'
+release = '1.2.4'
 
 
 # -- General configuration ---------------------------------------------------

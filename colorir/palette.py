@@ -401,7 +401,7 @@ class Palette:
                 formatted_colors[c_name] = c_rgba
             json.dump(formatted_colors, file, indent=4)
 
-    def to_spalette(self) -> "StackPalette":
+    def to_stackpalette(self) -> "StackPalette":
         """Converts this palette into a :class:`StackPalette`."""
         return StackPalette(self.name, self.color_format, *self._color_dict.values())
 
