@@ -2,13 +2,7 @@
 
     Please note that colorir is still in its early days and that slight modifications to the API may happen between versions.
 
-.. raw:: html
-
-    <style> .rainbow {background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red); -webkit-background-clip: text; color: transparent;} </style>
-
-.. role:: rainbow
-
-What is :rainbow:`colorir`?
+What is colorir?
 ----------------
 
 colorir is a package developed to unify your workflow with colors across different projects.
