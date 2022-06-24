@@ -12,7 +12,7 @@ respectively.
 Interpreting color-like objects
 -------------------------------
 
-Most functions and classes of :mod:`colorir` can take as a parameter a type called
+Most functions and classes of colorir can take as a parameter a type called
 :const:`ColorLike`. This type stands for any common representation of color, such as those using
 strings or tuples. The function/class is then able to interpret such a format using a color format
 we provide or the default color format (see notes section at the end).
@@ -108,7 +108,7 @@ class ColorFormat:
         >>> c_format.new_color(1, 0, 0)
         sRGB(1, 0, 0)
 
-        For more examples see the documentation of the :mod:`color_format` module.
+        For more examples see the documentation of the :mod:`~colorir.color_format` module.
     """
     def __init__(self, color_sys: Type["colorir.color.ColorBase"], **kwargs):
         self.color_sys = color_sys

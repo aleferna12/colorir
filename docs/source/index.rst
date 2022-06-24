@@ -2,8 +2,14 @@
 
     Please note that colorir is still in its early days and that slight modifications to the API may happen between versions.
 
-Welcome to colorir's documentation!
-=====================================
+.. raw:: html
+
+    <style> .rainbow {background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red); -webkit-background-clip: text; color: transparent;} </style>
+
+.. role:: rainbow
+
+Welcome to :rainbow:`colorir`'s documentation!
+==============================================
 
 API
 ---

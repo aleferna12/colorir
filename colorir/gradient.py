@@ -1,11 +1,11 @@
 """Gradients between colors.
 
-For now only an RGB linear gradient is available.
+For now only an RGB gradient is available.
 
 Examples:
     Get purple inbetween red and blue:
 
-    >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255), sRGB(255, 255, 255)])
+    >>> grad = RGBGrad([sRGB(255, 0, 0), sRGB(0, 0, 255), sRGB(255, 255, 255)])
     >>> grad.perc(0.25)
     HexRGB('#800080')
 
@@ -20,7 +20,7 @@ from .color import sRGB, _to_sRGB, _to_linear_RGB
 from .color_format import ColorLike
 
 
-class RGBLinearGrad:
+class RGBGrad:
     """Poly-linear interpolation gradient using the RGB color space [1]_.
 
     Args:
@@ -57,7 +57,7 @@ class RGBLinearGrad:
         Examples:
             Get purple inbetween red and blue:
 
-            >>> grad = RGBLinearGrad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
+            >>> grad = RGBGrad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
             >>> grad.perc(0.5)
             HexRGB('#800080')
 
@@ -104,3 +104,5 @@ class RGBLinearGrad:
         return new_rgba if not self.use_linear_RGB else _to_sRGB(new_rgba)
 
 
+# Alias
+RGBLinearGrad = RGBGrad

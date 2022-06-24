@@ -23,7 +23,7 @@ copyrimaght = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2.2'
+release = '1.2.3'
 
 
 # -- General configuration ---------------------------------------------------
@@ -45,6 +45,7 @@ default_role = "py:obj"
 autodoc_member_order = 'bysource'
 autodoc_typehints = "description"
 autodoc_typehints_description_target = "documented"
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -65,4 +66,4 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
-# html_css_files = ['css/text_colors.css']
+# html_css_files = ['css/colors.css']

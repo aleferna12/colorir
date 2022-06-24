@@ -4,7 +4,7 @@ Config.set('graphics', 'height', '400')
 from kivy.app import App
 from kivy.graphics import Ellipse, Color
 from kivy.uix.widget import Widget
-from colorir import config, KIVY_COLOR_FORMAT, RGBLinearGrad, HSV, sRGB
+from colorir import config, KIVY_COLOR_FORMAT, RGBGrad, HSV, sRGB
 
 # Define the default color format to work with kivy
 config.DEFAULT_COLOR_FORMAT = KIVY_COLOR_FORMAT
@@ -24,7 +24,7 @@ class WheelScreen(Widget):
                 # Use HUE to create the outermost color on the wheel
                 outer_color = HSV(i * iter_angle, 1, 1)
                 # Create a gradient from the outer color to white
-                grad = RGBLinearGrad([outer_color, sRGB(255, 255, 255)])
+                grad = RGBGrad([outer_color, sRGB(255, 255, 255)])
                 # Enumerate over the segments of the step while creating new colors with the grad
                 for j, color in enumerate(grad.n_colors(ELLIPSE_SEGMENTS, no_ends=False)):
                     Color(*color)

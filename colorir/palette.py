@@ -67,14 +67,11 @@ class Palette:
         For more examples see the documentation of the :mod:`~colorir.palette` module.
 
     Args:
-        name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
+        name: Name of the palette which will be used to save it with :meth:`Palette.save()`.
         color_format: Color format specifying how the colors of this :class:`Palette` should be
             stored. Defaults to the value specified in
             :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
-
-    Attributes:
-        name: Name of the palette which will be used to save it with the :meth:`Palette.save()`.
     """
     def __init__(self,
                  name: str = None,
@@ -88,6 +85,32 @@ class Palette:
         self._color_dict = {}
         for k, v in colors.items():
             self.add(k, v)
+
+    @property
+    def colors(self):
+        """colors: A list of all color values currently stored in the :class:`Palette`."""
+        return list(self._color_dict.values())
+
+    @property
+    def color_names(self):
+        """colors: A list of all color names currently stored in the :class:`Palette`."""
+        return list(self._color_dict.keys())
+
+    @property
+    def color_format(self):
+        """color_format: Color format specifying how the colors of this :class:`Palette` are
+        stored.
+        """
+        return self._color_format
+
+    # color_format could be used to build a color on every Palette.color call, but that is
+    # computationally intensive. That's why the colors are stored as ready objects and are
+    # re-created if needed
+    @color_format.setter
+    def color_format(self, value):
+        self._color_dict = {c_name: value._from_rgba(c_value._rgba)
+                            for c_name, c_value in self._color_dict.items()}
+        self._color_format = value
 
     @classmethod
     def load(cls,
@@ -106,11 +129,11 @@ class Palette:
         If multiple palettes define different color values under the same name, only the first one
         will be kept. You can define the order in which the palettes are loaded by ordering them in
         the `palettes` parameter. By default this occurrence logs a warning, but this behaviour can
-        be changed through the `warning` parameter.
+        be changed through the `warnings` parameter.
 
         Args:
             palettes: List of palettes located in the location represented by `palettes_dir` that
-                should be loaded by this :class:`Palette` instance. Addtionally may include
+                should be loaded by this :class:`Palette` instance. Additionally may include
                 built-in palettes such as 'css' if `search_builtins` is set to ``True``. If this
                 parameter is a string, the :attr:`Palettes.name` will be inferred from it. By
                 default, loads all palettes found in the specified directory.
@@ -175,32 +198,6 @@ class Palette:
                 else:
                     palette_obj.add(c_name, new_color)
         return palette_obj
-
-    @property
-    def colors(self):
-        """colors: A list of all color values currently stored in the :class:`Palette`."""
-        return list(self._color_dict.values())
-
-    @property
-    def color_names(self):
-        """colors: A list of all color names currently stored in the :class:`Palette`."""
-        return list(self._color_dict.keys())
-
-    @property
-    def color_format(self):
-        """color_format: Color format specifying how the colors of this :class:`Palette` are
-        stored.
-        """
-        return self._color_format
-
-    # color_format could be used to build a color on every Palette.color call, but that is
-    # computationally intensive. That's why the colors are stored as ready objects and are
-    # re-created if needed
-    @color_format.setter
-    def color_format(self, value):
-        self._color_dict = {c_name: value._from_rgba(c_value._rgba)
-                            for c_name, c_value in self._color_dict.items()}
-        self._color_format = value
 
     def __len__(self):
         return len(self._color_dict)
@@ -283,7 +280,7 @@ class Palette:
         """Finds the `n` most similar colors to `color` in this palette.
 
         For more details on the algorithm implemented to calculate similarity, see
-        :func:`color.perceived_dist() <colorir.color.perceived_dist()>` documentation.
+        :func:`color.simplified_dist() <colorir.color.simplified_dist()>` documentation.
 
         Args:
             color: The value of the color of reference. Can be an instance of any
@@ -302,19 +299,13 @@ class Palette:
             :class:`~colorir.color.ColorBase` if n != 1. If the return type is a list, the colors
             will be ordered from most similar to least.
         """
-        color = self.color_format.format(color)
-        closest = sorted(self.colors, key=lambda color2: simplified_dist(color, color2))
-        if n == 1:
-            return closest[0]
-        elif n < 0:
-            n = len(self)
-        return closest[:n]
+        return _most_similar(self, color, n)
 
     def add(self, name: str, color: ColorLike):
         """Adds a color to the palette.
 
         Two colors with the same name but different values are invalid and can not coexist in a
-        same :class:`Palette`. You should therefore avoid reusing names for already existing
+        same :class:`Palette`. You should therefore avoid reusing names of already existing
         colors.
 
         Args:
@@ -427,16 +418,12 @@ class StackPalette:
         HexRGB('#ff0000')
 
     Args:
-        name: Name of the palette which will be used to save it with the
+        name: Name of the palette which will be used to save it with
             :meth:`StackPalette.save()`.
         color_format: Color format specifying how the colors of this :class:`StackPalette` should
             be stored. Defaults to the value specified in
             :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
-
-    Attributes:
-        name: Name of the palette which will be used to save it with the
-            :meth:`StackPalette.save()`.
     """
 
     def __init__(self,
@@ -451,6 +438,26 @@ class StackPalette:
         self._color_stack = []
         for color in colors:
             self.add(color)
+
+    @property
+    def colors(self):
+        """colors: A list of all color values currently stored in the :class:`StackPalette`."""
+        return list(self._color_stack)
+
+    @property
+    def color_format(self):
+        """color_format: Color format specifying how the colors of this :class:`StackPalette` are
+        stored.
+        """
+        return self._color_format
+
+    # color_format could be used to build a color on every StackPalette[color] call, but that is
+    # computationally intensive. That's why the colors are stored as ready objects and are
+    # re-created if needed
+    @color_format.setter
+    def color_format(self, value):
+        self._color_stack = [value._from_rgba(color._rgba) for color in self._color_stack]
+        self._color_format = value
 
     @classmethod
     def load(cls,
@@ -516,7 +523,7 @@ class StackPalette:
                           color: ColorLike = None,
                           name: str = None,
                           color_format: ColorFormat = None):
-        """Creates a new palette with 'n' complementary colors.
+        """Creates a new palette with `n` complementary colors.
 
         Colors are considered complementary if they are interspaced in the additive HUE color
         wheel.
@@ -536,7 +543,7 @@ class StackPalette:
             n: The number of colors in the new palette.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
-            name: Name of the palette which will be used to save it with the
+            name: Name of the palette which will be used to save it with
                 :meth:`StackPalette.save()`.
             color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
@@ -562,7 +569,7 @@ class StackPalette:
                       color: ColorLike = None,
                       name: str = None,
                       color_format: ColorFormat = None):
-        """Creates a new palette with 'n' analogous colors.
+        """Creates a new palette with `n` analogous colors.
 
         Colors are considered analogous if they are side-by-side in the additive HUE color wheel.
 
@@ -588,7 +595,7 @@ class StackPalette:
                 be sampled clockwise from 'color'. If '-1', they will be sampled counter-clockwise.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
-            name: Name of the palette which will be used to save it with the
+            name: Name of the palette which will be used to save it with
                 :meth:`StackPalette.save()`.
             color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
@@ -618,26 +625,6 @@ class StackPalette:
             n_spalette.add(HSV(hue, hsv[1], hsv[2]))
         return n_spalette
 
-    @property
-    def colors(self):
-        """colors: A list of all color values currently stored in the :class:`StackPalette`."""
-        return list(self._color_stack)
-
-    @property
-    def color_format(self):
-        """color_format: Color format specifying how the colors of this :class:`StackPalette` are
-        stored.
-        """
-        return self._color_format
-
-    # color_format could be used to build a color on every StackPalette[color] call, but that is
-    # computationally intensive. That's why the colors are stored as ready objects and are
-    # re-created if needed
-    @color_format.setter
-    def color_format(self, value):
-        self._color_stack = [value._from_rgba(color._rgba) for color in self._color_stack]
-        self._color_format = value
-
     def __getitem__(self, item: int):
         return self._color_stack[item]
 
@@ -662,6 +649,31 @@ class StackPalette:
         for color in other:
             self.add(color)
         return self
+
+    def most_similar(self, color: ColorLike, n=1):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        For more details on the algorithm implemented to calculate similarity, see
+        :func:`color.simplified_dist() <colorir.color.simplified_dist()>` documentation.
+
+        Args:
+            color: The value of the color of reference. Can be an instance of any
+                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
+                the color to which others will be compared in search of similar results.
+            n: How many similar colors to be retrieved. -1 means all colors from the palette will
+                be returned from most similar to least.
+
+        Examples:
+            >>> spalette = StackPalette(None, None, "#ff0000", "#0000ff")
+            >>> spalette.most_similar("#880000")
+            HexRGB('#ff0000')
+
+        Returns:
+            A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
+            :class:`~colorir.color.ColorBase` if n != 1. If the return type is a list, the colors
+            will be ordered from most similar to least.
+        """
+        return _most_similar(self, color, n)
 
     def swap(self, index1: int, index2: int):
         """Swap the places of two colors in the palette.
@@ -885,3 +897,14 @@ def swatch(obj: Union[ColorLike, List[ColorLike], Palette, StackPalette],
         print(rect_str + val_str)
         for _ in range(height - 1):
             print(rect_str)
+
+
+# Common implementation of most_similar methods of Palette and StackPalette
+def _most_similar(palette, color, n):
+    color = palette.color_format.format(color)
+    closest = sorted(palette.colors, key=lambda color2: simplified_dist(color, color2))
+    if n == 1:
+        return closest[0]
+    elif n < 0:
+        n = len(palette)
+    return closest[:n]

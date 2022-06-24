@@ -101,7 +101,7 @@ Just like with any other example, the color picker can be executed with:
 Color Wheel with Kivy
 ---------------------
 
-A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.RGBLinearGrad`.
+A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.RGBGrad`.
 
 .. literalinclude:: ../../colorir/examples/color_wheel.py
 
