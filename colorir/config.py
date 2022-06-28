@@ -10,11 +10,11 @@ Examples:
 
     >>> config.DEFAULT_PALETTES_DIR = ".../my_project/palettes"
 """
-from os import path
+import os
 from .color_format import ColorFormat
 from .color import HexRGB
 
-DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
+DEFAULT_PALETTES_DIR = os.path.join(os.path.dirname(__file__), "palettes")
 """Default directory from which palettes will be loaded and to which they will be saved."""
 
 DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB)

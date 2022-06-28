@@ -405,6 +405,9 @@ class Palette:
         """Converts this palette into a :class:`StackPalette`."""
         return StackPalette(self.name, self.color_format, *self._color_dict.values())
 
+    # TODO
+    # def to_cmap(self):
+
 
 class StackPalette:
     """Class that handles anonymous indexed colors stored as a stack.
@@ -795,6 +798,9 @@ class StackPalette:
             return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
         raise ValueError("'names' must have the same length as this 'StackPalette' and no "
                          "duplicates")
+
+    # TODO
+    # def to_cmap(self):
 
 
 def find_palettes(palettes_dir: str = None,

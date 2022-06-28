@@ -62,9 +62,6 @@ class ColorBase(metaclass=abc.ABCMeta):
         format_ = {k: v for k, v in self.__dict__.items() if k != "_rgba"}
         return colorir.color_format.ColorFormat(self.__class__, **format_)
 
-    # TODO
-    # def grayscale(self):
-
     def hex(self, **kwargs) -> "HexRGB":
         """Converts the current color to a hexadecimal representation.
 
@@ -118,6 +115,8 @@ class ColorBase(metaclass=abc.ABCMeta):
                 :class:`CMY` constructor.
         """
         return CMY._from_rgba(self._rgba, **kwargs)
+
+    # TODO add conversion to new perceptually uniform color systems
 
 
 class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
@@ -473,19 +472,28 @@ class CMY(ColorTupleBase):
         return obj
 
 
+# TODO implement with colormath (referred to as lch in this module)
+# class HCLuv(ColorTupleBase):
+
+
+# TODO implement with colormath (referred to as lch in this module)
+# class HCLab(ColorTupleBase):
+
+
+# TODO implement with colormath
+# class CIELUV(ColorTupleBase):
+
+
+# TODO implement with colormath
+# class CIELAB(ColorTupleBase):
+
+
 class HexRGB(ColorBase, str):
     """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 
     Is mostly used for representing colors in web applications [#]_.
 
-    Be aware that printing objects of this class with ``print()`` makes it look like the object
-    is a ``str``.
-
-    >>> red = HexRGB("#ff0000")
-    >>> print(red)
-    #ff0000
-    >>> red # red is NOT a string, but a subclass of a string
-    HexRGB('#ff0000')
+    `Hex` is available as a handy alias for this class.
 
     References:
         .. [#] Wikipedia at https://en.wikipedia.org/wiki/SRGB.
@@ -579,6 +587,11 @@ class HexRGB(ColorBase, str):
         return ColorBase.__hash__(self)
 
 
+# Alias
+Hex = HexRGB
+
+
+# TODO rename to something else? (if so, keep as alias)
 def simplified_dist(color1: "colorir.color_format.ColorLike",
                     color2: "colorir.color_format.ColorLike"):
     """Calculates the perceived distance between two colors.
@@ -609,6 +622,14 @@ def simplified_dist(color1: "colorir.color_format.ColorLike",
     return sqrt((2 + avg_r) * d_r ** 2
                 + 4 * d_g ** 2
                 + (3 - avg_r) * d_b ** 2)
+
+
+# TODO one unified function of colormath funcs and simplified
+# def dist(, method="CIE94"):
+
+
+# TODO
+# def to_grayscale
 
 
 def random_color(random_a=False,
@@ -663,6 +684,7 @@ def color_str(string: str,
     return string
 
 
+# TODO implement in a better way
 # https://entropymine.com/imageworsener/srgbformula/
 def _to_linear_RGB(rgba):
     rgba = list(rgba)

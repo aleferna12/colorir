@@ -92,6 +92,9 @@ class RGBGrad:
             colors.append(self.perc(p))
         return colors
 
+    # TODO
+    # def to_cmap(self):
+
     def _linear_interp(self, color_1: ColorLike, color_2: ColorLike, p: float):
         if self.use_linear_RGB:
             rgba_1 = _to_linear_RGB(color_1._rgba)
