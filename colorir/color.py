@@ -667,18 +667,18 @@ def color_str(string: str,
 def _to_linear_rgb(rgba):
     rgba = list(rgba)
     for i in range(3):
-        if rgba[i] <= 0.04045:
-            rgba[i] /= 12.92
+        if rgba[i] <= 255 * 0.04045:
+            rgba[i] /= 255 * 12.92
         else:
-            rgba[i] = pow(((rgba[i] + 0.055) / 1.055), 2.4)
-    return rgba
+            rgba[i] = 255 * pow(((rgba[i] / 255 + 0.055) / 1.055), 2.4)
+    return tuple(rgba)
 
 
-def _to_sRGB(rgba):
+def _to_srgb(rgba):
     rgba = list(rgba)
     for i in range(3):
-        if rgba[i] <= 0.0031308:
-            rgba[i] *= 12.92
+        if rgba[i] <= 255 * 0.0031308:
+            rgba[i] *= 255 * 12.92
         else:
-            rgba[i] = 1.055 * pow(rgba[i], 1/2.4) - 0.055
-    return rgba
+            rgba[i] = 255 * (1.055 * pow(rgba[i] / 255, 1/2.4) - 0.055)
+    return tuple(rgba)

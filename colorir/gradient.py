@@ -16,7 +16,7 @@ Examples:
 """
 from typing import Iterable
 from . import config
-from .color import sRGB, _to_sRGB, _to_linear_rgb
+from .color import sRGB, _to_srgb, _to_linear_rgb
 from .color_format import ColorLike
 
 
@@ -100,8 +100,10 @@ class RGBGrad:
             rgba_1 = color_1._rgba
             rgba_2 = color_2._rgba
 
-        new_rgba = tuple(round(rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p) for i in range(4))
-        return new_rgba if not self.use_linear_rgb else _to_sRGB(new_rgba)
+        new_rgba = [rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p for i in range(4)]
+        if self.use_linear_rgb:
+            new_rgba = _to_srgb(new_rgba)
+        return tuple(round(spec) for spec in new_rgba)
 
 
 # Alias
