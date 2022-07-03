@@ -26,7 +26,7 @@ class WheelScreen(Widget):
                 # Create a gradient from the outer color to white
                 grad = RGBGrad([outer_color, sRGB(255, 255, 255)])
                 # Enumerate over the segments of the step while creating new colors with the grad
-                for j, color in enumerate(grad.n_colors(ELLIPSE_SEGMENTS, no_ends=False)):
+                for j, color in enumerate(grad.n_colors(ELLIPSE_SEGMENTS, include_ends=True)):
                     Color(*color)
                     width = 400 * (ELLIPSE_SEGMENTS - j) / ELLIPSE_SEGMENTS
                     height = 400 * (ELLIPSE_SEGMENTS - j) / ELLIPSE_SEGMENTS
