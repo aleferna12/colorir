@@ -664,7 +664,7 @@ def color_str(string: str,
 
 
 # https://entropymine.com/imageworsener/srgbformula/
-def _to_linear_RGB(rgba):
+def _to_linear_rgb(rgba):
     rgba = list(rgba)
     for i in range(3):
         if rgba[i] <= 0.04045:
