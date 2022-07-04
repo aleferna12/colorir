@@ -16,7 +16,7 @@ Examples:
 """
 from typing import Iterable
 from . import config
-from .color import sRGB, _to_sRGB, _to_linear_RGB
+from .color import sRGB, _to_srgb, _to_linear_rgb
 from .color_format import ColorLike
 
 
@@ -28,7 +28,7 @@ class RGBGrad:
             this iterable.
         color_format: Color format specifying how to store and create colors. Defaults to
             :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
-        use_linear_RGB: Whether to use linear RGB rather than sRGB to create the gradient.
+        use_linear_rgb: Whether to use linear RGB rather than sRGB to create the gradient.
 
     Notes:
         Often using linear RGB may result in a gradient that looks more natural to the human eye
@@ -39,13 +39,13 @@ class RGBGrad:
         .. [2] Ayke van Laethem at https://aykevl.nl/2019/12/colors
     """
 
-    def __init__(self, colors: Iterable[ColorLike], color_format=None, use_linear_RGB=False):
+    def __init__(self, colors: Iterable[ColorLike], color_format=None, use_linear_rgb=False):
         colors = list(colors)
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
         self.color_format = color_format
         self.colors = [self.color_format.format(color) for color in colors]
-        self.use_linear_RGB = use_linear_RGB
+        self.use_linear_rgb = use_linear_rgb
 
     def perc(self, p: float) -> ColorLike:
         """Returns the color placed in a given percentage of the gradient.
@@ -75,20 +75,20 @@ class RGBGrad:
         )
         return self.color_format._from_rgba(new_rgba)
 
-    def n_colors(self, n: int, no_ends=True):
+    def n_colors(self, n: int, include_ends=False):
         """Return `n` interspaced colors from the gradient.
 
         Args:
             n: Number of colors to retrieve.
-            no_ends: By default, color values returned by this method will never include the very
-                extremes of the gradient. This allows sampling a small number of colors (such as
-                two) without having it return the same colors that were used to create the
+            include_ends: By default, color values returned by this method will never include the
+                very extremes of the gradient. This allows sampling a small number of colors (such
+                as two) without having it return the same colors that were used to create the
                 gradient in the first place.
         """
         colors = []
-        sub = 1 if no_ends else -1
+        sub = -1 if include_ends else 1
         for i in range(n):
-            p = (i + no_ends) / (n + sub)
+            p = (i + (not include_ends)) / (n + sub)
             colors.append(self.perc(p))
         return colors
 
@@ -96,15 +96,17 @@ class RGBGrad:
     # def to_cmap(self):
 
     def _linear_interp(self, color_1: ColorLike, color_2: ColorLike, p: float):
-        if self.use_linear_RGB:
-            rgba_1 = _to_linear_RGB(color_1._rgba)
-            rgba_2 = _to_linear_RGB(color_2._rgba)
+        if self.use_linear_rgb:
+            rgba_1 = _to_linear_rgb(color_1._rgba)
+            rgba_2 = _to_linear_rgb(color_2._rgba)
         else:
             rgba_1 = color_1._rgba
             rgba_2 = color_2._rgba
 
-        new_rgba = tuple(round(rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p) for i in range(4))
-        return new_rgba if not self.use_linear_RGB else _to_sRGB(new_rgba)
+        new_rgba = [rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p for i in range(4)]
+        if self.use_linear_rgb:
+            new_rgba = _to_srgb(new_rgba)
+        return tuple(round(spec) for spec in new_rgba)
 
 
 # Alias
