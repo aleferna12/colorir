@@ -95,13 +95,13 @@ class RGBGrad:
     # TODO
     # def to_cmap(self):
 
-    def _linear_interp(self, color_1: ColorLike, color_2: ColorLike, p: float):
+    def _linear_interp(self, color1, color2, p: float):
         if self.use_linear_rgb:
-            rgba_1 = _to_linear_rgb(color_1._rgba)
-            rgba_2 = _to_linear_rgb(color_2._rgba)
+            rgba_1 = _to_linear_rgb(color1._rgba)
+            rgba_2 = _to_linear_rgb(color2._rgba)
         else:
-            rgba_1 = color_1._rgba
-            rgba_2 = color_2._rgba
+            rgba_1 = color1._rgba
+            rgba_2 = color2._rgba
 
         new_rgba = [rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p for i in range(4)]
         if self.use_linear_rgb:
