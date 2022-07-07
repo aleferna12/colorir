@@ -23,11 +23,15 @@ Examples:
 References:
     .. [#] Wikipedia at https://en.wikipedia.org/wiki/Color_model.
 """
-import colorsys
 import abc
+# TODO Get rid of colorsys
+import colorsys
+from colormath.color_objects import LabColor as _LabColor, \
+    sRGBColor as _sRGBColor, \
+    LuvColor as _LuvColor
+from colormath.color_conversions import convert_color as _convert_color
 from math import sqrt
 from random import randint
-
 import colorir
 
 
@@ -116,7 +120,23 @@ class ColorBase(metaclass=abc.ABCMeta):
         """
         return CMY._from_rgba(self._rgba, **kwargs)
 
-    # TODO add conversion to new perceptually uniform color systems
+    def cieluv(self, **kwargs) -> "CIELUV":
+        """Converts the current color to a CIELUV representation.
+
+        Args:
+            **kwargs: Keyword arguments wrapped in this function will be passed on to the
+                :class:`CIELUV` constructor.
+        """
+        return CIELUV._from_rgba(self._rgba, **kwargs)
+
+    def cielab(self, **kwargs) -> "CIELAB":
+        """Converts the current color to a CIELAB representation.
+
+        Args:
+            **kwargs: Keyword arguments wrapped in this function will be passed on to the
+                :class:`CIELAB` constructor.
+        """
+        return CIELAB._from_rgba(self._rgba, **kwargs)
 
 
 class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
@@ -259,8 +279,11 @@ class HSL(ColorTupleBase):
                 "parameter'")
 
         rgba = colorsys.hls_to_rgb(h / max_h, l / max_sla, s / max_sla) + (a / max_sla,)
-        rgba = [spec * 255 for spec in rgba]
-        obj = super().__new__(cls, (h, s, l, a), rgba, include_a=include_a, round_to=round_to)
+        obj = super().__new__(cls,
+                              (h, s, l, a),
+                              [spec * 255 for spec in rgba],
+                              include_a=include_a,
+                              round_to=round_to)
         obj.max_h = max_h
         obj.max_sla = max_sla
 
@@ -391,7 +414,6 @@ class CMYK(ColorTupleBase):
     def _from_rgba(cls, rgba, max_cmyka=1, include_a=False, round_to=-1):
         if sum(rgba[:-1]) == 0:
             cmyka = (0.0, 0.0, 0.0, max_cmyka, rgba[-1] / 255 * max_cmyka)
-
         else:
             c = 1 - rgba[0] / 255
             m = 1 - rgba[1] / 255
@@ -451,7 +473,7 @@ class CMY(ColorTupleBase):
                 255 - c / max_cmya * 255,
                 255 - m / max_cmya * 255,
                 255 - y / max_cmya * 255,
-                a / max_cmya
+                a / max_cmya * 255
             ),
             include_a=include_a,
             round_to=round_to)
@@ -461,7 +483,6 @@ class CMY(ColorTupleBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_cmya=1, include_a=False, round_to=-1):
-
         obj = super().__new__(cls,
                               [spec / 255 * max_cmya for spec in
                                (255 - rgba[0], 255 - rgba[1], 255 - rgba[2], rgba[-1])],
@@ -472,20 +493,72 @@ class CMY(ColorTupleBase):
         return obj
 
 
-# TODO implement with colormath (referred to as lch in this module)
-# class HCLuv(ColorTupleBase):
+# TODO doc
+class CIELUV(ColorTupleBase):
+    def __new__(cls, l, u, v, a=None, max_a=1, include_a=False, round_to=-1):
+        if a is None:
+            a = max_a
+        elif a > max_a:
+            raise ValueError("'a' parameter of CIELUV can't be larger than"
+                             " the defined 'max_a' parameter'")
+        if l > 100:
+            raise ValueError("'l' parameter of CIELUV can't be larger than 100")
+
+        rgb = _convert_color(_LuvColor(l, u, v, illuminant="d65"), _sRGBColor)
+        rgba = (rgb.clamped_rgb_r * 255,
+                rgb.clamped_rgb_g * 255,
+                rgb.clamped_rgb_b * 255,
+                a / max_a * 255)
+        obj = super().__new__(cls, (l, u, v, a), rgba, include_a=include_a, round_to=round_to)
+        obj.max_a = max_a
+
+        return obj
+
+    @classmethod
+    def _from_rgba(cls, rgba, max_a=1, include_a=False, round_to=-1):
+        luva = _convert_color(
+            _sRGBColor(*rgba[:3], is_upscaled=True),
+            _LuvColor,
+            target_illuminant="d65"
+        ).get_value_tuple() + (rgba[-1] / 255 * max_a,)
+        obj = super().__new__(cls, luva, rgba, include_a, round_to=round_to)
+        obj.max_a = max_a
+
+        return obj
 
 
-# TODO implement with colormath (referred to as lch in this module)
-# class HCLab(ColorTupleBase):
+# TODO doc
+class CIELAB(ColorTupleBase):
+    def __new__(cls, l, a_, b, a=None, max_a=1, include_a=False, round_to=-1):
+        if a is None:
+            a = max_a
+        elif a > max_a:
+            raise ValueError("'a' parameter of CIELAB can't be larger than"
+                             " the defined 'max_a' parameter'")
+        if l > 100:
+            raise ValueError("'l' parameter of CIELAB can't be larger than 100")
 
+        rgb = _convert_color(_LabColor(l, a_, b, illuminant="d65"), _sRGBColor)
+        rgba = (rgb.clamped_rgb_r * 255,
+                rgb.clamped_rgb_g * 255,
+                rgb.clamped_rgb_b * 255,
+                a / max_a * 255)
+        obj = super().__new__(cls, (l, a_, b, a), rgba, include_a=include_a, round_to=round_to)
+        obj.max_a = max_a
 
-# TODO implement with colormath
-# class CIELUV(ColorTupleBase):
+        return obj
 
+    @classmethod
+    def _from_rgba(cls, rgba, max_a=1, include_a=False, round_to=-1):
+        laba = _convert_color(
+            _sRGBColor(*rgba[:3], is_upscaled=True),
+            _LabColor,
+            target_illuminant="d65"
+        ).get_value_tuple() + (rgba[-1] / 255 * max_a,)
+        obj = super().__new__(cls, laba, rgba, include_a, round_to=round_to)
+        obj.max_a = max_a
 
-# TODO implement with colormath
-# class CIELAB(ColorTupleBase):
+        return obj
 
 
 class HexRGB(ColorBase, str):
