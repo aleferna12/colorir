@@ -17,7 +17,7 @@ Examples:
 
     Compare the perceived distance between two colors:
 
-    >>> simplified_dist(HexRGB("#ff0000"), HexRGB("#ffff00"))
+    >>> simplified_dist(Hex("#ff0000"), Hex("#ffff00"))
     510.0
 
 References:
@@ -66,14 +66,14 @@ class ColorBase(metaclass=abc.ABCMeta):
         format_ = {k: v for k, v in self.__dict__.items() if k != "_rgba"}
         return colorir.color_format.ColorFormat(self.__class__, **format_)
 
-    def hex(self, **kwargs) -> "HexRGB":
+    def hex(self, **kwargs) -> "Hex":
         """Converts the current color to a hexadecimal representation.
 
         Args:
             **kwargs: Keyword arguments wrapped in this function will be passed on to the
-                :class:`HexRGB` constructor.
+                :class:`Hex` constructor.
         """
-        return HexRGB._from_rgba(self._rgba, **kwargs)
+        return Hex._from_rgba(self._rgba, **kwargs)
 
     def rgb(self, **kwargs) -> "sRGB":
         """Converts the current color to an sRGB representation.
@@ -561,7 +561,7 @@ class CIELAB(ColorTupleBase):
         return obj
 
 
-class HexRGB(ColorBase, str):
+class Hex(ColorBase, str):
     """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 
     Is mostly used for representing colors in web applications [#]_.
@@ -573,24 +573,24 @@ class HexRGB(ColorBase, str):
         .. [#] Wikipedia at https://en.wikipedia.org/wiki/Web_colors
 
     Args:
-        hex_str: Hexadecimal string from which the :class:`HexRGB` instance will be built.
+        hex_str: Hexadecimal string from which the :class:`Hex` instance will be built.
             May or may not include a "#" character in its beginning.
         uppercase: Whether the color will be represented in uppercase or lowercase.
         include_a: Whether to include the opacity parameter `a` in the constructed string.
-            Setting it to ``True`` may result in an object such as :code:`HexRGB('#ffffff00')`
-            instead of :code:`HexRGB('#ffff00')`, for exemple.
+            Setting it to ``True`` may result in an object such as :code:`Hex('#ffffff00')`
+            instead of :code:`Hex('#ffff00')`, for exemple.
         tail_a: Whether the alpha component is present in the tail or head of the hex string. Used
             only if `hex_str` includes an alpha component or `include_a` is ``True``.
 
     Examples:
-        >>> HexRGB("#ff0000")
-        HexRGB('#ff0000')
+        >>> Hex("#ff0000")
+        Hex('#ff0000')
 
-        >>> HexRGB("#FF0000", include_hash=False)
-        HexRGB('ff0000')
+        >>> Hex("#FF0000", include_hash=False)
+        Hex('ff0000')
 
-        >>> HexRGB("ff0000", include_a=True, tail_a=True)
-        HexRGB('#ff0000ff')
+        >>> Hex("ff0000", include_a=True, tail_a=True)
+        Hex('#ff0000ff')
     """
 
     def __new__(cls,
@@ -647,7 +647,7 @@ class HexRGB(ColorBase, str):
         return f"{self.__class__.__name__}({str.__repr__(self)})"
 
     # It would be very dangerous to change str conversion as the target framework could call it
-    # expecting #ff0000 and get HexRGB('#ff0000')
+    # expecting #ff0000 and get Hex('#ff0000')
     def __str__(self):
         return str.__str__(self)
 
@@ -661,7 +661,7 @@ class HexRGB(ColorBase, str):
 
 
 # Alias
-Hex = HexRGB
+HexRGB = Hex
 
 
 # TODO rename to something else? (if so, keep as alias)
@@ -716,7 +716,7 @@ def random_color(random_a=False,
 
     Examples:
         >>> random_color()  # doctest: +SKIP
-        HexRGB('#304fcc')
+        Hex('#304fcc')
     """
     if color_format is None:
         color_format = colorir.config.DEFAULT_COLOR_FORMAT

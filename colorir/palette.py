@@ -19,7 +19,7 @@ Examples:
     Get the value for red:
 
     >>> palette.red
-    HexRGB('#ff0000')
+    Hex('#ff0000')
 
     Get names of all colors:
 
@@ -62,7 +62,7 @@ class Palette:
     Examples:
         >>> palette = Palette(red="#ff0000") # Uses default color format
         >>> palette.red
-        HexRGB('#ff0000')
+        Hex('#ff0000')
 
         For more examples see the documentation of the :mod:`~colorir.palette` module.
 
@@ -237,9 +237,9 @@ class Palette:
         Examples:
             >>> palette = Palette(red="#ff0000", blue="#0000ff")
             >>> palette.get_color("red")
-            HexRGB('#ff0000')
+            Hex('#ff0000')
             >>> palette.get_color(["red", "blue"])
-            [HexRGB('#ff0000'), HexRGB('#0000ff')]
+            [Hex('#ff0000'), Hex('#0000ff')]
 
         Returns:
             A single :class:`~colorir.color.ColorBase` if `name` is a string or a list of
@@ -292,7 +292,7 @@ class Palette:
         Examples:
             >>> palette = Palette(red="#ff0000", blue="#0000ff")
             >>> palette.most_similar("#880000")
-            HexRGB('#ff0000')
+            Hex('#ff0000')
 
         Returns:
             A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
@@ -320,7 +320,7 @@ class Palette:
             >>> palette = Palette()
             >>> palette.add("bestblue", "4287f5")
             >>> palette.bestblue
-            HexRGB('#4287f5')
+            Hex('#4287f5')
         """
         # Test to detect invalid color names
         if name in dir(self):
@@ -343,13 +343,13 @@ class Palette:
             
             >>> palette = Palette(myred="dd0000")
             >>> palette.myred
-            HexRGB('#dd0000')
+            Hex('#dd0000')
             
             Change it to be even a bit darker:
             
             >>> palette.update("myred", "800000")
             >>> palette.myred
-            HexRGB('#800000')
+            Hex('#800000')
         """
         if name in self._color_dict:
             self._color_dict[name] = self.color_format.format(color)
@@ -405,9 +405,6 @@ class Palette:
         """Converts this palette into a :class:`StackPalette`."""
         return StackPalette(self.name, self.color_format, *self._color_dict.values())
 
-    # TODO
-    # def to_cmap(self):
-
 
 class StackPalette:
     """Class that handles anonymous indexed colors stored as a stack.
@@ -418,7 +415,7 @@ class StackPalette:
     Examples:
         >>> spalette = StackPalette("elementary", None, "ff0000", "00ff00", "0000ff")
         >>> spalette[0]
-        HexRGB('#ff0000')
+        Hex('#ff0000')
 
     Args:
         name: Name of the palette which will be used to save it with
@@ -536,7 +533,7 @@ class StackPalette:
 
              >>> spalette = StackPalette.new_complementary(2, sRGB(255, 0, 0))
              >>> spalette
-             StackPalette(HexRGB('#ff0000'), HexRGB('#00ffff'))
+             StackPalette(Hex('#ff0000'), Hex('#00ffff'))
 
              Make a tetradic palette of random colors:
 
@@ -581,7 +578,7 @@ class StackPalette:
 
              >>> spalette = StackPalette.new_analogous(2, start=1, color=sRGB(255, 0, 0))
              >>> spalette
-             StackPalette(HexRGB('#ff0000'), HexRGB('#ff8000'))
+             StackPalette(Hex('#ff0000'), Hex('#ff8000'))
 
              Make a palette of four similar colors:
 
@@ -669,7 +666,7 @@ class StackPalette:
         Examples:
             >>> spalette = StackPalette(None, None, "#ff0000", "#0000ff")
             >>> spalette.most_similar("#880000")
-            HexRGB('#ff0000')
+            Hex('#ff0000')
 
         Returns:
             A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
@@ -686,10 +683,10 @@ class StackPalette:
         Examples:
             >>> spalette = StackPalette(None, None, "ff0000", "0000ff")
             >>> spalette
-            StackPalette(HexRGB('#ff0000'), HexRGB('#0000ff'))
+            StackPalette(Hex('#ff0000'), Hex('#0000ff'))
             >>> spalette.swap(0, 1)
             >>> spalette
-            StackPalette(HexRGB('#0000ff'), HexRGB('#ff0000'))
+            StackPalette(Hex('#0000ff'), Hex('#ff0000'))
 
         Args:
             index1: The index of the first color.
@@ -716,7 +713,7 @@ class StackPalette:
             >>> spalette = StackPalette()
             >>> spalette.add("4287f5")
             >>> spalette[0]
-            HexRGB('#4287f5')
+            Hex('#4287f5')
         """
         self._color_stack.append(self.color_format.format(color))
 
@@ -734,13 +731,13 @@ class StackPalette:
 
             >>> spalette = StackPalette(None, None, "dd0000")
             >>> spalette[0]
-            HexRGB('#dd0000')
+            Hex('#dd0000')
 
             Change it to be even a bit darker:
 
             >>> spalette.update(0, "800000")
             >>> spalette[0]
-            HexRGB('#800000')
+            Hex('#800000')
         """
         self._color_stack[index] = self.color_format.format(color)
 
@@ -798,9 +795,6 @@ class StackPalette:
             return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
         raise ValueError("'names' must have the same length as this 'StackPalette' and no "
                          "duplicates")
-
-    # TODO
-    # def to_cmap(self):
 
 
 def find_palettes(palettes_dir: str = None,

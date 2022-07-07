@@ -19,9 +19,9 @@ we provide or the default color format (see notes section at the end).
 
 However, not all representation of a color can be understood by all :class:`ColorFormat` instances.
 A tuple representation of red in RGB such as ``(255, 0, 0)``, for example, cannot be understood
-by a color format such as ``ColorFormat(HexRGB)``. This is because there are many ways to represent
+by a color format such as ``ColorFormat(Hex)``. This is because there are many ways to represent
 red as a tuple of three elements, such as ``(0, 1, 0.5)`` in HSL or as ``(1, 0, 0)`` in RGB with
-a maximum value of 1 for each color spectrum, and a color format based on the HexRGB system is
+a maximum value of 1 for each color spectrum, and a color format based on the Hex system is
 incapable of diferentiating them. Because of this, for a color format to understand a tuple
 (or list) representation of a color, it must itself be based on a tuple representation.
 
@@ -43,7 +43,7 @@ understood universally, for example.
           - Any
 
         * - Hex string with eight elements (e.g.: ``"#ff0000"``)
-          - Hex string color format (e.g.: ``ColorFormat(HexRGB, ...)``)
+          - Hex string color format (e.g.: ``ColorFormat(Hex, ...)``)
 
 Built-in color formats
 ----------------------
@@ -165,13 +165,13 @@ class ColorFormat:
             sRGB(255, 0, 0)
             >>> rgb_format.format((255, 0, 0))
             sRGB(255, 0, 0)
-            >>> hex_format = ColorFormat(colorir.color.HexRGB)
+            >>> hex_format = ColorFormat(colorir.color.Hex)
             >>> hex_format.format("#ff0000")
-            HexRGB('#ff0000')
+            Hex('#ff0000')
             >>> hex_format.format((255, 0, 0)) # Can't understand how to parse this tuple
             Traceback (most recent call last):
               ...
-            ValueError: tried to interpret a tuple-formatted color object with a HexRGB ColorFormat
+            ValueError: tried to interpret a tuple-formatted color object with a Hex ColorFormat
 
         Args:
             color: The value of the color to be formatted. Can be an instance of any
@@ -182,19 +182,19 @@ class ColorFormat:
             return self._from_rgba(color._rgba)
         elif isinstance(color, str):
             # Try to preserve input options (none implemented now but who knows)
-            if self.color_sys == colorir.color.HexRGB:
+            if self.color_sys == colorir.color.Hex:
                 return self.new_color(color)
-            # No alpha in the string, safe to interpret with HexRGB
+            # No alpha in the string, safe to interpret with Hex
             if len(color) < 8:
-                # Fallback to HexRGB default args
-                return self._from_rgba(colorir.color.HexRGB(color)._rgba)
+                # Fallback to Hex default args
+                return self._from_rgba(colorir.color.Hex(color)._rgba)
             raise ValueError("tried to interpret a string-formatted color that contains an alpha"
-                             "component with a non-HexRGB ColorFormat")
-        if self.color_sys != colorir.color.HexRGB:
+                             "component with a non-Hex ColorFormat")
+        if self.color_sys != colorir.color.Hex:
             # Assume that the color system is tuple-based
             return self.new_color(*color)
         else:
-            raise ValueError("tried to interpret a tuple-formatted color object with a HexRGB "
+            raise ValueError("tried to interpret a tuple-formatted color object with a Hex "
                              "ColorFormat")
 
 
@@ -204,7 +204,7 @@ PYGAME_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgb=255, max
 KIVY_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgb=1, max_a=1, include_a=True)
 """Color format compatible with Kivy standards."""
 
-WEB_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.HexRGB)
+WEB_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.Hex)
 """Color format compatible with HTML and CSS standards."""
 
 TKINTER_COLOR_FORMAT = WEB_COLOR_FORMAT

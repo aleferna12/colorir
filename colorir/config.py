@@ -4,18 +4,18 @@ Examples:
     Create a new color format and make it default:
 
     >>> from colorir import config, ColorFormat
-    >>> config.DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB, uppercase=True)
+    >>> config.DEFAULT_COLOR_FORMAT = ColorFormat(Hex, uppercase=True)
 
     Change the default locations from which palettes are loaded and to which they are saved:
 
     >>> config.DEFAULT_PALETTES_DIR = ".../my_project/palettes"
 """
-import os
+from os import path
 from .color_format import ColorFormat
-from .color import HexRGB
+from .color import Hex
 
-DEFAULT_PALETTES_DIR = os.path.join(os.path.dirname(__file__), "palettes")
+DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
 """Default directory from which palettes will be loaded and to which they will be saved."""
 
-DEFAULT_COLOR_FORMAT = ColorFormat(HexRGB)
+DEFAULT_COLOR_FORMAT = ColorFormat(Hex)
 """Default color format used by different objects in this package."""
