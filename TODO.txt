@@ -1,4 +1,5 @@
 TODO
     Add __all__
-    Change conversions to use hsluv + numpy
+    Change conversions to use colormath
+    Add colormath as dependency
     Add more palettes

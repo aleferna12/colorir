@@ -7,16 +7,17 @@ Examples:
 
     >>> grad = Grad(["ff0000", "0000ff", "ffffff"])
     >>> grad.perc(0.25)
-    HexRGB('#be0090')
+    Hex('#be0090')
 
     Get 3 colors interspaced in the gradient:
 
     >>> grad.n_colors(3)
-    [HexRGB('#be0090'), HexRGB('#0000ff'), HexRGB('#9999e8')]
+    [Hex('#be0090'), Hex('#0000ff'), Hex('#9999e8')]
 """
+import numpy as np
 from typing import Iterable, Type
 from . import config
-from .color import sRGB, CIELUV, _to_srgb, _to_linear_rgb, ColorBase
+from .color import sRGB, CIELUV, HSL, _to_srgb, _to_linear_rgb, ColorBase, HSV
 from .color_format import ColorLike
 
 
@@ -56,12 +57,12 @@ class Grad:
 
             >>> grad = Grad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
             >>> grad.perc(0.5)
-            HexRGB('#be0090')
+            Hex('#be0090')
 
             Get a very "reddish" purple:
 
             >>> grad.perc(0.2)
-            HexRGB('#e6005c')
+            Hex('#e6005c')
         """
         i = int(p * (len(self._conv_colors) - 1))
         new_color = self._linear_interp(
@@ -92,9 +93,42 @@ class Grad:
     # def to_cmap(self):
 
     def _linear_interp(self, color1, color2, p: float):
+        """Receives two colors in 'self.color_sys' format (expected to include_a) and returns a
+        new color in the same format."""
+        color1, color2 = np.array(color1), np.array(color2)
         return self.color_sys(
-            *(color1[i] + (color2[i] - color1[i]) * p for i in range(len(color1)))
+            *(color1 + (color2 - color1) * p)
         )
+
+
+# TODO doc
+class PolarGrad(Grad):
+    # TODO change default color_sys to HSLuv
+    def __init__(self,
+                 colors,
+                 color_format=None,
+                 color_sys=HSL):
+        super().__init__(colors=colors, color_format=color_format, color_sys=color_sys)
+        polar_sys = (HSL, HSV)
+        if color_sys not in polar_sys:
+            raise ValueError(f"'color_sys' must be one of {polar_sys}")
+
+    def _linear_interp(self, color1, color2, p: float):
+        max_h = color1.max_h
+        # Assumes that hue is 0th component
+        d = abs(color2[0] - color1[0])
+        if d <= max_h / 2:
+            return super()._linear_interp(color1=color1, color2=color2, p=p)
+
+        color1, color2 = np.array(color1), np.array(color2)
+        if color1[0] > color2[0]:
+            color1, color2 = color2, color1
+            p = 1 - p
+        color1[0] += max_h
+        new_color = color1 + (color2 - color1) * p
+        new_color[0] %= max_h
+
+        return self.color_sys(*new_color)
 
 
 class RGBGrad(Grad):
@@ -119,7 +153,7 @@ class RGBGrad(Grad):
         .. [#] Ayke van Laethem at https://aykevl.nl/2019/12/colors
     """
 
-    def __init__(self, colors: Iterable[ColorLike], color_format=None, use_linear_rgb=False):
+    def __init__(self, colors: Iterable[ColorLike], color_format=None, use_linear_rgb=True):
         super().__init__(colors=colors, color_format=color_format, color_sys=sRGB)
         self.use_linear_rgb = use_linear_rgb
 

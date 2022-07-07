@@ -26,9 +26,7 @@ References:
 import abc
 # TODO Get rid of colorsys
 import colorsys
-from colormath.color_objects import LabColor as _LabColor, \
-    sRGBColor as _sRGBColor, \
-    LuvColor as _LuvColor
+from colormath.color_objects import LabColor, LuvColor, sRGBColor
 from colormath.color_conversions import convert_color as _convert_color
 from math import sqrt
 from random import randint
@@ -504,7 +502,7 @@ class CIELUV(ColorTupleBase):
         if l > 100:
             raise ValueError("'l' parameter of CIELUV can't be larger than 100")
 
-        rgb = _convert_color(_LuvColor(l, u, v, illuminant="d65"), _sRGBColor)
+        rgb = _convert_color(LuvColor(l, u, v, illuminant="d65"), sRGBColor)
         rgba = (rgb.clamped_rgb_r * 255,
                 rgb.clamped_rgb_g * 255,
                 rgb.clamped_rgb_b * 255,
@@ -517,8 +515,8 @@ class CIELUV(ColorTupleBase):
     @classmethod
     def _from_rgba(cls, rgba, max_a=1, include_a=False, round_to=-1):
         luva = _convert_color(
-            _sRGBColor(*rgba[:3], is_upscaled=True),
-            _LuvColor,
+            sRGBColor(*rgba[:3], is_upscaled=True),
+            LuvColor,
             target_illuminant="d65"
         ).get_value_tuple() + (rgba[-1] / 255 * max_a,)
         obj = super().__new__(cls, luva, rgba, include_a, round_to=round_to)
@@ -538,7 +536,7 @@ class CIELAB(ColorTupleBase):
         if l > 100:
             raise ValueError("'l' parameter of CIELAB can't be larger than 100")
 
-        rgb = _convert_color(_LabColor(l, a_, b, illuminant="d65"), _sRGBColor)
+        rgb = _convert_color(LabColor(l, a_, b, illuminant="d65"), sRGBColor)
         rgba = (rgb.clamped_rgb_r * 255,
                 rgb.clamped_rgb_g * 255,
                 rgb.clamped_rgb_b * 255,
@@ -551,8 +549,8 @@ class CIELAB(ColorTupleBase):
     @classmethod
     def _from_rgba(cls, rgba, max_a=1, include_a=False, round_to=-1):
         laba = _convert_color(
-            _sRGBColor(*rgba[:3], is_upscaled=True),
-            _LabColor,
+            sRGBColor(*rgba[:3], is_upscaled=True),
+            LabColor,
             target_illuminant="d65"
         ).get_value_tuple() + (rgba[-1] / 255 * max_a,)
         obj = super().__new__(cls, laba, rgba, include_a, round_to=round_to)
