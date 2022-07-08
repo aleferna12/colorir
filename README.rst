@@ -44,6 +44,6 @@ Getting started with colorir can be as simple as:
     win.configure(bg=colors.magicmint)  # Set background to 'magicmint' color
     win.mainloop()
 
-.. image:: examples/readme_example.png
+.. image:: readme_example.png
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
