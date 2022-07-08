@@ -463,6 +463,7 @@ class StackPalette:
     def load(cls,
              palettes: Union[str, List[str]] = None,
              palettes_dir: str = None,
+             search_builtins = True,
              name: str = None,
              color_format: ColorFormat = None):
         """Factory method that loads previously created stack palettes into a
@@ -485,6 +486,9 @@ class StackPalette:
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
                 :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
+            search_builtins: Whether `palettes` also includes built-in palettes such as 'tab10' or
+                'dark2'. Set to ``False`` to ensure only palette files found in `palettes_dir` are
+                loaded.
             name: Name of the palette which will be used to save it with the
                 :meth:`StackPalette.save()`. If the `palettes` parameter is a single string,
                 defaults to that.
@@ -494,15 +498,21 @@ class StackPalette:
         """
         if palettes_dir is None:
             palettes_dir = config.DEFAULT_PALETTES_DIR
+        palettes_dir = [palettes_dir]
+        if search_builtins:
+            palettes_dir.append(_builtin_palettes_dir)
         if isinstance(palettes, str):
             if name is None:
                 name = palettes
             palettes = [palettes]
 
         found_palettes = {}
-        for palette_file in Path(palettes_dir).glob("*.spalette"):
-            palette_name = palette_file.name.replace(".spalette", '')
-            found_palettes[palette_name] = json.loads(palette_file.read_text())
+        for path in palettes_dir:
+            path = Path(path)
+            palette_files = path.glob("*.spalette")
+            for palette_file in palette_files:
+                palette_name = palette_file.name.replace(".spalette", '')
+                found_palettes[palette_name] = json.loads(palette_file.read_text())
 
         palette_obj = cls(name=name, color_format=color_format)
         if palettes is None: palettes = list(found_palettes)
