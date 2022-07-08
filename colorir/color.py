@@ -225,7 +225,7 @@ class sRGB(ColorTupleBase):
                 b: float,
                 a: float = None,
                 max_rgb=255,
-                max_a=255,
+                max_a=1,
                 include_a=False,
                 round_to=-1):
         if a is None:
@@ -247,7 +247,7 @@ class sRGB(ColorTupleBase):
         return obj
 
     @classmethod
-    def _from_rgba(cls, rgba, max_rgb=255, max_a=255, include_a=False, round_to=-1):
+    def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=-1):
         rgba_ = [spec / 255 * max_rgb for spec in rgba[:3]] + [rgba[-1] / 255 * max_a]
         obj = super().__new__(cls,
                               rgba_,
