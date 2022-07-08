@@ -41,6 +41,14 @@ class TestDistance(unittest.TestCase):
             CIELuv._from_rgba(rgba)
         )
         self.assertEqual(
+            HCLuv(111.514, 36.172, 29.757, 1),
+            HCLuv._from_rgba(rgba)
+        )
+        self.assertEqual(
+            HCLab(122.206, 41.926, 29.757, 1),
+            HCLab._from_rgba(rgba)
+        )
+        self.assertEqual(
             Hex("#ff324e05"),
             Hex._from_rgba(rgba)
         )
