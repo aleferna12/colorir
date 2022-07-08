@@ -3,7 +3,7 @@
     colorir is still in its early days and slight modifications to the API may happen between versions.
 
 What is colorir?
-================
+----------------
 
 colorir is a package developed to unify your workflow with colors across different projects.
 
