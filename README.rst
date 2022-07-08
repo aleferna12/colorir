@@ -3,7 +3,7 @@
     colorir is still in its early days and slight modifications to the API may happen between versions.
 
 What is colorir?
-----------------
+================
 
 colorir is a package developed to unify your workflow with colors across different projects.
 
@@ -28,5 +28,22 @@ colorir was designed to be your best friend when dealing with colors so that you
     TOP_NOTCH_RED = (131, 34, 50)
     # ... unnecessarily long and ugly list of colors
 
+Getting Started
+---------------
+
+Getting started with colorir can be as simple as:
+
+.. code-block:: python
+
+    import tkinter as tk
+    from colorir import *
+
+    colors = Palette.load()  # Load colors
+
+    win = tk.Tk()
+    win.configure(bg=colors.magicmint)  # Set background to 'magicmint' color
+    win.mainloop()
+
+.. image:: readme_example.png
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
