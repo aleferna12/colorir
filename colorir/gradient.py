@@ -17,7 +17,7 @@ Examples:
 import numpy as np
 from typing import Iterable, Type
 from . import config
-from .color import sRGB, CIELUV, HSL, _to_srgb, _to_linear_rgb, ColorBase, HSV
+from .color import sRGB, CIELuv, HSL, _to_srgb, _to_linear_rgb, ColorBase, HSV, HCLuv
 from .color_format import ColorLike
 
 
@@ -35,7 +35,7 @@ class Grad:
     def __init__(self,
                  colors: Iterable[ColorLike],
                  color_format=None,
-                 color_sys: Type[ColorBase] = CIELUV):
+                 color_sys: Type[ColorBase] = CIELuv):
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
 
@@ -107,17 +107,20 @@ class PolarGrad(Grad):
     def __init__(self,
                  colors,
                  color_format=None,
-                 color_sys=HSL):
-        super().__init__(colors=colors, color_format=color_format, color_sys=color_sys)
-        polar_sys = (HSL, HSV)
+                 color_sys=HCLuv,
+                 lerp=True):
+        polar_sys = (HCLuv, HSL, HSV)
         if color_sys not in polar_sys:
             raise ValueError(f"'color_sys' must be one of {polar_sys}")
+
+        super().__init__(colors=colors, color_format=color_format, color_sys=color_sys)
+        self.lerp = lerp
 
     def _linear_interp(self, color1, color2, p: float):
         max_h = color1.max_h
         # Assumes that hue is 0th component
         d = abs(color2[0] - color1[0])
-        if d <= max_h / 2:
+        if not self.lerp or d <= max_h / 2:
             return super()._linear_interp(color1=color1, color2=color2, p=p)
 
         color1, color2 = np.array(color1), np.array(color2)

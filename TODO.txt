@@ -1,5 +1,6 @@
 TODO
     Add __all__
+    Change things to make use of numpy
     Change conversions to use colormath
     Add colormath as dependency
     Add more palettes

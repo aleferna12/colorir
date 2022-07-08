@@ -33,12 +33,12 @@ class TestDistance(unittest.TestCase):
             CMYK._from_rgba(rgba)
         )
         self.assertEqual(
-            CIELAB(29.757, -22.344, 35.474, 1),
-            CIELAB._from_rgba(rgba)
+            CIELab(29.757, -22.344, 35.474, 1),
+            CIELab._from_rgba(rgba)
         )
         self.assertEqual(
-            CIELUV(29.757, -13.267, 33.646, 1),
-            CIELUV._from_rgba(rgba)
+            CIELuv(29.757, -13.267, 33.646, 1),
+            CIELuv._from_rgba(rgba)
         )
         self.assertEqual(
             Hex("#ff324e05"),
