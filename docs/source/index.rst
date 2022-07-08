@@ -66,15 +66,15 @@ Quick-Start
 Create a palette with the additive elementary colors and call it 'elementary':
 
 >>> palette = Palette(name="elementary",
-...                   red=HexRGB("#ff0000"),
-...                   green=HexRGB("00ff00"), # No need to include the # symbol
-...                   blue=HexRGB("#0000ff"))
+...                   red=Hex("#ff0000"),
+...                   green=Hex("00ff00"), # No need to include the # symbol
+...                   blue=Hex("#0000ff"))
 
 Following CSS color-naming conventions, our color names are all lowercase with no
 underscores, but you may name a color as you wish as long as it complies with python's
 syntax for attribute names.
 
-Let's take a look at  our palette with the :func:`~colorir.palette.swatch()` function:
+Let's take a look at  our palette with the :func:`~colorir.utils.swatch()` function:
 
 >>> swatch(palette)
 
@@ -92,6 +92,46 @@ Let's take a look at  our palette with the :func:`~colorir.palette.swatch()` fun
 
 We can add colors by providing a name and a color-like object to the :meth:`Palette.add() <colorir.palette.Palette.add()>`
 method:
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> palette.swatch()
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> palette.swatch()
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> palette.swatch()
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> palette.swatch()
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> palette.swatch()
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> palette.swatch()
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> colorir.utils.swatch()
+
+>>>import colorir.utils palette.add("cyan", "#00ffff")
+>>> palette.add("yellow", "#ffff00")
+>>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> colorir.utils.swatch()
 
 >>> palette.add("cyan", "#00ffff")
 >>> palette.add("yellow", "#ffff00")
@@ -119,9 +159,9 @@ method:
       <span style="background-color:#ff00ff"> &emsp; </span> &nbsp; <span style="color:#ff00ff"> magenta #ff00ff </span>
     </p>
 
-Note how we passed hex strings as arguments without initializing :class:`~colorir.color.HexRGB` colors this time. This is because objects that hold colors in the colorir package can interpret strings and tuples as colors implicitly! To know more about what can be interpreted as a color in colorir, read the documentation of the :mod:`~colorir.color_format` module.
+Note how we passed hex strings as arguments without initializing :class:`~colorir.color_class.Hex` colors this time. This is because objects that hold colors in the colorir package can interpret strings and tuples as colors implicitly! To know more about what can be interpreted as a color in colorir, read the documentation of the :mod:`~colorir.color_format` module.
 
-We also passed an :class:`~colorir.color.HSL` object for "magenta". By default, a new palette such as ours converts any input color to  :class:`~colorir.color.HexRGB` objects, but we will see in a bit how to change this to work with other color formats.
+We also passed an :class:`~colorir.color_class.HSL` object for "magenta". By default, a new palette such as ours converts any input color to  :class:`~colorir.color_class.Hex` objects, but we will see in a bit how to change this to work with other color formats.
 
 To then modify a color after it has been added, use the :meth:`Palette.update() <colorir.palette.Palette.update()>` method:
 
@@ -130,12 +170,12 @@ To then modify a color after it has been added, use the :meth:`Palette.update() 
 Now suppose we want to finally use the colors we added to our palette. For that we can get them individually as attributes of the palette:
 
 >>> palette.cyan
-HexRGB('#00ffff')
+Hex('#00ffff')
 
 Or we can get them all at once with the :attr:`Palette.colors <colorir.palette.Palette.colors>` property:
 
 >>> palette.colors
-[HexRGB('#ff0000'), HexRGB('#00ff00'), HexRGB('#0000ff'), HexRGB('#00ffff'), HexRGB('#ffff00'), HexRGB('#ff11ff')]
+[Hex('#ff0000'), Hex('#00ff00'), Hex('#0000ff'), Hex('#00ffff'), Hex('#ffff00'), Hex('#ff11ff')]
 
 Since we are done using our palette for now, let's save it to the default palette directory:
 
@@ -169,7 +209,7 @@ palettes default to it:
 >>> pygame_palette.red
 sRGB(255, 0, 0)
 >>> pygame_palette.green
-HexRGB('#00ff00')
+Hex('#00ff00')
 
 This makes it easy to configure colorir to work with any color format right out of the box!
 
@@ -180,7 +220,7 @@ working with web development or matplotlib.
 >>> config.DEFAULT_COLOR_FORMAT = WEB_COLOR_FORMAT # Change default back to web-compatible
 >>> web_palette = Palette.load("css")
 >>> web_palette.red
-HexRGB('#ff0000')
+Hex('#ff0000')
 
 It is worth noting that all color classes inherit either ``tuple`` or ``str``, meaning that
 no conversion is needed when passing them to other frameworks such as PyGame, Kivy and HTML embedding templates like Jinja.

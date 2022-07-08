@@ -5,7 +5,7 @@ API
 .. toctree::
 
 	palette
-	color
+	color_class
 	color_format
 	gradient
 	config

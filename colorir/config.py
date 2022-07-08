@@ -12,7 +12,7 @@ Examples:
 """
 from os import path
 from .color_format import ColorFormat
-from .color import Hex
+from .color_class import Hex
 
 DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
 """Default directory from which palettes will be loaded and to which they will be saved."""

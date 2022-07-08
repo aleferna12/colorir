@@ -16,8 +16,10 @@ Examples:
 """
 import numpy as np
 from typing import Iterable, Type
+
 from . import config
-from .color import sRGB, CIELuv, HSL, _to_srgb, _to_linear_rgb, ColorBase, HSV, HCLuv
+from . import utils
+from .color_class import sRGB, CIELuv, HSL, ColorBase, HSV, HCLuv
 from .color_format import ColorLike
 
 
@@ -162,15 +164,15 @@ class RGBGrad(Grad):
 
     def _linear_interp(self, color1, color2, p: float):
         if self.use_linear_rgb:
-            rgba_1 = _to_linear_rgb(color1._rgba)
-            rgba_2 = _to_linear_rgb(color2._rgba)
+            rgba_1 = utils._to_linear_rgb(color1._rgba)
+            rgba_2 = utils._to_linear_rgb(color2._rgba)
         else:
             rgba_1 = color1._rgba
             rgba_2 = color2._rgba
 
         new_rgba = tuple(rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p for i in range(4))
         if self.use_linear_rgb:
-            new_rgba = _to_srgb(new_rgba)
+            new_rgba = utils._to_srgb(new_rgba)
         return sRGB(*new_rgba)
 
 

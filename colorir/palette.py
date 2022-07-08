@@ -48,9 +48,10 @@ from pathlib import Path
 from typing import Union, List
 from warnings import warn
 
-from .color import ColorBase, sRGB, HSL, simplified_dist, random_color, HSV, color_str
-from .color_format import ColorFormat, ColorLike
 from . import config
+from . import utils
+from .color_class import ColorBase, sRGB, HSL, HSV
+from .color_format import ColorFormat, ColorLike
 
 _throw_exception = object()
 _builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
@@ -242,8 +243,8 @@ class Palette:
             [Hex('#ff0000'), Hex('#0000ff')]
 
         Returns:
-            A single :class:`~colorir.color.ColorBase` if `name` is a string or a list of
-            :class:`~colorir.color.ColorBase` if `name` is a list of strings.
+            A single :class:`~colorir.color_class.ColorBase` if `name` is a string or a list of
+            :class:`~colorir.color_class.ColorBase` if `name` is a list of strings.
         """
         if fallback is _throw_exception:
             if isinstance(name, str):
@@ -261,8 +262,8 @@ class Palette:
 
         Args:
             color: The value of the color to be searched for. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
-                the color you want to search for.
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
+                resembles the color you want to search for.
 
         Examples:
             >>> palette = Palette(red="#ff0000")
@@ -280,12 +281,12 @@ class Palette:
         """Finds the `n` most similar colors to `color` in this palette.
 
         For more details on the algorithm implemented to calculate similarity, see
-        :func:`color.simplified_dist() <colorir.color.simplified_dist()>` documentation.
+        :func:`~colorir.utils.simplified_dist()` documentation.
 
         Args:
             color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
-                the color to which others will be compared in search of similar results.
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
+                resembles the color to which others will be compared in search of similar results.
             n: How many similar colors to be retrieved. -1 means all colors from the palette will
                 be returned from most similar to least.
 
@@ -295,9 +296,9 @@ class Palette:
             Hex('#ff0000')
 
         Returns:
-            A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color.ColorBase` if n != 1. If the return type is a list, the colors
-            will be ordered from most similar to least.
+            A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
+            :class:`~colorir.color_class.ColorBase` if n != 1. If the return type is a list, the
+            colors will be ordered from most similar to least.
         """
         return _most_similar(self, color, n)
 
@@ -311,8 +312,8 @@ class Palette:
         Args:
             name: Name to be assigned to the new color.
             color: The value of the color to be created. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
-                the color you want to add.
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
+                resembles the color you want to add.
 
         Examples:
             Adding a new blue color to the palette:
@@ -335,7 +336,7 @@ class Palette:
         Args:
             name: Name of the color to be updated.
             color: The value of the color to be updated. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
                 resembles the format of the color you want to update.
 
         Examples:
@@ -561,7 +562,7 @@ class StackPalette:
         """
         n_spalette = cls(name=name, color_format=color_format)
         if color is None:
-            hsv = random_color(color_format=ColorFormat(HSV, max_h=360))
+            hsv = utils.random_color(color_format=ColorFormat(HSV, max_h=360))
         else:
             hsv = n_spalette.color_format.format(color).hsv(max_h=360)
 
@@ -625,7 +626,7 @@ class StackPalette:
 
         n_spalette = cls(name=name, color_format=color_format)
         if color is None:
-            hsv = random_color(color_format=ColorFormat(HSV, max_h=360))
+            hsv = utils.random_color(color_format=ColorFormat(HSV, max_h=360))
         else:
             hsv = n_spalette.color_format.format(color).hsv(max_h=360)
 
@@ -664,12 +665,12 @@ class StackPalette:
         """Finds the `n` most similar colors to `color` in this palette.
 
         For more details on the algorithm implemented to calculate similarity, see
-        :func:`color.simplified_dist() <colorir.color.simplified_dist()>` documentation.
+        :func:`~colorir.utils.simplified_dist()` documentation.
 
         Args:
             color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
-                the color to which others will be compared in search of similar results.
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
+                resembles the color to which others will be compared in search of similar results.
             n: How many similar colors to be retrieved. -1 means all colors from the palette will
                 be returned from most similar to least.
 
@@ -679,9 +680,9 @@ class StackPalette:
             Hex('#ff0000')
 
         Returns:
-            A single :class:`~colorir.color.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color.ColorBase` if n != 1. If the return type is a list, the colors
-            will be ordered from most similar to least.
+            A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
+            :class:`~colorir.color_class.ColorBase` if n != 1. If the return type is a list, the
+            colors will be ordered from most similar to least.
         """
         return _most_similar(self, color, n)
 
@@ -714,8 +715,8 @@ class StackPalette:
 
         Args:
             color: The value of the color to be created. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that resembles
-                the color you want to add.
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
+                resembles the color you want to add.
 
         Examples:
             Adding a new blue color to the palette:
@@ -733,7 +734,7 @@ class StackPalette:
         Args:
             index: Index of the color to be updated.
             color: The value of the color to be updated. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
                 resembles the format of the color you want to update.
 
         Examples:
@@ -869,50 +870,10 @@ def delete_palette(palette: str, palettes_dir: str = None):
         raise ValueError(f"palette name '{palette}' is ambiguous (more than one palette share it)")
 
 
-def swatch(obj: Union[ColorLike, List[ColorLike], Palette, StackPalette],
-           colored_text=True,
-           width=3,
-           height=1,
-           tabular=True):
-    """Prints swatches of `obj` in the terminal with colored text.
-
-    Each swatch consists of a rectangle of a color followed by its value (and name if known).
-
-    Args:
-        obj: What will be represented in the terminal. Is either a single color, a list of colors,
-            a :class:`Palette`, or a :class:`StackPalette`.
-        colored_text: Whether the text that follows the colored rectangles should also be colored.
-        width: The width (in space characters) of the colored rectangles.
-        height: The height (in number of lines) of the colored rectangles.
-        tabular: Whether the colored rectangle, color name and color value should be printed each
-            in its separate column. Only used if `obj` is a :class:`Palette`.
-    """
-    # Assume single ColorLike
-    if isinstance(obj, (ColorBase, str, tuple)):
-        obj = [obj]
-    if isinstance(obj, Palette):
-        longest_name = max([len(name) for name in obj.color_names])
-    # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
-    # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
-    os.system("")
-    for i, c_val in enumerate(obj):
-        rect_str = color_str(" " * width, bg_color=c_val)
-        val_str = f" {c_val}"
-        if isinstance(obj, Palette):
-            name = obj.color_names[i]
-            spacing = tabular * " " * (longest_name - len(name))
-            val_str = ' ' + name + spacing + val_str
-        if colored_text:
-            val_str = color_str(val_str, fg_color=c_val)
-        print(rect_str + val_str)
-        for _ in range(height - 1):
-            print(rect_str)
-
-
 # Common implementation of most_similar methods of Palette and StackPalette
 def _most_similar(palette, color, n):
     color = palette.color_format.format(color)
-    closest = sorted(palette.colors, key=lambda color2: simplified_dist(color, color2))
+    closest = sorted(palette.colors, key=lambda color2: utils.simplified_dist(color, color2))
     if n == 1:
         return closest[0]
     elif n < 0:

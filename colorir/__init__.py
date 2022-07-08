@@ -1,4 +1,4 @@
-from colorir.color import *
+from colorir.color_class import *
 from colorir.palette import *
 from colorir.gradient import *
 from colorir.color_format import *

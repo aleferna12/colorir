@@ -1,7 +1,7 @@
-Color
-=====
+Color Class
+===========
 
-.. automodule:: colorir.color
+.. automodule:: colorir.color_class
 	:members:
 	:undoc-members:
 	:show-inheritance:

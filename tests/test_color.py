@@ -1,7 +1,7 @@
 import doctest
 import unittest
-from colorir import color
-from colorir.color import *
+from colorir import color_class
+from colorir.color_class import *
 
 
 def load_tests(loader, tests, ignore):

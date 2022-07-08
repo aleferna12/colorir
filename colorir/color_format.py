@@ -69,7 +69,7 @@ Examples:
 
     Create our own color format to work with HSL colors:
 
-    >>> hsl_format = ColorFormat(colorir.color.HSL, max_h=100, max_sla=100, round_to=0)
+    >>> hsl_format = ColorFormat(color_class.HSL, max_h=100, max_sla=100, round_to=0)
 
     We can then create colors using the :meth:`ColorFormat.new_color()` and
     :meth:`ColorFormat.format()` methods:
@@ -82,16 +82,17 @@ Examples:
 
 Notes:
     To change the default color format to a custom or pre-built color format, take
-    a look at :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+    a look at :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
 
 References:
     .. [1] Kivy: Cross-platform Python Framework for NUI Development at https://kivy.org/.
     .. [2] PyGame library at https://www.pygame.org/.
 """
 from typing import Type, Union, NewType
-import colorir
 
-ColorLike = NewType("ColorLike", Union["colorir.color.ColorBase", str, tuple, list])
+from . import color_class
+
+ColorLike = NewType("ColorLike", Union["color_class.ColorBase", str, tuple, list])
 """Type constant that describes common representations of colors in python."""
 
 
@@ -104,13 +105,13 @@ class ColorFormat:
         color system and can be consulted in their respective documentations.
 
     Examples:
-        >>> c_format = ColorFormat(colorir.color.sRGB, max_rgb=1)
+        >>> c_format = ColorFormat(color_class.sRGB, max_rgb=1)
         >>> c_format.new_color(1, 0, 0)
         sRGB(1, 0, 0)
 
         For more examples see the documentation of the :mod:`~colorir.color_format` module.
     """
-    def __init__(self, color_sys: Type["colorir.color.ColorBase"], **kwargs):
+    def __init__(self, color_sys: Type["color_class.ColorBase"], **kwargs):
         self.color_sys = color_sys
         self._format_params = kwargs
 
@@ -132,12 +133,12 @@ class ColorFormat:
             color_sys_str += ", "
         return f"{self.__class__.__name__}({color_sys_str}{', '.join(param_strs)})"
 
-    def new_color(self, *args, **kwargs) -> "colorir.color.ColorBase":
+    def new_color(self, *args, **kwargs) -> "color_class.ColorBase":
         """Creates a new color by filling the remaining parameters of a color constructor with the
         provided arguments.
 
         Examples:
-            >>> c_format = ColorFormat(colorir.color.sRGB,
+            >>> c_format = ColorFormat(color_class.sRGB,
             ...                        max_rgb=1,
             ...                        max_a=1,
             ...                        include_a=True)
@@ -151,21 +152,21 @@ class ColorFormat:
         # Factory method to be called when reading the palette files or reconstructing colors
         return self.color_sys._from_rgba(rgba, **self._format_params)
 
-    def format(self, color: ColorLike) -> "colorir.color.ColorBase":
+    def format(self, color: ColorLike) -> "color_class.ColorBase":
         """Tries to format a color-like object into this color format.
 
         Because there are multiple implementations of tuple-based color systems, the `color`
-        parameter is always allowed to be a subclass of :class:`~colorir.color.ColorBase` or a hex
-        string with length == 6, but can only be a tuple if :attr:`ColorFormat.color_sys` is a
-        tuple-based color system, such as :class:`~colorir.color.sRGB` for example.
+        parameter is always allowed to be a subclass of :class:`~colorir.color_class.ColorBase` or
+        a hex string with length == 6, but can only be a tuple if :attr:`ColorFormat.color_sys` is
+        a tuple-based color system, such as :class:`~colorir.color_class.sRGB` for example.
 
         Examples:
-            >>> rgb_format = ColorFormat(colorir.color.sRGB, round_to=0)
+            >>> rgb_format = ColorFormat(color_class.sRGB, round_to=0)
             >>> rgb_format.format("#ff0000")
             sRGB(255, 0, 0)
             >>> rgb_format.format((255, 0, 0))
             sRGB(255, 0, 0)
-            >>> hex_format = ColorFormat(colorir.color.Hex)
+            >>> hex_format = ColorFormat(color_class.Hex)
             >>> hex_format.format("#ff0000")
             Hex('#ff0000')
             >>> hex_format.format((255, 0, 0)) # Can't understand how to parse this tuple
@@ -175,22 +176,22 @@ class ColorFormat:
 
         Args:
             color: The value of the color to be formatted. Can be an instance of any
-                :mod:`~colorir.color` class or, alternatively, a color-like object that
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
                 resembles the format of the color you want to format.
         """
-        if isinstance(color, colorir.color.ColorBase):
+        if isinstance(color, color_class.ColorBase):
             return self._from_rgba(color._rgba)
         elif isinstance(color, str):
             # Try to preserve input options (none implemented now but who knows)
-            if self.color_sys == colorir.color.Hex:
+            if self.color_sys == color_class.Hex:
                 return self.new_color(color)
             # No alpha in the string, safe to interpret with Hex
             if len(color) < 8:
                 # Fallback to Hex default args
-                return self._from_rgba(colorir.color.Hex(color)._rgba)
+                return self._from_rgba(color_class.Hex(color)._rgba)
             raise ValueError("tried to interpret a string-formatted color that contains an alpha"
                              "component with a non-Hex ColorFormat")
-        if self.color_sys != colorir.color.Hex:
+        if self.color_sys != color_class.Hex:
             # Assume that the color system is tuple-based
             return self.new_color(*color)
         else:
@@ -198,13 +199,13 @@ class ColorFormat:
                              "ColorFormat")
 
 
-PYGAME_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgb=255, max_a=255, round_to=0)
+PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=255, max_a=255, round_to=0)
 """Color format compatible with PyGame standards."""
 
-KIVY_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.sRGB, max_rgb=1, max_a=1, include_a=True)
+KIVY_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=1, max_a=1, include_a=True)
 """Color format compatible with Kivy standards."""
 
-WEB_COLOR_FORMAT = ColorFormat(color_sys=colorir.color.Hex)
+WEB_COLOR_FORMAT = ColorFormat(color_sys=color_class.Hex)
 """Color format compatible with HTML and CSS standards."""
 
 TKINTER_COLOR_FORMAT = WEB_COLOR_FORMAT
