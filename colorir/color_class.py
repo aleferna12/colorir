@@ -208,7 +208,7 @@ class sRGB(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`sRGB(255, 255, 0,
             255)` instead of :code:`sRGB(255, 255, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting
-            this parameter to 0 ensures that the components will be of type ``int``. -1
+            this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
 
@@ -270,7 +270,7 @@ class HSL(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`HSL(360, 1, 0,
             1)` instead of :code:`HSL(360, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting
-            this parameter to 0 ensures that the components will be of type ``int``. -1
+            this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
 
@@ -334,7 +334,7 @@ class HSV(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`HSV(360, 1, 0,
             1)` instead of :code:`HSV(360, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting
-            this parameter to 0 ensures that the components will be of type ``int``. -1
+            this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
 
@@ -396,7 +396,7 @@ class CMYK(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`CMYK(1, 1, 0,
             1)` instead of :code:`CMYK(1, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting
-            this parameter to 0 ensures that the components will be of type ``int``. The default,
+            this parameter to 0 ensures that the components will be of type `int`. The default,
             -1, means that the components won't be rounded at all.
     """
 
@@ -465,7 +465,7 @@ class CMY(ColorTupleBase):
             Setting it to ``True`` may result in an object such as :code:`CMY(1, 1, 0,
             1)` instead of :code:`CMY(1, 1, 0)`, for exemple.
         round_to: Rounds the value of each color component to this many decimal places. Setting
-            this parameter to 0 ensures that the components will be of type ``int``. The default,
+            this parameter to 0 ensures that the components will be of type `int`. The default,
             -1, means that the components won't be rounded at all.
     """
 
@@ -671,8 +671,6 @@ class Hex(ColorBase, str):
     """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 
     Is mostly used for representing colors in web applications [#]_.
-
-    `Hex` is available as a handy alias for this class.
 
     References:
         .. [#] Wikipedia at https://en.wikipedia.org/wiki/SRGB.

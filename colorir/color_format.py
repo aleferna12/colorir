@@ -36,14 +36,14 @@ understood universally, for example.
           - :class:`ColorFormat` that can understand it
 
         * - Tuple or list (e.g.: ``(255, 0, 0)``, ``(0, 1, 0.5)``)
-          - Any tuple-based color format (e.g.: ``ColorFormat(sRGB, ...)``,
-            ``ColorFormat(HSL, ...)``)
+          - Any tuple-based color format (e.g.: ``ColorFormat(sRGB)``,
+            ``ColorFormat(HSL)``)
 
         * - Hex string with six elements (e.g.: ``"#ff0000"``)
           - Any
 
         * - Hex string with eight elements (e.g.: ``"#ff0000"``)
-          - Hex string color format (e.g.: ``ColorFormat(Hex, ...)``)
+          - Hex string color format (e.g.: ``ColorFormat(Hex)``)
 
 Built-in color formats
 ----------------------

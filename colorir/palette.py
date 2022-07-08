@@ -88,17 +88,17 @@ class Palette:
             self.add(k, v)
 
     @property
-    def colors(self):
+    def colors(self) -> List[ColorBase]:
         """colors: A list of all color values currently stored in the :class:`Palette`."""
         return list(self._color_dict.values())
 
     @property
-    def color_names(self):
+    def color_names(self) -> List[str]:
         """colors: A list of all color names currently stored in the :class:`Palette`."""
         return list(self._color_dict.keys())
 
     @property
-    def color_format(self):
+    def color_format(self) -> ColorFormat:
         """color_format: Color format specifying how the colors of this :class:`Palette` are
         stored.
         """
@@ -121,7 +121,7 @@ class Palette:
              name: str = None,
              color_format: ColorFormat = None,
              warnings=True):
-        """Factory method that loads previously created palettes into a :class:`Palettes` instance.
+        """Factory method that loads previously created palettes into a :class:`Palette` instance.
 
         A palette is a file containing json-formatted information about colors that ends with the
         '.palette' extension. You should not create such files manually but rather through the
@@ -136,7 +136,7 @@ class Palette:
             palettes: List of palettes located in the location represented by `palettes_dir` that
                 should be loaded by this :class:`Palette` instance. Additionally may include
                 built-in palettes such as 'css' if `search_builtins` is set to ``True``. If this
-                parameter is a string, the :attr:`Palettes.name` will be inferred from it. By
+                parameter is a string, the :attr:`Palette.name` will be inferred from it. By
                 default, loads all palettes found in the specified directory.
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
@@ -297,7 +297,7 @@ class Palette:
 
         Returns:
             A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color_class.ColorBase` if n != 1. If the return type is a list, the
+            :class:`~colorir.color_class.ColorBase` if `n` != 1. If the return type is a list, the
             colors will be ordered from most similar to least.
         """
         return _most_similar(self, color, n)
@@ -441,12 +441,12 @@ class StackPalette:
             self.add(color)
 
     @property
-    def colors(self):
+    def colors(self) -> List[ColorBase]:
         """colors: A list of all color values currently stored in the :class:`StackPalette`."""
         return list(self._color_stack)
 
     @property
-    def color_format(self):
+    def color_format(self) -> ColorFormat:
         """color_format: Color format specifying how the colors of this :class:`StackPalette` are
         stored.
         """
@@ -464,7 +464,7 @@ class StackPalette:
     def load(cls,
              palettes: Union[str, List[str]] = None,
              palettes_dir: str = None,
-             search_builtins = True,
+             search_builtins=True,
              name: str = None,
              color_format: ColorFormat = None):
         """Factory method that loads previously created stack palettes into a
@@ -482,7 +482,7 @@ class StackPalette:
         Args:
             palettes: List of stack palettes located in the location represented by `palettes_dir`
                 that should be loaded by this :class:`StackPalette` instance. If this parameter is
-                a string, the :attr:`StackPalettes.name` will be inferred from it. By default,
+                a string, the :attr:`StackPalette.name` will be inferred from it. By default,
                 loads all palettes found in the specified directory.
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
@@ -681,7 +681,7 @@ class StackPalette:
 
         Returns:
             A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color_class.ColorBase` if n != 1. If the return type is a list, the
+            :class:`~colorir.color_class.ColorBase` if `n` != 1. If the return type is a list, the
             colors will be ordered from most similar to least.
         """
         return _most_similar(self, color, n)

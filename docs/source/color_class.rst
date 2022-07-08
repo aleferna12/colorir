@@ -1,5 +1,5 @@
-Color Class
-===========
+Color Classes
+=============
 
 .. automodule:: colorir.color_class
 	:members:
@@ -8,11 +8,6 @@ Color Class
 	:exclude-members: ColorBase, ColorTupleBase
 
 .. autoclass:: ColorBase
-	:members:
-	:undoc-members:
-	:show-inheritance:
-
-.. autoclass:: ColorTupleBase
 	:members:
 	:undoc-members:
 	:show-inheritance:

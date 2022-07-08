@@ -21,20 +21,20 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
 
     Args:
         obj: What will be represented in the terminal. Is either a single color, a list of colors,
-            a :class:`Palette`, a :class:`StackPalette` or a subclass of
-            :class:`gradient.Grad <colorir.gradient.Grad>`.
+            a :class:`~colorir.palette.Palette`, a :class:`~colorir.palette.StackPalette` or a
+            subclass of :class:`~colorir.gradient.Grad`.
         colored_text: Whether the text that follows the colored rectangles should also be colored.
         width: The width (in space characters) of the colored rectangles.
         height: The height (in number of lines) of the colored rectangles.
         tabular: Whether the colored rectangle, color name and color value should be printed each
-            in its separate column. Only used if `obj` is a :class:`Palette`.
+            in its separate column. Only used if `obj` is a :class:`~colorir.palette.Palette`.
     """
     # Assume single ColorLike
     if isinstance(obj, (ColorBase, str, tuple)):
         obj = [obj]
     elif isinstance(obj, Grad):
         pass
-    elif isinstance(obj, Palette):
+    elif isinstance(obj, palette.Palette):
         longest_name = max([len(name) for name in obj.color_names])
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
@@ -42,7 +42,7 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
     for i, c_val in enumerate(obj):
         rect_str = color_str(" " * width, bg_color=c_val)
         val_str = f" {c_val}"
-        if isinstance(obj, Palette):
+        if isinstance(obj, palette.Palette):
             name = obj.color_names[i]
             spacing = tabular * " " * (longest_name - len(name))
             val_str = ' ' + name + spacing + val_str
@@ -100,7 +100,7 @@ def random_color(random_a=False,
     Args:
         random_a: Whether to randomize the alpha attribute as well or just make it 1.
         color_format: Specifies the format of the output color. Defaults to
-            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAt>`.
+            :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
 
     Examples:
         >>> random_color()  # doctest: +SKIP

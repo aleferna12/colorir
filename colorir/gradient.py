@@ -1,7 +1,5 @@
 """Gradients between colors.
 
-For now only an RGB gradient is available.
-
 Examples:
     Get purple inbetween red and blue:
 

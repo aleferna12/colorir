@@ -1,6 +1,6 @@
 .. note::
 
-    Please note that colorir is still in its early days and that slight modifications to the API may happen between versions.
+    colorir is still in its early days and slight modifications to the API may happen between versions.
 
 What is colorir?
 ----------------

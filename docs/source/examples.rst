@@ -37,7 +37,7 @@ That's it! We are done and ready to use our basic colors:
 
 You should now hopefully see a red square in your screen.
 
-Let's modify our example to add some personal favorite colors to our ``colors`` object:
+Let's modify our example to add some personal favorite colors to our `colors` object:
 
 .. code-block:: python
 
@@ -101,7 +101,7 @@ Just like with any other example, the color picker can be executed with:
 Color Wheel with Kivy
 ---------------------
 
-A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.RGBGrad`.
+A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.Grad`.
 
 .. literalinclude:: ../../colorir/examples/color_wheel.py
 

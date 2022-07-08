@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from colorir import Palette, find_palettes
+from colorir import *
 import os
 from glob import glob
 
@@ -7,12 +7,10 @@ MAX_COLORS = 15
 IMG_HEIGHT = 25
 
 pal_pngs_dir = os.path.join(os.path.dirname(__file__), "images/palettes")
-for file in glob(pal_pngs_dir + "/*.palette"):
-    os.remove(file)
 
-pal_files = find_palettes()
-for pal_name in pal_files:
-    pal = Palette.load(pal_name)
+pals = {name: StackPalette.load(name) for name in find_palettes(kind=StackPalette)}
+pals.update({name: Palette.load(name).to_stackpalette() for name in find_palettes(kind=Palette)})
+for pal_name, pal in pals.items():
     im = Image.new("RGBA", size=(min(len(pal), MAX_COLORS + 1) * IMG_HEIGHT, IMG_HEIGHT))
     draw = ImageDraw.Draw(im)
     for i, color in enumerate(pal.colors[:MAX_COLORS]):

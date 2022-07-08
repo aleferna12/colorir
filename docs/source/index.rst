@@ -1,10 +1,10 @@
 .. note::
 
-    Please note that colorir is still in its early days and that slight modifications to the API may happen between versions.
+    colorir is still in its early days and slight modifications to the API may happen between versions.
 
 .. raw:: html
 
-    <style> .rainbow {background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red); -webkit-background-clip: text; color: transparent;} </style>
+    <style> .rainbow {background-image: linear-gradient(to left, blue, green, yellow, red); -webkit-background-clip: text; color: transparent;} </style>
 
 .. role:: rainbow
 
@@ -92,46 +92,6 @@ Let's take a look at  our palette with the :func:`~colorir.utils.swatch()` funct
 
 We can add colors by providing a name and a color-like object to the :meth:`Palette.add() <colorir.palette.Palette.add()>`
 method:
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> palette.swatch()
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> palette.swatch()
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> palette.swatch()
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> palette.swatch()
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> palette.swatch()
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> palette.swatch()
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> colorir.utils.swatch()
-
->>>import colorir.utils palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
->>> colorir.utils.swatch()
 
 >>> palette.add("cyan", "#00ffff")
 >>> palette.add("yellow", "#ffff00")

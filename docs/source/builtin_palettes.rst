@@ -1,9 +1,14 @@
 Built-in Palettes
 =================
 
-The following palettes come built in colorir and can be loaded with the :meth:`Palette.load() <colorir.palette.Palette.load()>` method.
+These are built-in palettes that come with colorir by default.
 
 The ellipsis symbol indicates the palette is bigger but couldn't fit here.
+
+Palettes
+________
+
+The following palettes can be loaded with :meth:`Palette.load() <colorir.palette.Palette.load()>`.
 
 Essentials
 ----------
@@ -97,4 +102,92 @@ pantone_years
 
 .. image:: images/palettes/pantone_years.png
     :height: 25px
-    
+
+Stack Palettes
+______________
+
+The following palettes can be loaded with :meth:`StackPalette.load() <colorir.palette.StackPalette.load()>`.
+
+Matplotlib
+----------
+
+Palettes derived from Matplotlib qualitative color maps.
+
+.. note::
+
+    All names are lowercase, unlike those of some of the original color maps.
+
+tab10
++++++++++++++
+
+.. image:: images/palettes/tab10.png
+    :height: 25px
+
+tab20
++++++++++++++
+
+.. image:: images/palettes/tab20.png
+    :height: 25px
+
+tab20b
++++++++++++++
+
+.. image:: images/palettes/tab20b.png
+    :height: 25px
+
+tab20c
++++++++++++++
+
+.. image:: images/palettes/tab20c.png
+    :height: 25px
+
+pastel1
++++++++++++++
+
+.. image:: images/palettes/pastel1.png
+    :height: 25px
+
+pastel2
++++++++++++++
+
+.. image:: images/palettes/pastel2.png
+    :height: 25px
+
+paired
++++++++++++++
+
+.. image:: images/palettes/paired.png
+    :height: 25px
+
+accent
++++++++++++++
+
+.. image:: images/palettes/accent.png
+    :height: 25px
+
+dark2
++++++++++++++
+
+.. image:: images/palettes/dark2.png
+    :height: 25px
+
+set1
++++++++++++++
+
+.. image:: images/palettes/set1.png
+    :height: 25px
+
+set2
++++++++++++++
+
+.. image:: images/palettes/set2.png
+    :height: 25px
+
+set3
++++++++++++++
+
+.. image:: images/palettes/set3.png
+    :height: 25px
+
+
+
