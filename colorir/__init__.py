@@ -1,6 +1,7 @@
-from colorir.color_class import *
-from colorir.palette import *
-from colorir.gradient import *
-from colorir.color_format import *
+from .color_class import *
+from .palette import *
+from .gradient import *
+from .color_format import *
+from .utils import *
 
 __version__ = '1.3.0'

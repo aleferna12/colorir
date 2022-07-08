@@ -33,7 +33,8 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
     if isinstance(obj, (ColorBase, str, tuple)):
         obj = [obj]
     elif isinstance(obj, Grad):
-        pass
+        # Seven steps for each color transition = 7 * (n - 1) - (n - 2)
+        obj = obj.n_colors(6 * len(obj.colors) - 5, include_ends=True)
     elif isinstance(obj, palette.Palette):
         longest_name = max([len(name) for name in obj.color_names])
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
