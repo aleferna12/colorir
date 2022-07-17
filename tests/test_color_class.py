@@ -5,11 +5,12 @@ from colorir.color_class import *
 
 
 def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite(color))
+    tests.addTests(doctest.DocTestSuite(color_class))
     return tests
 
 
-class TestDistance(unittest.TestCase):
+class TestConversion(unittest.TestCase):
+    # Probably should split in multiple tests
     def test_color_conversion(self):
         rgba = (50, 78, 5, 255)
         self.assertEqual(
@@ -52,10 +53,6 @@ class TestDistance(unittest.TestCase):
             Hex("#ff324e05"),
             Hex._from_rgba(rgba)
         )
-
-    def test_simple_dist(self):
-        dist = simplified_dist(sRGB(255, 255, 255), sRGB(0, 0, 0))
-        self.assertAlmostEqual(dist, 765)
 
 
 if __name__ == "__main__":
