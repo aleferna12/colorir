@@ -398,7 +398,7 @@ class Palette:
         with open(Path(palettes_dir) / (self.name + ".palette"), "w") as file:
             formatted_colors = {}
             for c_name, c_val in self._color_dict.items():
-                c_rgba = "#%02x" % c_val._rgba[-1] + "%02x%02x%02x" % c_val._rgba[:3]
+                c_rgba = c_val.hex(include_a=True, tail_a=False)
                 formatted_colors[c_name] = c_rgba
             json.dump(formatted_colors, file, indent=4)
 

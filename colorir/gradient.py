@@ -15,9 +15,8 @@ Examples:
 import numpy as np
 from typing import Iterable, Type
 
-from . import config
-from . import utils
-from .color_class import sRGB, CIELuv, HSL, ColorBase, HSV, HCLuv
+from . import config, utils
+from .color_class import sRGB, CIELuv, ColorBase, HCLuv, ColorPolarBase
 from .color_format import ColorLike
 
 
@@ -41,9 +40,9 @@ class Grad:
 
         self.color_format = color_format
         self.color_sys = color_sys
-        self.colors = tuple(self.color_format.format(color) for color in colors)
-        self._conv_colors = tuple(color_sys._from_rgba(color._rgba, include_a=True)
-                                  for color in self.colors)
+        self.colors = [self.color_format.format(color) for color in colors]
+        self._conv_colors = [color_sys._from_rgba(color._rgba, include_a=True)
+                                  for color in self.colors]
 
     def perc(self, p: float):
         """Returns the color placed in a given percentage of the gradient.
@@ -103,33 +102,31 @@ class Grad:
 
 # TODO doc
 class PolarGrad(Grad):
-    # TODO change default color_sys to HSLuv
     def __init__(self,
                  colors,
                  color_format=None,
                  color_sys=HCLuv,
                  lerp=True):
-        polar_sys = (HCLuv, HSL, HSV)
-        if color_sys not in polar_sys:
-            raise ValueError(f"'color_sys' must be one of {polar_sys}")
+        if not issubclass(color_sys, ColorPolarBase):
+            raise ValueError(f"'color_sys' must implement a polar coordinate system")
 
         super().__init__(colors=colors, color_format=color_format, color_sys=color_sys)
         self.lerp = lerp
 
     def _linear_interp(self, color1, color2, p: float):
-        max_h = color1.max_h
-        # Assumes that hue is 0th component
-        d = abs(color2[0] - color1[0])
-        if not self.lerp or d <= max_h / 2:
+        polar1, polar2 = color1[color1._polar_index], color2[color1._polar_index]
+        polar_max = color1._polar_max
+        d = abs(polar2 - polar1)
+        if not self.lerp or d <= color1._polar_max / 2:
             return super()._linear_interp(color1=color1, color2=color2, p=p)
 
         color1, color2 = np.array(color1), np.array(color2)
-        if color1[0] > color2[0]:
+        if polar1 > polar2:
             color1, color2 = color2, color1
             p = 1 - p
-        color1[0] += max_h
+        color1[0] += polar_max
         new_color = color1 + (color2 - color1) * p
-        new_color[0] %= max_h
+        new_color[0] %= polar_max
 
         return self.color_sys(*new_color)
 
