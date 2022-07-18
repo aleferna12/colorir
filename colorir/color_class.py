@@ -23,7 +23,8 @@ import abc
 import colorsys
 import numpy as np
 from typing import List
-from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, LCHabColor
+from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, LCHabColor, \
+    CMYColor, CMYKColor
 from colormath.color_conversions import convert_color
 
 import colorir
@@ -252,11 +253,15 @@ class sRGB(ColorTupleBase):
         if not all(0 <= spec <= max_rgb for spec in (r, g, b)):
             raise ValueError("'r', 'g' and 'b' must be greater than 0 and smaller than 'max_rgb'")
 
+        rgba = np.array((r, g, b, a), dtype=float) * 255
+        rgba[:3] /= max_rgb
+        rgba[-1] /= max_a
+
         obj = super().__new__(
             cls,
             (r, g, b),
             a,
-            (r / max_rgb * 255, g / max_rgb * 255, b / max_rgb * 255, a / max_a * 255),
+            rgba,
             include_a=include_a,
             round_to=round_to
         )
@@ -269,14 +274,15 @@ class sRGB(ColorTupleBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=-1):
-        rgb = [spec / 255 * max_rgb for spec in rgba[:3]]
+        rgba_ = np.array(rgba) / 255 * max_rgb
+
         obj = super().__new__(cls,
-                              rgb,
-                              rgba[-1] / 255 * max_a,
+                              rgba_[:3],
+                              rgba_[-1],
                               rgba,
                               include_a=include_a,
                               round_to=round_to)
-        obj.r, obj.g, obj.b = rgb
+        obj.r, obj.g, obj.b = obj[:3]
         obj.max_rgb = max_rgb
         obj.max_a = max_a
         return obj
@@ -321,11 +327,12 @@ class HSL(ColorPolarBase):
             raise ValueError("'s', 'l' and 'a' must be greater than 0 and smaller than 'max_sla'")
 
         rgba = colorsys.hls_to_rgb(h % max_h / max_h, l / max_sla, s / max_sla) + (a / max_sla,)
+
         obj = super().__new__(cls,
                               max_h,
                               (h, s, l),
                               a,
-                              [spec * 255 for spec in rgba],
+                              np.array(rgba) * 255,
                               include_a=include_a,
                               round_to=round_to)
         obj.h, obj.s, obj.l = obj[:3]
@@ -337,7 +344,7 @@ class HSL(ColorPolarBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_h=360, max_sla=1, include_a=False, round_to=-1):
-        hls = colorsys.rgb_to_hls(*[spec / 255 for spec in rgba[:-1]])
+        hls = colorsys.rgb_to_hls(*np.array(rgba[:-1]) / 255)
         hsl = (hls[0] * max_h, hls[2] * max_sla, hls[1] * max_sla)
 
         obj = super().__new__(cls,
@@ -395,12 +402,12 @@ class HSV(ColorPolarBase):
             raise ValueError("'s', 'v' and 'a' must be greater than 0 and smaller than 'max_sva'")
 
         rgba = colorsys.hsv_to_rgb(h % max_h / max_h, s / max_sva, v / max_sva) + (a / max_sva,)
-        rgba = [spec * 255 for spec in rgba]
+
         obj = super().__new__(cls,
                               max_h,
                               (h, s, v),
                               a,
-                              rgba,
+                              np.array(rgba) * 255,
                               include_a=include_a,
                               round_to=round_to)
         obj.h, obj.s, obj.v = obj[:3]
@@ -412,7 +419,7 @@ class HSV(ColorPolarBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_h=360, max_sva=1, include_a=False, round_to=-1):
-        hsv = colorsys.rgb_to_hsv(*[spec / 255 for spec in rgba[:-1]])
+        hsv = colorsys.rgb_to_hsv(*np.array(rgba[:-1]) / 255)
         hsv = (hsv[0] * max_h, hsv[1] * max_sva, hsv[2] * max_sva)
 
         obj = super().__new__(cls,
@@ -462,14 +469,15 @@ class CMYK(ColorTupleBase):
             raise ValueError("'c', 'm', 'y', 'k', and 'a' must be greater than 0 and smaller than "
                              "'max_cmyka'")
 
-        r = (1 - c / max_cmyka) * (1 - k / max_cmyka) * 255
-        g = (1 - m / max_cmyka) * (1 - k / max_cmyka) * 255
-        b = (1 - y / max_cmyka) * (1 - k / max_cmyka) * 255
+        rgba = convert_color(
+            CMYKColor(*(np.array((c, m, y, k)) / max_cmyka)),
+            sRGBColor
+        ).get_value_tuple() + (a / max_cmyka,)
 
         obj = super().__new__(cls,
                               (c, m, y, k),
                               a,
-                              (r, g, b, a / max_cmyka * 255),
+                              np.array(rgba) * 255,
                               include_a=include_a,
                               round_to=round_to)
         obj.c, obj.m, obj.y, obj.k = obj[:4]
@@ -480,18 +488,11 @@ class CMYK(ColorTupleBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_cmyka=1, include_a=False, round_to=-1):
-        if sum(rgba[:-1]) == 0:
-            cmyk = (0.0, 0.0, 0.0, max_cmyka)
-        else:
-            c = 1 - rgba[0] / 255
-            m = 1 - rgba[1] / 255
-            y = 1 - rgba[2] / 255
-
-            k = min(c, m, y)
-            c = (c - k) / (1 - k)
-            m = (m - k) / (1 - k)
-            y = (y - k) / (1 - k)
-            cmyk = [spec * max_cmyka for spec in (c, m, y, k)]
+        cmyk = convert_color(
+            sRGBColor(*rgba[:3], is_upscaled=True),
+            CMYKColor
+        ).get_value_tuple()
+        cmyk = np.array(cmyk) * max_cmyka
 
         obj = super().__new__(cls,
                               cmyk,
@@ -529,7 +530,13 @@ class CMY(ColorTupleBase):
             -1, means that the components won't be rounded at all.
     """
 
-    def __new__(cls, c: float, m: float, y: float, a: float = None, max_cmya=1, include_a=False,
+    def __new__(cls,
+                c: float,
+                m: float,
+                y: float,
+                a: float = None,
+                max_cmya=1,
+                include_a=False,
                 round_to=-1):
         if a is None:
             a = max_cmya
@@ -537,16 +544,16 @@ class CMY(ColorTupleBase):
             raise ValueError("'c', 'm', 'y', and 'a' must be greater than 0 and smaller than "
                              "'max_cmya'")
 
+        rgba = convert_color(
+            CMYColor(*(np.array((c, m, y)) / max_cmya)),
+            sRGBColor
+        ).get_value_tuple() + (a / max_cmya,)
+
         obj = super().__new__(
             cls,
             (c, m, y),
             a,
-            (
-                255 - c / max_cmya * 255,
-                255 - m / max_cmya * 255,
-                255 - y / max_cmya * 255,
-                a / max_cmya * 255
-            ),
+            np.array(rgba) * 255,
             include_a=include_a,
             round_to=round_to)
         obj.c, obj.m, obj.y = obj[:3]
@@ -557,7 +564,11 @@ class CMY(ColorTupleBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_cmya=1, include_a=False, round_to=-1):
-        cmy = [(255 - spec) / 255 * max_cmya for spec in rgba[:3]]
+        cmy = convert_color(
+            sRGBColor(*rgba[:3], is_upscaled=True),
+            CMYColor
+        ).get_value_tuple()
+        cmy = np.array(cmy) * max_cmya
         
         obj = super().__new__(cls,
                               cmy,

@@ -113,8 +113,6 @@ def random_color(random_a=False,
         a = randint(0, 255)
     else:
         a = 255
-    # randint divided by 255 has to be used to avoid floating point errors when rounding a random
-    # float
     return color_format._from_rgba((randint(0, 255),
                                     randint(0, 255),
                                     randint(0, 255),
