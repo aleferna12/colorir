@@ -17,5 +17,5 @@ setup(
     long_description_content_type="text/x-rst",
     project_urls={"Documentation": "https://colorir.readthedocs.io/en/latest/"},
     include_package_data=True,
-    python_requires=">=3.6"
+    python_requires=">=3.8"
 )
