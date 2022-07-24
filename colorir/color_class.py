@@ -75,7 +75,7 @@ class ColorBase(metaclass=abc.ABCMeta):
         return colorir.color_format.ColorFormat(self.__class__, **format_)
 
     def grayscale(self):
-        """Converts this color to a grayscale representation in the same format using CIELUV
+        """Converts this color to a grayscale representation in the same format using CIELuv
         lightness component."""
         return self.get_format().format(CIELuv(self.cieluv().l, 0, 0))
 
