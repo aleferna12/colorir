@@ -3,14 +3,14 @@
 Examples:
     Get purple inbetween red and blue:
 
-    >>> grad = Grad(["ff0000", "0000ff", "ffffff"])
-    >>> grad.perc(0.25)
+    >>> grad = Grad(["ff0000", "0000ff"])
+    >>> grad.perc(0.5)
     Hex('#be0090')
 
-    Get 3 colors interspaced in the gradient:
+    Get 5 colors interspaced in the gradient:
 
-    >>> grad.n_colors(3)
-    [Hex('#be0090'), Hex('#0000ff'), Hex('#9999e8')]
+    >>> grad.n_colors(5)
+    [Hex('#ff0000'), Hex('#e00066'), Hex('#be0090'), Hex('#9400b9'), Hex('#0000ff')]
 """
 import numpy as np
 from typing import Iterable, Type
