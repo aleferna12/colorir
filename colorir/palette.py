@@ -56,6 +56,13 @@ from .color_format import ColorFormat, ColorLike
 _throw_exception = object()
 _builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
 
+__all__ = [
+    "Palette",
+    "StackPalette",
+    "find_palettes",
+    "delete_palette"
+]
+
 
 class Palette:
     """Class that holds colors values associated with names.
@@ -405,6 +412,19 @@ class Palette:
     def to_stackpalette(self) -> "StackPalette":
         """Converts this palette into a :class:`StackPalette`."""
         return StackPalette(self.name, self.color_format, *self._color_dict.values())
+
+    def to_cmap(self, N: int = None):
+        """Converts this palette into a matplotlib ListedColormap.
+
+        Args:
+            N: Passed down to ListedColormap constructor.
+        """
+        from matplotlib.colors import ListedColormap
+
+        colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
+        if self.name is None:
+            return ListedColormap(colors, N=N)
+        return ListedColormap(colors, N=N, name=self.name)
 
 
 class StackPalette:
@@ -806,6 +826,19 @@ class StackPalette:
             return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
         raise ValueError("'names' must have the same length as this 'StackPalette' and no "
                          "duplicates")
+
+    def to_cmap(self, N: int = None):
+        """Converts this stack palette into a matplotlib ListedColormap.
+
+        Args:
+            N: Passed down to ListedColormap constructor.
+        """
+        from matplotlib.colors import ListedColormap
+
+        colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
+        if self.name is None:
+            return ListedColormap(colors, N=N)
+        return ListedColormap(colors, N=N, name=self.name)
 
 
 def find_palettes(palettes_dir: str = None,

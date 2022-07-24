@@ -19,6 +19,13 @@ from . import config, utils
 from .color_class import sRGB, CIELuv, ColorBase, HCLuv, ColorPolarBase
 from .color_format import ColorLike
 
+__all__ = [
+    "Grad",
+    "PolarGrad",
+    "RGBGrad",
+    "RGBLinearGrad"
+]
+
 
 class Grad:
     """Linear interpolation gradient.
@@ -71,15 +78,14 @@ class Grad:
         )
         return self.color_format._from_rgba(new_color._rgba)
 
-    def n_colors(self, n: int, include_ends=False):
+    def n_colors(self, n: int, include_ends=True):
         """Return `n` interspaced colors from the gradient.
 
         Args:
             n: Number of colors to retrieve.
-            include_ends: By default, color values returned by this method will never include the
-                very extremes of the gradient. This allows sampling a small number of colors (such
-                as two) without having it return the same colors that were used to create the
-                gradient in the first place.
+            include_ends: Stops the colors at the extreme of the gradient from being sampled.
+                This allows sampling a small number of colors (such as two) without having it
+                return the same colors that were used to create the gradient in the first place.
         """
         colors = []
         sub = -1 if include_ends else 1
@@ -88,8 +94,18 @@ class Grad:
             colors.append(self.perc(p))
         return colors
 
-    # TODO
-    # def to_cmap(self):
+    def to_cmap(self, name, N=256, gamma=1.0):
+        """Converts this gradient into a matplotlib LinearSegmentedColormap.
+
+        Args:
+            name: Passed down to ListedColormap constructor.
+            N: Passed down to ListedColormap constructor.
+            gamma: Passed down to ListedColormap constructor.
+        """
+        from matplotlib.colors import LinearSegmentedColormap
+
+        colors = [color.hex(include_a=True, tail_a=True) for color in self.n_colors(N)]
+        return LinearSegmentedColormap.from_list(name=name, colors=colors, N=N, gamma=gamma)
 
     def _linear_interp(self, color1, color2, p: float):
         """Receives two colors in 'self.color_sys' format (expected to include_a) and returns a
@@ -108,7 +124,7 @@ class PolarGrad(Grad):
                  color_sys=HCLuv,
                  lerp=True):
         if not issubclass(color_sys, ColorPolarBase):
-            raise ValueError(f"'color_sys' must implement a polar coordinate system")
+            raise ValueError("'color_sys' must be a subclass of 'ColorPolarBase'")
 
         super().__init__(colors=colors, color_format=color_format, color_sys=color_sys)
         self.lerp = lerp

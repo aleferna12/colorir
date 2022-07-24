@@ -11,6 +11,7 @@ Examples:
     >>> config.DEFAULT_PALETTES_DIR = ".../my_project/palettes"
 """
 from os import path
+
 from .color_format import ColorFormat
 from .color_class import Hex
 

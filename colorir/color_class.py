@@ -19,7 +19,6 @@ References:
     .. [#] Wikipedia at https://en.wikipedia.org/wiki/Color_model.
 """
 import abc
-# TODO Get rid of colorsys
 import colorsys
 import numpy as np
 from typing import List
@@ -28,6 +27,23 @@ from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, L
 from colormath.color_conversions import convert_color
 
 import colorir
+
+__all__ = [
+    "ColorBase",
+    "ColorTupleBase",
+    "ColorPolarBase",
+    "sRGB",
+    "HSV",
+    "HSL",
+    "CMY",
+    "CMYK",
+    "CIELuv",
+    "CIELab",
+    "HCLuv",
+    "HCLab",
+    "Hex",
+    "HexRGB"
+]
 
 
 class ColorBase(metaclass=abc.ABCMeta):
@@ -50,13 +66,18 @@ class ColorBase(metaclass=abc.ABCMeta):
         return all(self._rgba == other._rgba) if isinstance(other, ColorBase) else False
 
     def __hash__(self):
-        return hash(self._rgba)
+        return hash(tuple(self._rgba))
 
     def get_format(self) -> "colorir.color_format.ColorFormat":
         """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
         color object."""
         format_ = {param: getattr(self, param) for param in self._format_params}
         return colorir.color_format.ColorFormat(self.__class__, **format_)
+
+    def grayscale(self):
+        """Converts this color to a grayscale representation in the same format using CIELUV
+        lightness component."""
+        return self.get_format().format(CIELuv(self.cieluv().l, 0, 0))
 
     def hex(self, **kwargs) -> "Hex":
         """Converts the current color to a hexadecimal representation.
@@ -192,7 +213,6 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         return ColorBase.__hash__(self)
 
 
-# TODO finish
 class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):
     """Base class from which all color classes that are represented by tuples and have at least
     one polar component (which is usually hue) inherit.
@@ -459,7 +479,6 @@ class CMYK(ColorTupleBase):
             this parameter to 0 ensures that the components will be of type `int`. The default,
             -1, means that the components won't be rounded at all.
     """
-
     def __new__(cls, c: float, m: float, y: float, k: float, a: float = None, max_cmyka=1,
                 include_a=False,
                 round_to=-1):
@@ -529,7 +548,6 @@ class CMY(ColorTupleBase):
             this parameter to 0 ensures that the components will be of type `int`. The default,
             -1, means that the components won't be rounded at all.
     """
-
     def __new__(cls,
                 c: float,
                 m: float,
@@ -569,7 +587,7 @@ class CMY(ColorTupleBase):
             CMYColor
         ).get_value_tuple()
         cmy = np.array(cmy) * max_cmya
-        
+
         obj = super().__new__(cls,
                               cmy,
                               rgba[-1] / 255 * max_cmya,
@@ -692,7 +710,7 @@ class HCLuv(ColorPolarBase):
                               max_h,
                               (h, c, l),
                               a,
-                              rgba, 
+                              rgba,
                               include_a=include_a,
                               round_to=round_to)
         obj.h, obj.c, obj.l = obj[:3]
@@ -861,8 +879,11 @@ class Hex(ColorBase, str):
 
         obj = str.__new__(cls, hex_str)
         obj.uppercase = uppercase
+        obj.include_hash = include_hash
         obj.include_a = include_a
+        obj.tail_a = tail_a
         obj._rgba = np.rint(rgba).astype(int)
+        obj._format_params = ["uppercase", "include_hash", "include_a", "tail_a"]
         return obj
 
     def __repr__(self):

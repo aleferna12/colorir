@@ -3,11 +3,23 @@ from math import sqrt
 from random import randint
 from typing import Union, List
 
+from colormath.color_conversions import convert_color
+from colormath.color_diff import *
+from colormath.color_objects import sRGBColor, LabColor
+
 from . import config
 from . import palette
 from .color_class import ColorBase
 from .color_format import ColorLike, ColorFormat
 from .gradient import Grad
+
+__all__ = [
+    "swatch",
+    "simplified_dist",
+    "dist",
+    "random_color",
+    "color_str"
+]
 
 
 def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.StackPalette"],
@@ -86,12 +98,31 @@ def simplified_dist(color1: ColorLike,
                  + (3 - avg_r) * d_b ** 2)
 
 
-# TODO one unified function of colormath funcs and simplified
-# def dist(, method="CIE94"):
+# TODO doc (mention 2000 not working properly in colormath and kwargs for delta-e funcs)
+def dist(color1: ColorLike, color2: ColorLike, method="CIE76", **kwargs):
+    if method == "simplified":
+        return simplified_dist(color1, color2)
 
+    color_format = config.DEFAULT_COLOR_FORMAT
+    if not isinstance(color1, ColorBase):
+        color1 = color_format.format(color1)
+    if not isinstance(color2, ColorBase):
+        color2 = color_format.format(color2)
+    color1 = sRGBColor(*color1._rgba[:3], is_upscaled=True)
+    color2 = sRGBColor(*color2._rgba[:3], is_upscaled=True)
+    color1 = convert_color(color1, LabColor, target_illuminant="d65")
+    color2 = convert_color(color2, LabColor, target_illuminant="d65")
 
-# TODO
-# def to_grayscale
+    if method == "CIE76":
+        return delta_e_cie1976(color1, color2)
+    if method == "CIE94":
+        return delta_e_cie1994(color1, color2, **kwargs)
+    if method == "CIE2000":
+        return delta_e_cie2000(color1, color2, **kwargs)
+    if method == "CMC":
+        return delta_e_cmc(color1, color2, **kwargs)
+
+    raise ValueError("invalid 'method' parameter")
 
 
 def random_color(random_a=False,
@@ -144,7 +175,6 @@ def color_str(string: str,
     return string
 
 
-# TODO implement in a better way
 # https://entropymine.com/imageworsener/srgbformula/
 def _to_linear_rgb(rgba):
     rgba = list(rgba)

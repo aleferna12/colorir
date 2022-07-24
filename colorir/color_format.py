@@ -92,6 +92,16 @@ from typing import Type, Union, NewType
 
 from . import color_class
 
+__all__ = [
+    "ColorLike",
+    "ColorFormat",
+    "PYGAME_COLOR_FORMAT",
+    "TKINTER_COLOR_FORMAT",
+    "KIVY_COLOR_FORMAT",
+    "WEB_COLOR_FORMAT",
+    "MATPLOTLIB_COLOR_FORMAT"
+]
+
 ColorLike = NewType("ColorLike", Union["color_class.ColorBase", str, tuple, list])
 """Type constant that describes common representations of colors in python."""
 
@@ -101,8 +111,8 @@ class ColorFormat:
 
     Args:
         color_sys: The color system that is the basis of this color format.
-        kwargs: Keyword arguments that further specify the color format. These are specific to each
-        color system and can be consulted in their respective documentations.
+        format_kwargs: Keyword arguments that further specify the color format. These are specific
+            to each color system and can be consulted in their respective documentations.
 
     Examples:
         >>> c_format = ColorFormat(color_class.sRGB, max_rgb=1)
@@ -111,14 +121,14 @@ class ColorFormat:
 
         For more examples see the documentation of the :mod:`~colorir.color_format` module.
     """
-    def __init__(self, color_sys: Type["color_class.ColorBase"], **kwargs):
+    def __init__(self, color_sys: Type["color_class.ColorBase"], **format_kwargs):
         self.color_sys = color_sys
-        self._format_params = kwargs
+        self.format_params = format_kwargs
 
     def __getattr__(self, item):
         # __getattr__ is called only when super().__getattribute__ fails
         try:
-            return self._format_params[item]
+            return self.format_params[item]
         except LookupError as e:
             raise AttributeError(f"AttributeError: '{self.__class__.__name__}' object has no "
                                  f"attribute '{item}'") from e
@@ -127,7 +137,7 @@ class ColorFormat:
         return self.new_color(*args, **kwargs)
 
     def __repr__(self):
-        param_strs = [f"{param}={val.__repr__()}" for param, val in self._format_params.items()]
+        param_strs = [f"{param}={val.__repr__()}" for param, val in self.format_params.items()]
         color_sys_str = f"color_sys={self.color_sys.__name__}"
         if param_strs:
             color_sys_str += ", "
@@ -145,12 +155,12 @@ class ColorFormat:
             >>> c_format.new_color(1, 0, 0)
             sRGB(1, 0, 0, 1)
         """
-        kwargs.update(self._format_params)
+        kwargs.update(self.format_params)
         return self.color_sys(*args, **kwargs)
 
+    # Factory method to be called when reading the palette files or reconstructing colors
     def _from_rgba(self, rgba):
-        # Factory method to be called when reading the palette files or reconstructing colors
-        return self.color_sys._from_rgba(rgba, **self._format_params)
+        return self.color_sys._from_rgba(rgba, **self.format_params)
 
     def format(self, color: ColorLike) -> "color_class.ColorBase":
         """Tries to format a color-like object into this color format.
@@ -205,11 +215,11 @@ PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=255, max_a
 KIVY_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=1, max_a=1, include_a=True)
 """Color format compatible with Kivy standards."""
 
+MATPLOTLIB_COLOR_FORMAT = ColorFormat(color_sys=color_class.Hex, include_a=True, tail_a=True)
+"""Color format compatible with Matplotlib."""
+
 WEB_COLOR_FORMAT = ColorFormat(color_sys=color_class.Hex)
 """Color format compatible with HTML and CSS standards."""
 
 TKINTER_COLOR_FORMAT = WEB_COLOR_FORMAT
 """Color format compatible with Tkinter standards."""
-
-MATPLOTLIB_COLOR_FORMAT = WEB_COLOR_FORMAT
-"""Color format compatible with Matplotlib."""
