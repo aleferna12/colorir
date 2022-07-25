@@ -7,6 +7,15 @@ Examples:
     >>> grad.perc(0.5)
     Hex('#be0090')
 
+    Depending on your use-case, it may be useful to rather interpolate colors in a cilindrical
+    color space, such as :class:`~colorir.color_class.HSV` or :class:`~colorir.color_class.HCLuv`.
+    To do this, use :class:`PolarGrad`, which supports color lerping through polar coordinate
+    color components:
+
+    >>> p_grad = PolarGrad(["ff0000", "0000ff"])
+    >>> p_grad.perc(0.5)
+    Hex('#f000cc')
+
     Get 5 colors interspaced in the gradient:
 
     >>> grad.n_colors(5)
