@@ -85,6 +85,9 @@ class Grad:
             self._conv_colors[min([i + 1, len(self._conv_colors) - 1])],
             p * (len(self._conv_colors) - 1) - i
         )
+        # Sometimes this reinterpretation makes colors seem to not be linearly-interpolated
+        # HCLuv(287, 99, 31) -> sRGB(131, 0, 185) -> HCLuv(286, 95, 35)
+        # This is okay though
         return self.color_format._from_rgba(new_color._rgba)
 
     def n_colors(self, n: int, include_ends=True):

@@ -64,6 +64,10 @@ __all__ = [
 ]
 
 
+# TODO create common interface for Palette and StackPalette
+# class PaletteBase:
+
+
 class Palette:
     """Class that holds colors values associated with names.
 
