@@ -41,11 +41,11 @@ Examples:
 
     >>> palette = Palette.load("single_blue")
 """
-
+import abc
 import json
 import os
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Dict
 from warnings import warn
 
 from . import config
@@ -65,10 +65,85 @@ __all__ = [
 
 
 # TODO create common interface for Palette and StackPalette
-# class PaletteBase:
+class PaletteBase(metaclass=abc.ABCMeta):
+    def __init__(self, name=None, color_format=None):
+        if color_format is None:
+            color_format = config.DEFAULT_COLOR_FORMAT
+
+        self.name = name
+        self._color_format = color_format
+
+    @property
+    @abc.abstractmethod
+    def colors(self):
+        """A list of all color values currently stored in the palette."""
+        pass
+
+    @property
+    def color_format(self) -> ColorFormat:
+        """Color format specifying how the colors of this palette are stored."""
+        return self._color_format
+
+    @color_format.setter
+    @abc.abstractmethod
+    def color_format(self, color_format):
+        self._color_format = color_format
+
+    def __len__(self):
+        return len(self.colors)
+
+    def __contains__(self, item):
+        return self.color_format.format(item) in self.colors
+
+    def __iter__(self):
+        return iter(self.colors)
+
+    def most_similar(self, color: ColorLike, n=1, method="CIE76"):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        Args:
+            color: The value of the color of reference. Can be an instance of any
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
+                resembles the color to which others will be compared in search of similar results.
+            n: How many similar colors to be retrieved. -1 means all colors from the palette will
+                be returned from most similar to least.
+            method: Method for calculating color distance. See the documentation of
+                :func:`~colorir.utils.color_dist()`.
+
+        Examples:
+            >>> palette = Palette(red="#ff0000", blue="#0000ff")
+            >>> palette.most_similar("#880000")
+            Hex('#ff0000')
+
+        Returns:
+            A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
+            :class:`~colorir.color_class.ColorBase` if `n` != 1. If the return type is a list, the
+            colors will be ordered from most similar to least.
+        """
+        color = self.color_format.format(color)
+        closest = sorted(self.colors,
+                         key=lambda color2: utils.color_dist(color, color2, method=method))
+        if n == 1:
+            return closest[0]
+        elif n < 0:
+            n = len(self)
+        return closest[:n]
+
+    def to_cmap(self, N: int = None):
+        """Converts this palette into a matplotlib ListedColormap.
+
+        Args:
+            N: Passed down to ListedColormap constructor.
+        """
+        from matplotlib.colors import ListedColormap
+
+        colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
+        if self.name is None:
+            return ListedColormap(colors, N=N)
+        return ListedColormap(colors, N=N, name=self.name)
 
 
-class Palette:
+class Palette(PaletteBase):
     """Class that holds colors values associated with names.
 
     Examples:
@@ -89,40 +164,31 @@ class Palette:
                  name: str = None,
                  color_format: ColorFormat = None,
                  **colors: ColorLike):
-        if color_format is None:
-            color_format = config.DEFAULT_COLOR_FORMAT
+        super().__init__(name, color_format)
 
-        self.name = name
-        self._color_format = color_format
         self._color_dict = {}
         for k, v in colors.items():
             self.add(k, v)
 
     @property
     def colors(self) -> List[ColorBase]:
-        """colors: A list of all color values currently stored in the :class:`Palette`."""
         return list(self._color_dict.values())
 
     @property
     def color_names(self) -> List[str]:
-        """colors: A list of all color names currently stored in the :class:`Palette`."""
+        """A list of all color names currently stored in the palette."""
         return list(self._color_dict.keys())
 
-    @property
-    def color_format(self) -> ColorFormat:
-        """color_format: Color format specifying how the colors of this :class:`Palette` are
-        stored.
-        """
-        return self._color_format
 
     # color_format could be used to build a color on every Palette.color call, but that is
     # computationally intensive. That's why the colors are stored as ready objects and are
     # re-created if needed
-    @color_format.setter
-    def color_format(self, value):
-        self._color_dict = {c_name: value._from_rgba(c_value._rgba)
+    @PaletteBase.color_format.setter
+    def color_format(self, color_format):
+        PaletteBase.color_format.fset(self, color_format)
+
+        self._color_dict = {c_name: color_format._from_rgba(c_value._rgba)
                             for c_name, c_value in self._color_dict.items()}
-        self._color_format = value
 
     @classmethod
     def load(cls,
@@ -211,15 +277,6 @@ class Palette:
                     palette_obj.add(c_name, new_color)
         return palette_obj
 
-    def __len__(self):
-        return len(self._color_dict)
-
-    def __contains__(self, item):
-        return self.color_format.format(item) in self._color_dict.values()
-
-    def __iter__(self):
-        return iter(self._color_dict.values())
-
     def __getattr__(self, item):
         return self._color_dict[item]
 
@@ -229,7 +286,7 @@ class Palette:
         return f"{self.__class__.__name__}({name_str}{', '.join(color_strs)})"
 
     def __eq__(self, other):
-        return (self.name == other.name) and (self._color_dict == other._color_dict)
+        return set(self._color_dict.items()) == set(other._color_dict.items())
 
     def __add__(self, other):
         for c_name in other.color_names:
@@ -266,7 +323,7 @@ class Palette:
         return [self._color_dict.get(name_i, fallback) for name_i in name]
 
     def get_names(self, color: ColorLike) -> list:
-        """Finds the names of the provided color in this :class:`Palette`.
+        """Finds all names of the provided color in this :class:`Palette`.
 
         Compares the provided `color` to every color the :class:`Palette` contains and returns the
         names of the colors that are equivalent to the one provided.
@@ -287,31 +344,6 @@ class Palette:
             if self.get_color(name) == color:
                 color_list.append(name)
         return color_list
-
-    def most_similar(self, color: ColorLike, n=1):
-        """Finds the `n` most similar colors to `color` in this palette.
-
-        For more details on the algorithm implemented to calculate similarity, see
-        :func:`~colorir.utils.simplified_dist()` documentation.
-
-        Args:
-            color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
-                resembles the color to which others will be compared in search of similar results.
-            n: How many similar colors to be retrieved. -1 means all colors from the palette will
-                be returned from most similar to least.
-
-        Examples:
-            >>> palette = Palette(red="#ff0000", blue="#0000ff")
-            >>> palette.most_similar("#880000")
-            Hex('#ff0000')
-
-        Returns:
-            A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color_class.ColorBase` if `n` != 1. If the return type is a list, the
-            colors will be ordered from most similar to least.
-        """
-        return _most_similar(self, color, n)
 
     def add(self, name: str, color: ColorLike):
         """Adds a color to the palette.
@@ -417,21 +449,12 @@ class Palette:
         """Converts this palette into a :class:`StackPalette`."""
         return StackPalette(self.name, self.color_format, *self._color_dict.values())
 
-    def to_cmap(self, N: int = None):
-        """Converts this palette into a matplotlib ListedColormap.
-
-        Args:
-            N: Passed down to ListedColormap constructor.
-        """
-        from matplotlib.colors import ListedColormap
-
-        colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
-        if self.name is None:
-            return ListedColormap(colors, N=N)
-        return ListedColormap(colors, N=N, name=self.name)
+    def to_dict(self):
+        """Converts this palette into a python `dict`."""
+        return dict(self._color_dict)
 
 
-class StackPalette:
+class StackPalette(PaletteBase):
     """Class that handles anonymous indexed colors stored as a stack.
 
     This class may be used as a replacement for :class:`Palette` when the name of the colors is
@@ -455,11 +478,8 @@ class StackPalette:
                  name: str = None,
                  color_format: ColorFormat = None,
                  *colors: ColorLike):
-        if color_format is None:
-            color_format = config.DEFAULT_COLOR_FORMAT
+        super().__init__(name=name, color_format=color_format)
 
-        self.name = name
-        self._color_format = color_format
         self._color_stack = []
         for color in colors:
             self.add(color)
@@ -469,20 +489,11 @@ class StackPalette:
         """colors: A list of all color values currently stored in the :class:`StackPalette`."""
         return list(self._color_stack)
 
-    @property
-    def color_format(self) -> ColorFormat:
-        """color_format: Color format specifying how the colors of this :class:`StackPalette` are
-        stored.
-        """
-        return self._color_format
+    @PaletteBase.color_format.setter
+    def color_format(self, color_format):
+        PaletteBase.color_format.fset(self, color_format)
 
-    # color_format could be used to build a color on every StackPalette[color] call, but that is
-    # computationally intensive. That's why the colors are stored as ready objects and are
-    # re-created if needed
-    @color_format.setter
-    def color_format(self, value):
-        self._color_stack = [value._from_rgba(color._rgba) for color in self._color_stack]
-        self._color_format = value
+        self._color_stack = [color_format._from_rgba(color._rgba) for color in self._color_stack]
 
     @classmethod
     def load(cls,
@@ -552,6 +563,7 @@ class StackPalette:
                 palette_obj.add(new_color)
         return palette_obj
 
+    # TODO enhance to allow different color systems and variance param
     @classmethod
     def new_complementary(cls,
                           n: int,
@@ -663,52 +675,18 @@ class StackPalette:
     def __getitem__(self, item: int):
         return self._color_stack[item]
 
-    def __len__(self):
-        return len(self._color_stack)
-
-    def __contains__(self, item):
-        return self.color_format.format(item) in self._color_stack
-
-    def __iter__(self):
-        return iter(self._color_stack)
-
     def __repr__(self):
         name_str = self.name + ", " if self.name else ""
         return f"{self.__class__.__name__}({name_str}" \
                f"{', '.join(c_val.__repr__() for c_val in self._color_stack)})"
 
     def __eq__(self, other):
-        return (self.name == other.name) and (self._color_stack == other._color_stack)
+        return self._color_stack == other._color_stack
 
     def __add__(self, other):
         for color in other:
             self.add(color)
         return self
-
-    def most_similar(self, color: ColorLike, n=1):
-        """Finds the `n` most similar colors to `color` in this palette.
-
-        For more details on the algorithm implemented to calculate similarity, see
-        :func:`~colorir.utils.simplified_dist()` documentation.
-
-        Args:
-            color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
-                resembles the color to which others will be compared in search of similar results.
-            n: How many similar colors to be retrieved. -1 means all colors from the palette will
-                be returned from most similar to least.
-
-        Examples:
-            >>> spalette = StackPalette(None, None, "#ff0000", "#0000ff")
-            >>> spalette.most_similar("#880000")
-            Hex('#ff0000')
-
-        Returns:
-            A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color_class.ColorBase` if `n` != 1. If the return type is a list, the
-            colors will be ordered from most similar to least.
-        """
-        return _most_similar(self, color, n)
 
     def swap(self, index1: int, index2: int):
         """Swap the places of two colors in the palette.
@@ -831,19 +809,6 @@ class StackPalette:
         raise ValueError("'names' must have the same length as this 'StackPalette' and no "
                          "duplicates")
 
-    def to_cmap(self, N: int = None):
-        """Converts this stack palette into a matplotlib ListedColormap.
-
-        Args:
-            N: Passed down to ListedColormap constructor.
-        """
-        from matplotlib.colors import ListedColormap
-
-        colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
-        if self.name is None:
-            return ListedColormap(colors, N=N)
-        return ListedColormap(colors, N=N, name=self.name)
-
 
 def find_palettes(palettes_dir: str = None,
                   search_builtins=True,
@@ -905,14 +870,3 @@ def delete_palette(palette: str, palettes_dir: str = None):
         raise ValueError(f"couldn't find palette '{palette}' in '{palettes_dir}'")
     else:
         raise ValueError(f"palette name '{palette}' is ambiguous (more than one palette share it)")
-
-
-# Common implementation of most_similar methods of Palette and StackPalette
-def _most_similar(palette, color, n):
-    color = palette.color_format.format(color)
-    closest = sorted(palette.colors, key=lambda color2: utils.simplified_dist(color, color2))
-    if n == 1:
-        return closest[0]
-    elif n < 0:
-        n = len(palette)
-    return closest[:n]

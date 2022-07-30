@@ -142,19 +142,17 @@ class PolarGrad(Grad):
         self.lerp = lerp
 
     def _linear_interp(self, color1, color2, p: float):
-        polar1, polar2 = color1[color1._polar_index], color2[color1._polar_index]
-        polar_max = color1._polar_max
-        d = abs(polar2 - polar1)
-        if not self.lerp or d <= color1._polar_max / 2:
+        d = abs(color2.h - color1.h)
+        if not self.lerp or d <= color1.max_h / 2:
             return super()._linear_interp(color1=color1, color2=color2, p=p)
 
-        color1, color2 = np.array(color1), np.array(color2)
-        if polar1 > polar2:
-            color1, color2 = color2, color1
+        array1, array2 = np.array(color1), np.array(color2)
+        if color1.h > color2.h:
+            array1, array2 = array2, array1
             p = 1 - p
-        color1[0] += polar_max
-        new_color = color1 + (color2 - color1) * p
-        new_color[0] %= polar_max
+        array1[0] += color1.max_h
+        new_color = array1 + (array2 - array1) * p
+        new_color[0] %= color1.max_h
 
         return self.color_sys(*new_color)
 

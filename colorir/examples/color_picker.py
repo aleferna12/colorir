@@ -1,6 +1,7 @@
 import tkinter as tk
 from functools import partial
 from colorir import Palette, find_palettes
+from colorir.utils import hue_sort_key
 
 colors = Palette.load(palettes_dir=".")
 palettes = {"all": colors}
@@ -8,13 +9,6 @@ palettes.update({
     pal_name: Palette.load(pal_name, palettes_dir=".")
     for pal_name in find_palettes(palettes_dir=".", kind=Palette)
 })
-
-
-# Sort all colors based on their hue and luminance so they
-# look a bit nicer together
-def hue_sort(c_names):
-    hsl = colors.get_color(c_names).hsl(max_h=1, max_sla=1)
-    return int(hsl[0] * 8), int(hsl[2] * 8)
 
 
 class Window(tk.Tk):
@@ -66,7 +60,7 @@ class Window(tk.Tk):
             btn.grid_forget()
         row = 0
         col = 0
-        for c_name in sorted(c_names, key=hue_sort):
+        for c_name in sorted(c_names, key=lambda name: hue_sort_key(8)(colors.get_color(name))):
             self.color_btns[c_name].grid(row=row, column=col)
             if (col + 2) * self.btn_size < self.canvas.winfo_width():
                 col += 1

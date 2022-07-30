@@ -62,7 +62,6 @@ class ColorBase(metaclass=abc.ABCMeta):
         pass
 
     def __eq__(self, other):
-
         return all(self._rgba == other._rgba) if isinstance(other, ColorBase) else False
 
     def __hash__(self):
@@ -214,24 +213,14 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
 
 
 class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):
-    """Base class from which all color classes that are represented by tuples and have at least
-    one polar component (which is usually hue) inherit.
+    """Base class from which all color classes that are represented by tuples and have a hue
+     component in polar coordinates inherit.
 
     Notes:
         This class is abstract and should not be instantiated.
     """
-    _polar_index: int
-
-    def __new__(cls, polar_max, *args, **kwargs):
-        obj = super().__new__(cls, *args, **kwargs)
-        obj._polar_max = polar_max
-
-        return obj
-
-    def get_bound(self):
-        specs = list(self)
-        specs[self._polar_index] = specs[self._polar_index] % self._polar_max
-        return self.get_format().new_color(*specs)
+    h: float
+    max_h: float
 
 
 class sRGB(ColorTupleBase):
@@ -265,7 +254,7 @@ class sRGB(ColorTupleBase):
                 max_rgb=255,
                 max_a=1,
                 include_a=False,
-                round_to=-1):
+                round_to=0):
         if a is None:
             a = max_a
         elif not 0 <= a <= max_a:
@@ -293,7 +282,7 @@ class sRGB(ColorTupleBase):
         return obj
 
     @classmethod
-    def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=-1):
+    def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=0):
         rgba_ = np.array(rgba) / 255 * max_rgb
 
         obj = super().__new__(cls,
@@ -330,8 +319,6 @@ class HSL(ColorPolarBase):
             this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
-    _polar_index = 0
-
     def __new__(cls,
                 h: float,
                 s: float,
@@ -349,7 +336,6 @@ class HSL(ColorPolarBase):
         rgba = colorsys.hls_to_rgb(h % max_h / max_h, l / max_sla, s / max_sla) + (a / max_sla,)
 
         obj = super().__new__(cls,
-                              max_h,
                               (h, s, l),
                               a,
                               np.array(rgba) * 255,
@@ -368,7 +354,6 @@ class HSL(ColorPolarBase):
         hsl = (hls[0] * max_h, hls[2] * max_sla, hls[1] * max_sla)
 
         obj = super().__new__(cls,
-                              max_h,
                               hsl,
                               rgba[-1] / 255 * max_sla,
                               rgba,
@@ -405,8 +390,6 @@ class HSV(ColorPolarBase):
             this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
-    _polar_index = 0
-
     def __new__(cls,
                 h: float,
                 s: float,
@@ -424,7 +407,6 @@ class HSV(ColorPolarBase):
         rgba = colorsys.hsv_to_rgb(h % max_h / max_h, s / max_sva, v / max_sva) + (a / max_sva,)
 
         obj = super().__new__(cls,
-                              max_h,
                               (h, s, v),
                               a,
                               np.array(rgba) * 255,
@@ -443,7 +425,6 @@ class HSV(ColorPolarBase):
         hsv = (hsv[0] * max_h, hsv[1] * max_sva, hsv[2] * max_sva)
 
         obj = super().__new__(cls,
-                              max_h,
                               hsv,
                               rgba[-1] / 255 * max_sva,
                               rgba,
@@ -688,8 +669,6 @@ class CIELab(ColorTupleBase):
 
 # TODO doc
 class HCLuv(ColorPolarBase):
-    _polar_index = 0
-
     def __new__(cls, h, c, l, a=None, max_h=360, max_a=1, include_a=False, round_to=-1):
         if a is None:
             a = max_a
@@ -699,7 +678,7 @@ class HCLuv(ColorPolarBase):
             raise ValueError("'l' must be greater than 0 and smaller than 100")
 
         rgb = convert_color(
-            LCHuvColor(l, c, h % max_h, illuminant="d65"),
+            LCHuvColor(l, c, h / max_h * 360 % 360, illuminant="d65"),
             sRGBColor
         )
         rgba = (rgb.clamped_rgb_r * 255,
@@ -707,7 +686,6 @@ class HCLuv(ColorPolarBase):
                 rgb.clamped_rgb_b * 255,
                 a / max_a * 255)
         obj = super().__new__(cls,
-                              max_h,
                               (h, c, l),
                               a,
                               rgba,
@@ -727,9 +705,10 @@ class HCLuv(ColorPolarBase):
             LCHuvColor,
             target_illuminant="d65"
         ).get_value_tuple()[::-1]
+        hcl = np.array(hcl)
+        hcl[0] *= max_h / 360
         obj = super().__new__(
             cls,
-            max_h,
             hcl,
             rgba[-1] / 255 * max_a,
             rgba,
@@ -746,8 +725,6 @@ class HCLuv(ColorPolarBase):
 
 # TODO doc
 class HCLab(ColorPolarBase):
-    _polar_index = 0
-
     def __new__(cls, h, c, l, a=None, max_h=360, max_a=1, include_a=False, round_to=-1):
         if a is None:
             a = max_a
@@ -757,7 +734,7 @@ class HCLab(ColorPolarBase):
             raise ValueError("'l' must be greater than 0 and smaller than 100")
 
         rgb = convert_color(
-            LCHabColor(l, c, h % max_h, illuminant="d65"),
+            LCHabColor(l, c, h / max_h * 360 % 360, illuminant="d65"),
             sRGBColor
         )
         rgba = (rgb.clamped_rgb_r * 255,
@@ -766,7 +743,6 @@ class HCLab(ColorPolarBase):
                 a / max_a * 255)
 
         obj = super().__new__(cls,
-                              max_h,
                               (h, c, l),
                               a,
                               rgba,
@@ -786,9 +762,10 @@ class HCLab(ColorPolarBase):
             LCHabColor,
             target_illuminant="d65"
         ).get_value_tuple()[::-1]
+        hcl = np.array(hcl)
+        hcl[0] *= max_h / 360
         obj = super().__new__(
             cls,
-            max_h,
             hcl,
             rgba[-1] / 255 * max_a,
             rgba,
