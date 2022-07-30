@@ -18,7 +18,7 @@ sys.path.insert(0, "../..")
 # -- Project information -----------------------------------------------------
 
 project = 'colorir'
-copyrimaght = '2022, Alexandre Fernandes'
+copyright = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
