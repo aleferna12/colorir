@@ -1,7 +1,7 @@
 import os
 from math import sqrt
 from random import randint
-from typing import Union, List, Iterable
+from typing import Union, List
 from colormath.color_conversions import convert_color
 from colormath.color_diff import *
 from colormath.color_objects import sRGBColor, LabColor
@@ -66,7 +66,13 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
             print(rect_str)
 
 
-def hue_sort_key(hue_classes=8, gray_thresh=0.25, gray_start=True):
+# Implemented this way rather than a sort_colors function because it can be combined with
+# other keys (see color_picker example)
+def hue_sort_key(hue_classes=8,
+                 gray_thresh=0.23,
+                 gray_start=True,
+                 alt_lum=False,
+                 invert_lum=False):
     """Returns a function that can be used as a key for python's 'sort' and 'sorted' in order to
     sort color-like objects by their hue component.
 
@@ -75,14 +81,20 @@ def hue_sort_key(hue_classes=8, gray_thresh=0.25, gray_start=True):
         ['000000', 'ffffff', 'ff0000', '00ff00', '0000ff']
 
     Args:
-        hue_classes: Number hue categories which will be sorted by luminance.
+        hue_classes: Number hue categories. Inside each hue category colors will be sorted by
+            luminance rather than hue.
         gray_thresh: Saturation threshold bellow which a color will be considered a shade of gray.
         gray_start: Whether the colors considered shades of gray will be grouped at the start or
             end of the sorted iterable.
+        alt_lum: Whether to alternate luminance values with each hue class transition. Only has an
+            effect if `hue_classes` > 1.
+        invert_lum: By default, sorting within hue classes happen from darker to lighter colors.
+            This parameter allows inverting this patern, thus starting with light colors and going
+            towards darker tones. Only has an effect if `hue_classes` > 1.
 
     Notes:
         The refered hue component is that of :class:`~colorir.color_class.HCLuv`. Saturation is
-        considered to be Cuv / L.
+        considered to be Cuv / Luv.
     """
     color_format = config.DEFAULT_COLOR_FORMAT
     gray_hue = -1 if gray_start else hue_classes + 1
@@ -91,10 +103,19 @@ def hue_sort_key(hue_classes=8, gray_thresh=0.25, gray_start=True):
         interpreted = color_format.format(color)
         hcl = HCLuv._from_rgba(interpreted._rgba, max_h=1)
         if not hcl.l or hcl.c / hcl.l < gray_thresh:
-            return gray_hue, hcl.l
+            hcl.h = gray_hue
+            if not gray_start and alt_lum and hue_classes % 2 == 1:
+                hcl.l *= -1
+        elif hue_classes > 1:
+            hcl.h = int(hcl.h * hue_classes)
+            if alt_lum and hcl.h % 2 == (not gray_start):
+                hcl.l *= -1
+
         if hue_classes == 1:
-            return hcl.h, hcl.l
-        return int(hcl.h * hue_classes), hcl.l
+            return hcl.h
+        if invert_lum:
+            hcl.l *= -1
+        return hcl.h, hcl.l
 
     return sort_key
 
