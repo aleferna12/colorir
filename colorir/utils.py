@@ -153,7 +153,7 @@ def simplified_dist(color1: ColorLike,
 
 
 # TODO doc (mention 2000 not working properly in colormath and kwargs for delta-e funcs)
-def color_dist(color1: ColorLike, color2: ColorLike, method="CIE76", **kwargs):
+def color_dist(color1: ColorLike, color2: ColorLike, method="CIE76"):
     if method == "simplified":
         return simplified_dist(color1, color2)
 
@@ -170,11 +170,11 @@ def color_dist(color1: ColorLike, color2: ColorLike, method="CIE76", **kwargs):
     if method == "CIE76":
         return delta_e_cie1976(color1, color2)
     if method == "CIE94":
-        return delta_e_cie1994(color1, color2, **kwargs)
+        return delta_e_cie1994(color1, color2)
     if method == "CIE2000":
-        return delta_e_cie2000(color1, color2, **kwargs)
+        return delta_e_cie2000(color1, color2)
     if method == "CMC":
-        return delta_e_cmc(color1, color2, **kwargs)
+        return delta_e_cmc(color1, color2)
 
     raise ValueError("invalid 'method' parameter")
 

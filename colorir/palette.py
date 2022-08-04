@@ -64,7 +64,6 @@ __all__ = [
 ]
 
 
-# TODO create common interface for Palette and StackPalette
 class PaletteBase(metaclass=abc.ABCMeta):
     def __init__(self, name=None, color_format=None):
         if color_format is None:
@@ -563,7 +562,7 @@ class StackPalette(PaletteBase):
                 palette_obj.add(new_color)
         return palette_obj
 
-    # TODO enhance to allow different color systems and variance param
+    # TODO enhance to allow different color systems and variance param (prob. 1.4.0)
     @classmethod
     def new_complementary(cls,
                           n: int,
