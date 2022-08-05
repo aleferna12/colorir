@@ -8,7 +8,7 @@ from colormath.color_objects import sRGBColor, LabColor
 
 from . import config
 from . import palette
-from .color_class import ColorBase, HCLuv
+from .color_class import ColorBase, HCLab
 from .color_format import ColorLike, ColorFormat
 from .gradient import Grad
 
@@ -69,7 +69,7 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
 # Implemented this way rather than a sort_colors function because it can be combined with
 # other keys (see color_picker example)
 def hue_sort_key(hue_classes=8,
-                 gray_thresh=0.23,
+                 gray_thresh=12,
                  gray_start=True,
                  alt_lum=False,
                  invert_lum=False):
@@ -83,7 +83,7 @@ def hue_sort_key(hue_classes=8,
     Args:
         hue_classes: Number hue categories. Inside each hue category colors will be sorted by
             luminance rather than hue.
-        gray_thresh: Saturation threshold bellow which a color will be considered a shade of gray.
+        gray_thresh: Chroma threshold bellow which a color will be considered a shade of gray.
         gray_start: Whether the colors considered shades of gray will be grouped at the start or
             end of the sorted iterable.
         alt_lum: Whether to alternate luminance values with each hue class transition. Only has an
@@ -93,29 +93,28 @@ def hue_sort_key(hue_classes=8,
             towards darker tones. Only has an effect if `hue_classes` > 1.
 
     Notes:
-        The refered hue component is that of :class:`~colorir.color_class.HCLuv`. Saturation is
-        considered to be Cuv / Luv.
+        The refered hue and chroma components are those of :class:`~colorir.color_class.HCLab`.
     """
     color_format = config.DEFAULT_COLOR_FORMAT
     gray_hue = -1 if gray_start else hue_classes + 1
 
     def sort_key(color):
         interpreted = color_format.format(color)
-        hcl = HCLuv._from_rgba(interpreted._rgba, max_h=1)
-        if not hcl.l or hcl.c / hcl.l < gray_thresh:
-            hcl.h = gray_hue
+        h, c, l = HCLab._from_rgba(interpreted._rgba, max_h=1)
+        if c < gray_thresh:
+            h = gray_hue
             if not gray_start and alt_lum and hue_classes % 2 == 1:
-                hcl.l *= -1
+                l *= -1
         elif hue_classes > 1:
-            hcl.h = int(hcl.h * hue_classes)
-            if alt_lum and hcl.h % 2 == (not gray_start):
-                hcl.l *= -1
+            h = int(h * hue_classes)
+            if alt_lum and h % 2 == (not gray_start):
+                l *= -1
 
         if hue_classes == 1:
-            return hcl.h
+            return h
         if invert_lum:
-            hcl.l *= -1
-        return hcl.h, hcl.l
+            l *= -1
+        return h, l
 
     return sort_key
 
