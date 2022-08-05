@@ -80,6 +80,17 @@ silver_swirls
 .. image:: images/palettes/silver_swirls.png
     :height: 25px
 
+Matplotlib
+----------
+
+tab10
++++++++++++++
+
+Since tab10 colors are named, they are added as a palette. :ref:`Remaining Matplotlib palettes <mplt stack>` are available as stack palettes.
+
+.. image:: images/palettes/tab10.png
+    :height: 25px
+
 Other
 -----
 
@@ -87,6 +98,8 @@ Palettes that don't necessarily fit a category.
 
 world_flags
 +++++++++++
+
+Colors picked from country flags.
 
 .. image:: images/palettes/world_flags.png
     :height: 25px
@@ -100,6 +113,20 @@ mystic_forest
 pantone_years
 +++++++++++++
 
+.. attention::
+
+    Do not rely on the size (length) of this palette in your code. It is bound to change every year when a new color of the year is released by Pantone.
+
+Colors awarded as `color of the year <https://www.pantone.com/articles/past-colors-of-the-year>`_ by Pantone.
+
+.. image:: images/palettes/pantone_years.png
+    :height: 25px
+
+pigments
++++++++++++++
+
+Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`_.
+
 .. image:: images/palettes/pantone_years.png
     :height: 25px
 
@@ -107,6 +134,8 @@ Stack Palettes
 ______________
 
 The following palettes can be loaded with :meth:`StackPalette.load() <colorir.palette.StackPalette.load()>`.
+
+.. _mplt stack
 
 Matplotlib
 ----------
@@ -116,12 +145,6 @@ Palettes derived from Matplotlib qualitative color maps.
 .. note::
 
     All names are lowercase, unlike those of some of the original color maps.
-
-tab10
-+++++++++++++
-
-.. image:: images/palettes/tab10.png
-    :height: 25px
 
 tab20
 +++++++++++++
