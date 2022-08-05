@@ -1,7 +1,6 @@
 from PIL import Image, ImageDraw
 from colorir import *
 import os
-from glob import glob
 
 MAX_COLORS = 15
 IMG_HEIGHT = 25
