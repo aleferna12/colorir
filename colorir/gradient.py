@@ -194,7 +194,7 @@ class RGBGrad(Grad):
         new_rgba = tuple(rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p for i in range(4))
         if self.use_linear_rgb:
             new_rgba = utils._to_srgb(new_rgba)
-        return sRGB(*new_rgba)
+        return sRGB._from_rgba(new_rgba)
 
 
 # Alias
