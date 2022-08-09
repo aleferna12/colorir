@@ -45,7 +45,7 @@ import abc
 import json
 import os
 from pathlib import Path
-from typing import Union, List, Dict
+from typing import Union, List
 from warnings import warn
 
 from . import config
@@ -178,7 +178,6 @@ class Palette(PaletteBase):
         """A list of all color names currently stored in the palette."""
         return list(self._color_dict.keys())
 
-
     # color_format could be used to build a color on every Palette.color call, but that is
     # computationally intensive. That's why the colors are stored as ready objects and are
     # re-created if needed
@@ -285,7 +284,7 @@ class Palette(PaletteBase):
         return f"{self.__class__.__name__}({name_str}{', '.join(color_strs)})"
 
     def __eq__(self, other):
-        return set(self._color_dict.items()) == set(other._color_dict.items())
+        return self._color_dict.items() == other._color_dict.items()
 
     def __add__(self, other):
         for c_name in other.color_names:
