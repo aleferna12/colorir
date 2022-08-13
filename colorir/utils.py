@@ -68,7 +68,7 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
 
 # Implemented this way rather than a sort_colors function because it can be combined with
 # other keys (see color_picker example)
-def hue_sort_key(hue_classes=8,
+def hue_sort_key(hue_classes=1,
                  gray_thresh=12.0,
                  gray_start=True,
                  alt_lum=False,
