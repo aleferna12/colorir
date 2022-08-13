@@ -134,16 +134,16 @@ class PolarGrad(Grad):
                  colors,
                  color_format=None,
                  color_sys=HCLuv,
-                 lerp=True):
+                 shortest=True):
         if not issubclass(color_sys, ColorPolarBase):
             raise ValueError("'color_sys' must be a subclass of 'ColorPolarBase'")
 
         super().__init__(colors=colors, color_format=color_format, color_sys=color_sys)
-        self.lerp = lerp
+        self.shortest = shortest
 
     def _linear_interp(self, color1, color2, p: float):
         d = abs(color2.h - color1.h)
-        if not self.lerp or d <= color1.max_h / 2:
+        if not self.shortest or d <= color1.max_h / 2:
             return super()._linear_interp(color1=color1, color2=color2, p=p)
 
         array1, array2 = np.array(color1), np.array(color2)

@@ -212,7 +212,11 @@ class ColorFormat:
 PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=255, max_a=255, round_to=0)
 """Color format compatible with PyGame standards."""
 
-KIVY_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=1, max_a=1, include_a=True)
+KIVY_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB,
+                                max_rgb=1,
+                                max_a=1,
+                                round_to=-1,
+                                include_a=True)
 """Color format compatible with Kivy standards."""
 
 MATPLOTLIB_COLOR_FORMAT = ColorFormat(color_sys=color_class.Hex, include_a=True, tail_a=True)
