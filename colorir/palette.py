@@ -193,6 +193,7 @@ class Palette(PaletteBase):
              palettes: Union[str, List[str]] = None,
              palettes_dir: str = None,
              search_builtins=True,
+             search_cwd=True,
              name: str = None,
              color_format: ColorFormat = None,
              warnings=True):
@@ -216,9 +217,10 @@ class Palette(PaletteBase):
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
                 :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
-            search_builtins: Whether `palettes` also includes built-in palettes such as 'css' or
-                'basic'. Set to ``False`` to ensure only palette files found in `palettes_dir` are
-                loaded.
+            search_builtins: Whether `palettes` may also include built-in palettes such as 'css'
+                or 'basic'.
+            search_cwd: Whether `palettes` may also include palettes located in the current
+                working directory.
             name: Name of the palette which will be used to save it with the
                 :meth:`Palette.save()`. If the `palettes` parameter is a single string, defaults
                 to that.
@@ -242,6 +244,8 @@ class Palette(PaletteBase):
         palettes_dir = [palettes_dir]
         if search_builtins:
             palettes_dir.append(_builtin_palettes_dir)
+        if search_cwd:
+            palettes_dir.append(os.getcwd())
         if isinstance(palettes, str):
             if name is None:
                 name = palettes
@@ -498,6 +502,7 @@ class StackPalette(PaletteBase):
              palettes: Union[str, List[str]] = None,
              palettes_dir: str = None,
              search_builtins=True,
+             search_cwd=True,
              name: str = None,
              color_format: ColorFormat = None):
         """Factory method that loads previously created stack palettes into a
@@ -520,9 +525,10 @@ class StackPalette(PaletteBase):
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
                 :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
-            search_builtins: Whether `palettes` also includes built-in palettes such as 'tab10' or
-                'dark2'. Set to ``False`` to ensure only palette files found in `palettes_dir` are
-                loaded.
+            search_builtins: Whether `palettes` may also include built-in palettes such as 'tab10'
+                or 'dark2'.
+            search_cwd: Whether `palettes` may also include palettes located in the current
+                working directory.
             name: Name of the palette which will be used to save it with the
                 :meth:`StackPalette.save()`. If the `palettes` parameter is a single string,
                 defaults to that.
@@ -535,6 +541,8 @@ class StackPalette(PaletteBase):
         palettes_dir = [palettes_dir]
         if search_builtins:
             palettes_dir.append(_builtin_palettes_dir)
+        if search_cwd:
+            palettes_dir.append(os.getcwd())
         if isinstance(palettes, str):
             if name is None:
                 name = palettes
