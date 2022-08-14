@@ -287,9 +287,9 @@ class Palette(PaletteBase):
         return self._color_dict.items() == other._color_dict.items()
 
     def __add__(self, other):
-        for c_name in other.color_names:
-            self.add(c_name, other.get_color(c_name))
-        return self
+        c_dict = dict(self._color_dict)
+        c_dict.update(other._color_dict)
+        return Palette(**c_dict)
 
     def get_color(self,
                   name: Union[str, List[str]],
@@ -670,8 +670,17 @@ class StackPalette(PaletteBase):
             n_spalette.add(HSV(hue, hsv[1], hsv[2]))
         return n_spalette
 
-    def __getitem__(self, item: int):
+    def __getitem__(self, item):
+        if isinstance(item, list):
+            return [self._color_stack[i] for i in item]
         return self._color_stack[item]
+
+    def __setitem__(self, key, value):
+        if isinstance(key, list):
+            for i, val in zip(key, value):
+                self.update(i, val)
+        else:
+            self.update(key, value)
 
     def __repr__(self):
         name_str = self.name + ", " if self.name else ""
@@ -682,9 +691,8 @@ class StackPalette(PaletteBase):
         return self._color_stack == other._color_stack
 
     def __add__(self, other):
-        for color in other:
-            self.add(color)
-        return self
+        c_list = self.colors + other.colors
+        return StackPalette(None, None, *c_list)
 
     def swap(self, index1: int, index2: int):
         """Swap the places of two colors in the palette.
