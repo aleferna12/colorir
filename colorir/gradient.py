@@ -60,6 +60,14 @@ class Grad:
         self._conv_colors = [color_sys._from_rgba(color._rgba, include_a=True)
                                   for color in self.colors]
 
+    def __str__(self):
+        return f"{self.__class__.__name__}({self.colors})"
+
+    def __repr__(self):
+        if config.REPR_STYLE in ["traditional", "inherit"]:
+            return str(self)
+        return utils.swatch(self, stdout=False)
+
     def perc(self, p: float):
         """Returns the color placed in a given percentage of the gradient.
 

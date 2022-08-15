@@ -195,13 +195,17 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
 
         return obj
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}{tuple.__repr__(self)}"
-
-    # It would be very dangerous to change str conversion as the target framework could call it
+    # It would be dangerous to change str conversion as the target framework could call it
     # expecting (255, 0, 0) and get sRGB(255, 0, 0)
     def __str__(self):
         return tuple.__repr__(self)
+
+    def __repr__(self):
+        if colorir.config.REPR_STYLE == "traditional":
+            return f"{self.__class__.__name__}{tuple.__repr__(self)}"
+        if colorir.config.REPR_STYLE == "inherit":
+            return str(self)
+        return colorir.utils.swatch(self, stdout=False)
 
     def __eq__(self, other):
         if isinstance(other, ColorBase):
@@ -863,13 +867,17 @@ class Hex(ColorBase, str):
         obj._format_params = ["uppercase", "include_hash", "include_a", "tail_a"]
         return obj
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}({str.__repr__(self)})"
-
-    # It would be very dangerous to change str conversion as the target framework could call it
+    # It would be dangerous to change str conversion as the target framework could call it
     # expecting #ff0000 and get Hex('#ff0000')
     def __str__(self):
         return str.__str__(self)
+
+    def __repr__(self):
+        if colorir.config.REPR_STYLE == "traditional":
+            return f"{self.__class__.__name__}({str.__repr__(self)})"
+        if colorir.config.REPR_STYLE == "inherit":
+            return str(self)
+        return colorir.utils.swatch(self, stdout=False)
 
     def __eq__(self, other):
         if isinstance(other, ColorBase):

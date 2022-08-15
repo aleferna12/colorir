@@ -282,10 +282,17 @@ class Palette(PaletteBase):
     def __getattr__(self, item):
         return self._color_dict[item]
 
-    def __repr__(self):
+    def __str__(self):
         name_str = self.name + ", " if self.name else ""
-        color_strs = [f"{c_name}={c_val.__repr__()}" for c_name, c_val in self._color_dict.items()]
-        return f"{self.__class__.__name__}({name_str}{', '.join(color_strs)})"
+        colors_str = ', '.join(
+            f"{c_name}={c_val}" for c_name, c_val in self._color_dict.items()
+        )
+        return f"{self.__class__.__name__}({name_str}{colors_str})"
+
+    def __repr__(self):
+        if config.REPR_STYLE in ["traditional", "inherit"]:
+            return str(self)
+        return utils.swatch(self, stdout=False)
 
     def __eq__(self, other):
         return self._color_dict.items() == other._color_dict.items()
@@ -690,10 +697,15 @@ class StackPalette(PaletteBase):
         else:
             self.update(key, value)
 
-    def __repr__(self):
+    def __str__(self):
         name_str = self.name + ", " if self.name else ""
-        return f"{self.__class__.__name__}({name_str}" \
-               f"{', '.join(c_val.__repr__() for c_val in self._color_stack)})"
+        colors_str = ', '.join(c_val.__repr__() for c_val in self._color_stack)
+        return f"{self.__class__.__name__}({name_str}{colors_str})"
+
+    def __repr__(self):
+        if config.REPR_STYLE in ["traditional", "inherit"]:
+            return str(self)
+        return utils.swatch(self, stdout=False)
 
     def __eq__(self, other):
         return self._color_stack == other._color_stack

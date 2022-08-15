@@ -26,8 +26,9 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
            colored_text=True,
            width=3,
            height=1,
-           tabular=True):
-    """Prints swatches of `obj` in the terminal with colored text.
+           tabular=True,
+           stdout=True):
+    """Create swatches of `obj` in the terminal with colored text.
 
     Each swatch consists of a rectangle of a color followed by its value (and name if known).
 
@@ -40,6 +41,8 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
         height: The height (in number of lines) of the colored rectangles.
         tabular: Whether the colored rectangle, color name and color value should be printed each
             in its separate column. Only used if `obj` is a :class:`~colorir.palette.Palette`.
+        stdout: If ``True``, prints the swatch to the standard output, rather than returning
+            it as a string.
     """
     # Assume single ColorLike
     if isinstance(obj, (ColorBase, str, tuple)):
@@ -52,6 +55,7 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
     os.system("")
+    ret_str = ""
     for i, c_val in enumerate(obj):
         rect_str = color_str(" " * width, bg_color=c_val)
         val_str = f" {c_val}"
@@ -61,9 +65,12 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
             val_str = ' ' + name + spacing + val_str
         if colored_text:
             val_str = color_str(val_str, fg_color=c_val)
-        print(rect_str + val_str)
+        ret_str += rect_str + val_str + '\n'
         for _ in range(height - 1):
-            print(rect_str)
+            ret_str += rect_str + '\n'
+    if not stdout:
+        return ret_str
+    print(ret_str)
 
 
 # Implemented this way rather than a sort_colors function because it can be combined with
