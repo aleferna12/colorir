@@ -37,7 +37,7 @@ Getting started with colorir can be as simple as:
 .. code-block:: python
 
     sky = Palette.load("sky")  # Loads the sky palette
-    sky_grad = Grad([sky.sunrise, sky.highnoon])  # Creates a gradient from "sunrise" to "highnoon"
+    sky_grad = PolarGrad([sky.sunrise, sky.highnoon])  # Creates a gradient from "sunrise" to "highnoon"
     swatch(sky)
     swatch(sky_grad)
 
