@@ -4,7 +4,9 @@ from pathlib import Path
 from random import randint
 import re
 
-from colorir import palette, config, Palette, StackPalette, HSV, find_palettes, delete_palette
+from colorir import *
+
+config.REPR_STYLE = "traditional"
 config.DEFAULT_PALETTES_DIR = str(Path(__file__).resolve().parent / "test_palettes")
 # Clear test palette directory
 for file in Path(config.DEFAULT_PALETTES_DIR).glob("*"):

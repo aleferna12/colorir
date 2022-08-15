@@ -1,6 +1,9 @@
 import doctest
 import unittest
-from colorir import color_format
+
+from colorir import *
+
+config.REPR_STYLE = "traditional"
 
 
 def load_tests(loader, tests, ignore):
