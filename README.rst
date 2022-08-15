@@ -29,23 +29,23 @@ colorir was designed to be your best friend when dealing with colors so that you
     TOP_NOTCH_RED = (131, 34, 50)
     # ... unnecessarily long and ugly list of colors
 
-And can instead write assertive, functional code such as:
-
-.. code-block:: python
-
-    sky = Palette.load("sky")
-    sky_grad = Grad([sky.sunrise, sky.highnoon])
-    swatch(sky)
-    swatch(sky_grad)
-
-Which should print both the palette and the gradient directly in your terminal:
-
-.. image:: docs/source/images/readme_sky.png
-
 Getting Started
 ---------------
 
 Getting started with colorir can be as simple as:
+
+.. code-block:: python
+
+    sky = Palette.load("sky")  # Loads the sky palette
+    sky_grad = Grad([sky.sunrise, sky.highnoon])  # Creates a gradient from "sunrise" to "highnoon"
+    swatch(sky)
+    swatch(sky_grad)
+
+This code should print both the palette and the gradient directly in your terminal:
+
+.. image:: docs/source/images/readme_sky.png
+
+Now let's see how colorir can be used along other frameworks!
 
 .. code-block:: python
 
