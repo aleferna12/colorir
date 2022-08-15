@@ -50,7 +50,6 @@ Now let's see how colorir can be used along other frameworks!
 .. code-block:: python
 
     import tkinter as tk
-    from colorir import *
 
     colors = Palette.load()  # Load colors
 
@@ -59,5 +58,7 @@ Now let's see how colorir can be used along other frameworks!
     win.mainloop()
 
 .. image:: docs/source/images/readme_example.png
+
+The power of colorir comes from the fact that you can adjust it to work seamlessly with almost any graphical or web framework, not only tkinter!
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
