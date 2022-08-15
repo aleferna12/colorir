@@ -74,9 +74,9 @@ Following CSS color-naming conventions, our color names are all lowercase with n
 underscores, but you may name a color as you wish as long as it complies with python's
 syntax for attribute names.
 
-Let's take a look at  our palette with the :func:`~colorir.utils.swatch()` function:
+Let's take a look at our palette in the terminal:
 
->>> swatch(palette)
+>>> palette  # Prints swatches representing the palette
 
 .. raw:: html
 

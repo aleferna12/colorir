@@ -3,7 +3,10 @@ Built-in Palettes
 
 These are built-in palettes that come with colorir by default.
 
-The ellipsis symbol indicates the palette is bigger but couldn't fit here.
+The |ellipsis| symbol indicates the palette is bigger but couldn't fit here.
+
+.. |ellipsis| image:: images/ellipsis.png
+    :height: 25px
 
 Palettes
 ________
@@ -96,6 +99,34 @@ Other
 
 Palettes that don't necessarily fit a category.
 
+passion
++++++++
+
+Contrasts the `peace`_ palette. Take a moment to look at the name of the colors of these palettes, they took a while to come up with!
+
+.. image:: images/palettes/passion.png
+    :height: 25px
+
+peace
++++++
+
+Contrasts the `passion`_ palette.
+
+.. image:: images/palettes/peace.png
+    :height: 25px
+
+fire
+++++
+
+.. image:: images/palettes/fire.png
+    :height: 25px
+
+sky
++++
+
+.. image:: images/palettes/sky.png
+    :height: 25px
+
 world_flags
 +++++++++++
 
@@ -125,9 +156,9 @@ Colors awarded as `color of the year <https://www.pantone.com/articles/past-colo
 pigments
 +++++++++++++
 
-Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`_.
+Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`_. This palette is big and hue-sorted, so only the blacks are shown.
 
-.. image:: images/palettes/pantone_years.png
+.. image:: images/palettes/pigments.png
     :height: 25px
 
 Stack Palettes
@@ -135,7 +166,44 @@ ______________
 
 The following palettes can be loaded with :meth:`StackPalette.load() <colorir.palette.StackPalette.load()>`.
 
-.. _mplt stack
+Birds of Brazil
+---------------
+
+Palettes that pay homage to the beautiful compositions painted in the feathers of birds native to my home country, Brazil.
+
+precious_tanager
+++++++++++++++++
+
+Colors of the south-american *Tangara preciosa*.
+
+.. image:: images/palettes/precious_tanager.png
+    :height: 25px
+
+scarlet_macaw
++++++++++++++
+
+Colors of the parrot *Ara macao*.
+
+.. image:: images/palettes/scarlet_macaw.png
+    :height: 25px
+
+toco_toucan
++++++++++++
+
+Colors of the largest species of toucan, *Ramphastos toco*.
+
+.. image:: images/palettes/toco_toucan.png
+    :height: 25px
+
+hyacinth_macaw
+++++++++++++++
+
+Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the RGB color space.
+
+.. image:: images/palettes/hyacinth_macaw.png
+    :height: 25px
+
+.. _mplt stack:
 
 Matplotlib
 ----------
@@ -147,69 +215,78 @@ Palettes derived from Matplotlib qualitative color maps.
     All names are lowercase, unlike those of some of the original color maps.
 
 tab20
-+++++++++++++
++++++
 
 .. image:: images/palettes/tab20.png
     :height: 25px
 
 tab20b
-+++++++++++++
+++++++
 
 .. image:: images/palettes/tab20b.png
     :height: 25px
 
 tab20c
-+++++++++++++
+++++++
 
 .. image:: images/palettes/tab20c.png
     :height: 25px
 
 pastel1
-+++++++++++++
++++++++
 
 .. image:: images/palettes/pastel1.png
     :height: 25px
 
 pastel2
-+++++++++++++
++++++++
 
 .. image:: images/palettes/pastel2.png
     :height: 25px
 
 paired
-+++++++++++++
+++++++
 
 .. image:: images/palettes/paired.png
     :height: 25px
 
 accent
-+++++++++++++
+++++++
 
 .. image:: images/palettes/accent.png
     :height: 25px
 
 dark2
-+++++++++++++
++++++
 
 .. image:: images/palettes/dark2.png
     :height: 25px
 
 set1
-+++++++++++++
+++++
 
 .. image:: images/palettes/set1.png
     :height: 25px
 
 set2
-+++++++++++++
+++++
 
 .. image:: images/palettes/set2.png
     :height: 25px
 
 set3
-+++++++++++++
+++++
 
 .. image:: images/palettes/set3.png
+    :height: 25px
+
+Others
+------
+
+sunset
+++++++
+
+.. image:: images/palettes/sunset.png
     :height: 25px
 
 

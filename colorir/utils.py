@@ -68,6 +68,7 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
         ret_str += rect_str + val_str + '\n'
         for _ in range(height - 1):
             ret_str += rect_str + '\n'
+    ret_str.lstrip("\n")
     if not stdout:
         return ret_str
     print(ret_str)
