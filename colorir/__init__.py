@@ -5,4 +5,4 @@ from .color_format import *
 from .utils import *
 from . import config
 
-__version__ = '1.3.12'
+__version__ = '1.3.13'

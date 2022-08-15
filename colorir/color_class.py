@@ -287,11 +287,11 @@ class sRGB(ColorTupleBase):
 
     @classmethod
     def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=0):
-        rgba_ = np.array(rgba) / 255 * max_rgb
+        rgb = np.array(rgba[:-1]) / 255 * max_rgb
 
         obj = super().__new__(cls,
-                              rgba_[:3],
-                              rgba_[-1] / 255 * max_a,
+                              rgb,
+                              rgba[-1] / 255 * max_a,
                               rgba,
                               include_a=include_a,
                               round_to=round_to)

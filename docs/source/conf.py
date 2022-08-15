@@ -22,7 +22,7 @@ copyright = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
-release = '1.3.12'
+release = '1.3.13'
 
 
 # -- General configuration ---------------------------------------------------
