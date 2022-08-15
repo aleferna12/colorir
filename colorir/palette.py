@@ -838,6 +838,7 @@ class StackPalette(PaletteBase):
 
 def find_palettes(palettes_dir: str = None,
                   search_builtins=True,
+                  search_cwd=True,
                   kind=(Palette, StackPalette)) -> List[str]:
     """Returns the names of the palettes found in `directory`.
 
@@ -847,6 +848,7 @@ def find_palettes(palettes_dir: str = None,
             :data:`config.DEFAULT_PALETTES_DIR <colorir.config.DEFAULT_PALETTES_DIR>`.
         search_builtins: Whether to also include built-in palettes such as 'css' or
             'basic' in the search.
+        search_cwd: Whether to also search palettes in the current working directory.
         kind: The kinds of palettes to include in the search. Can be either :class:`Palette`,
             :class:`StackPalette`, or a list of any of those.
     """
@@ -856,6 +858,8 @@ def find_palettes(palettes_dir: str = None,
         palettes_dir = [palettes_dir]
     if search_builtins:
         palettes_dir.append(_builtin_palettes_dir)
+    if search_cwd:
+        palettes_dir.append(os.getcwd())
     globs = []
     if not isinstance(kind, (tuple, list)):
         kind = [kind]
