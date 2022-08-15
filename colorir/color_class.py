@@ -291,7 +291,7 @@ class sRGB(ColorTupleBase):
 
         obj = super().__new__(cls,
                               rgba_[:3],
-                              rgba_[-1],
+                              rgba_[-1] / 255 * max_a,
                               rgba,
                               include_a=include_a,
                               round_to=round_to)
