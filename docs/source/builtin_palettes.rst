@@ -1,148 +1,119 @@
+=================
 Built-in Palettes
 =================
 
 These are built-in palettes that come with colorir by default.
 
-The |ellipsis| symbol indicates the palette is bigger but couldn't fit here.
+Some of the following palettes have named colors (considered palettes), while in others colors are unnamed (considered stack palettes). After the name of each palette, it is indicated which type it belongs to, and therefore whether it should be loaded with :meth:`Palette.load() <colorir.palette.Palette.load()>` or :meth:`StackPalette.load() <colorir.palette.StackPalette.load()>`.
 
 .. |ellipsis| image:: images/ellipsis.png
-    :height: 25px
-
-Palettes
-________
-
-The following palettes can be loaded with :meth:`Palette.load() <colorir.palette.Palette.load()>`.
 
 Essentials
 ----------
 
 Palettes that provide access to commonly used colors.
 
-basic
-+++++
+basic - *palette*
++++++++++++++++++
 
 .. image:: images/palettes/basic.png
-    :height: 25px
 
-rainbow
-+++++++
+rainbow - *palette*
++++++++++++++++++++
 
 .. image:: images/palettes/rainbow.png
-    :height: 25px
     
-css
-+++
+css - *palette*
++++++++++++++++
+
+Web colors of CSS and HTML.
 
 .. image:: images/palettes/css.png
-    :height: 25px
 
-Crayons
--------
+Birds of Brazil
+---------------
 
-Palettes that have been release as crayon sets in the past.
-    
-fluorescent
-+++++++++++
+Palettes that pay homage to the beautiful compositions painted in the feathers of birds native to my home country, Brazil.
 
-.. image:: images/palettes/fluorescent.png
-    :height: 25px
-    
-gem_tones
-+++++++++
+precious_tanager - *stack palette*
+++++++++++++++++++++++++++++++++++
 
-.. image:: images/palettes/gem_tones.png
-    :height: 25px
-    
-heads_n_tails
-+++++++++++++
+Colors of the south-american *Tangara preciosa*.
 
-.. image:: images/palettes/heads_n_tails.png
-    :height: 25px
-    
-magic_scent
-+++++++++++
+.. image:: images/palettes/precious_tanager.png
 
-.. image:: images/palettes/magic_scent.png
-    :height: 25px
-    
-metallic_fx
-+++++++++++
+scarlet_macaw - *stack palette*
++++++++++++++++++++++++++++++++
 
-.. image:: images/palettes/metallic_fx.png
-    :height: 25px
-    
-silly_scents
-++++++++++++
+Colors of the parrot *Ara macao*.
 
-.. image:: images/palettes/silly_scents.png
-    :height: 25px
-    
-silver_swirls
-+++++++++++++
+.. image:: images/palettes/scarlet_macaw.png
 
-.. image:: images/palettes/silver_swirls.png
-    :height: 25px
+toco_toucan - *stack palette*
++++++++++++++++++++++++++++++
 
-Matplotlib
-----------
+Colors of the largest species of toucan, *Ramphastos toco*.
 
-tab10
-+++++++++++++
+.. image:: images/palettes/toco_toucan.png
 
-Since tab10 colors are named, they are added as a palette. :ref:`Remaining Matplotlib palettes <mplt stack>` are available as stack palettes.
+hyacinth_macaw - *stack palette*
+++++++++++++++++++++++++++++++++
 
-.. image:: images/palettes/tab10.png
-    :height: 25px
+Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the RGB color space.
 
-Other
------
+.. image:: images/palettes/hyacinth_macaw.png
 
-Palettes that don't necessarily fit a category.
+Originals
+---------
 
-passion
-+++++++
+Palettes created by me that don't fit other categories.
 
-Contrasts the `peace`_ palette. Take a moment to look at the name of the colors of these palettes, they took a while to come up with!
+.. _passion:
+
+passion - *palette*
++++++++++++++++++++
+
+Complements the `peace`_ palette. Take a moment to look at the name of the colors of these palettes, they took a while to come up with!
 
 .. image:: images/palettes/passion.png
-    :height: 25px
 
-peace
-+++++
+.. _peace:
 
-Contrasts the `passion`_ palette.
+peace - *palette*
++++++++++++++++++
+
+Complements the `passion`_ palette.
 
 .. image:: images/palettes/peace.png
-    :height: 25px
 
-fire
-++++
+sky - *palette*
++++++++++++++++
 
-.. image:: images/palettes/fire.png
-    :height: 25px
-
-sky
-+++
+Take a look at the sky! Its colors have inspired many poets and painters throughout history.
 
 .. image:: images/palettes/sky.png
-    :height: 25px
 
-world_flags
-+++++++++++
+mystic_forest - *palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/mystic_forest.png
+
+fire - *palette*
+++++++++++++++++
+
+Colors inspired by the many aspects of flame.
+
+.. image:: images/palettes/fire.png
+
+world_flags - *palette*
++++++++++++++++++++++++
 
 Colors picked from country flags.
 
 .. image:: images/palettes/world_flags.png
-    :height: 25px
 
-mystic_forest
-+++++++++++++
-
-.. image:: images/palettes/mystic_forest.png
-    :height: 25px
-
-pantone_years
-+++++++++++++
+pantone_years - *palette*
++++++++++++++++++++++++++
 
 .. attention::
 
@@ -151,143 +122,261 @@ pantone_years
 Colors awarded as `color of the year <https://www.pantone.com/articles/past-colors-of-the-year>`_ by Pantone.
 
 .. image:: images/palettes/pantone_years.png
-    :height: 25px
 
-pigments
-+++++++++++++
+pigments - *palette*
+++++++++++++++++++++
 
-Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`_. This palette is big and hue-sorted, so only the blacks are shown.
+Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`_.
 
 .. image:: images/palettes/pigments.png
-    :height: 25px
 
-Stack Palettes
-______________
+sunset - *stack palette*
+++++++++++++++++++++++++
 
-The following palettes can be loaded with :meth:`StackPalette.load() <colorir.palette.StackPalette.load()>`.
+.. image:: images/palettes/sunset.png
 
-Birds of Brazil
----------------
+Color Brewer
+------------
 
-Palettes that pay homage to the beautiful compositions painted in the feathers of birds native to my home country, Brazil.
+Palettes extracted from the amazing `Color Brewer project <https://colorbrewer2.org/>`_.
 
-precious_tanager
+accent - *palette*
+++++++++++++++++++
+
+.. image:: images/palettes/accent.png
+
+dark2 - *palette*
++++++++++++++++++
+
+.. image:: images/palettes/dark2.png
+
+paired - *palette*
+++++++++++++++++++
+
+.. image:: images/palettes/paired.png
+
+pastel1 - *palette*
++++++++++++++++++++
+
+.. image:: images/palettes/pastel1.png
+
+pastel2 - *palette*
++++++++++++++++++++
+
+.. image:: images/palettes/pastel2.png
+
+set1 - *palette*
 ++++++++++++++++
 
-Colors of the south-american *Tangara preciosa*.
+.. image:: images/palettes/set1.png
 
-.. image:: images/palettes/precious_tanager.png
-    :height: 25px
+set2 - *palette*
+++++++++++++++++
 
-scarlet_macaw
-+++++++++++++
+.. image:: images/palettes/set2.png
 
-Colors of the parrot *Ara macao*.
+set3 - *palette*
+++++++++++++++++
 
-.. image:: images/palettes/scarlet_macaw.png
-    :height: 25px
+.. image:: images/palettes/set3.png
 
-toco_toucan
-+++++++++++
+spectral - *stack palette*
+++++++++++++++++++++++++++
 
-Colors of the largest species of toucan, *Ramphastos toco*.
+.. image:: images/palettes/spectral.png
 
-.. image:: images/palettes/toco_toucan.png
-    :height: 25px
+blues - *stack palette*
++++++++++++++++++++++++
 
-hyacinth_macaw
-++++++++++++++
+.. image:: images/palettes/blues.png
 
-Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the RGB color space.
+greens - *stack palette*
+++++++++++++++++++++++++
 
-.. image:: images/palettes/hyacinth_macaw.png
-    :height: 25px
+.. image:: images/palettes/greens.png
 
-.. _mplt stack:
+greys - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/greys.png
+
+oranges - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/oranges.png
+
+purples - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/purples.png
+
+reds - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/reds.png
+
+brbg - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/brbg.png
+
+bugn - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/bugn.png
+
+bupu - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/bupu.png
+
+gnbu - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/gnbu.png
+
+orrd - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/orrd.png
+
+piyg - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/piyg.png
+
+prgn - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/prgn.png
+
+pubu - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/pubu.png
+
+pubugn - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/pubugn.png
+
+puor - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/puor.png
+
+purd - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/purd.png
+
+rdbu - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/rdbu.png
+
+rdgy - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/rdgy.png
+
+rdpu - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/rdpu.png
+
+rdylbu - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/rdylbu.png
+
+rdylgn - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/rdylbu.png
+
+ylgn - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/ylgn.png
+
+ylgnbu - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/ylgnbu.png
+
+ylorbr - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/ylorbr.png
+
+ylorrd - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/ylorrd.png
 
 Matplotlib
 ----------
 
-Palettes derived from Matplotlib qualitative color maps.
+tab10 - *palette*
++++++++++++++++++
 
-.. note::
+.. image:: images/palettes/tab10.png
 
-    All names are lowercase, unlike those of some of the original color maps.
-
-tab20
-+++++
+tab20 - *stack palette*
++++++++++++++++++++++++
 
 .. image:: images/palettes/tab20.png
-    :height: 25px
 
-tab20b
-++++++
+tab20b - *stack palette*
+++++++++++++++++++++++++
 
 .. image:: images/palettes/tab20b.png
-    :height: 25px
 
-tab20c
-++++++
+tab20c - *stack palette*
+++++++++++++++++++++++++
 
 .. image:: images/palettes/tab20c.png
-    :height: 25px
 
-pastel1
-+++++++
+Crayons
+-------
 
-.. image:: images/palettes/pastel1.png
-    :height: 25px
+Palettes that have been release as crayon sets in the past.
+    
+fluorescent - *palette*
++++++++++++++++++++++++
 
-pastel2
-+++++++
+.. image:: images/palettes/fluorescent.png
+    
+gem_tones - *palette*
++++++++++++++++++++++
 
-.. image:: images/palettes/pastel2.png
-    :height: 25px
+.. image:: images/palettes/gem_tones.png
+    
+heads_n_tails - *palette*
++++++++++++++++++++++++++
 
-paired
-++++++
+.. image:: images/palettes/heads_n_tails.png
+    
+magic_scent - *palette*
++++++++++++++++++++++++
 
-.. image:: images/palettes/paired.png
-    :height: 25px
+.. image:: images/palettes/magic_scent.png
+    
+metallic_fx - *palette*
++++++++++++++++++++++++
 
-accent
-++++++
+.. image:: images/palettes/metallic_fx.png
+    
+silly_scents - *palette*
+++++++++++++++++++++++++
 
-.. image:: images/palettes/accent.png
-    :height: 25px
+.. image:: images/palettes/silly_scents.png
+    
+silver_swirls - *palette*
++++++++++++++++++++++++++
 
-dark2
-+++++
-
-.. image:: images/palettes/dark2.png
-    :height: 25px
-
-set1
-++++
-
-.. image:: images/palettes/set1.png
-    :height: 25px
-
-set2
-++++
-
-.. image:: images/palettes/set2.png
-    :height: 25px
-
-set3
-++++
-
-.. image:: images/palettes/set3.png
-    :height: 25px
-
-Others
-------
-
-sunset
-++++++
-
-.. image:: images/palettes/sunset.png
-    :height: 25px
+.. image:: images/palettes/silver_swirls.png
 
 
 

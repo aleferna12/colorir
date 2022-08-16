@@ -9,9 +9,9 @@ colorir is a package developed to unify your workflow with colors across differe
 
 With colorir you can:
 
-- Create palettes of colors you like to use in your different projects;
+- Create palettes of your favorite colors to use in your different projects;
 - Pass color values directly as input for other graphical or web frameworks;
-- Have access to a curated selection of unique color palettes;
+- Have access to a curated selection of unique color palettes and color names;
 - Easily convert between different color systems and formats;
 - Create gradients between colors and sample from them;
 - Easily visualize swatches of colors in the terminal;
@@ -38,7 +38,7 @@ Getting started with colorir can be as simple as:
 
     sky = Palette.load("sky")  # Loads the sky palette
     sky_grad = PolarGrad([sky.sunrise, sky.highnoon])  # Creates a gradient from "sunrise" to "highnoon"
-    swatch(sky)
+    swatch(sky)  # Shows colorir objects in the terminal
     swatch(sky_grad)
 
 This code should print both the palette and the gradient directly in your terminal:
