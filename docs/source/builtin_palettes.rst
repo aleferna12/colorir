@@ -59,7 +59,7 @@ Colors of the largest species of toucan, *Ramphastos toco*.
 hyacinth_macaw - *stack palette*
 ++++++++++++++++++++++++++++++++
 
-Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the RGB color space.
+Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the HCLuv color space.
 
 .. image:: images/palettes/hyacinth_macaw.png
 

@@ -14,6 +14,7 @@ from .gradient import Grad
 
 __all__ = [
     "swatch",
+    "show",
     "simplified_dist",
     "color_dist",
     "random_color",
@@ -22,7 +23,11 @@ __all__ = [
 ]
 
 
-def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.StackPalette"],
+def swatch(obj: Union[ColorLike,
+                      List[ColorLike],
+                      "palette.Palette",
+                      "palette.StackPalette",
+                      "Grad"],
            colored_text=True,
            width=3,
            height=1,
