@@ -66,7 +66,7 @@ class Grad:
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
             return str(self)
-        return utils.swatch(self, stdout=False)
+        return utils.swatch(self, file=None)
 
     def perc(self, p: float):
         """Returns the color placed in a given percentage of the gradient.
@@ -118,9 +118,9 @@ class Grad:
         """Converts this gradient into a matplotlib LinearSegmentedColormap.
 
         Args:
-            name: Passed down to ListedColormap constructor.
-            N: Passed down to ListedColormap constructor.
-            gamma: Passed down to ListedColormap constructor.
+            name: Passed down to LinearSegmentedColormap constructor.
+            N: Passed down to LinearSegmentedColormap constructor.
+            gamma: Passed down to LinearSegmentedColormap constructor.
         """
         from matplotlib.colors import LinearSegmentedColormap
 

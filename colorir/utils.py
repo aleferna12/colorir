@@ -1,4 +1,5 @@
 import os
+import sys
 from math import sqrt
 from random import randint
 from typing import Union, List
@@ -28,7 +29,7 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
            width=3,
            height=1,
            tabular=True,
-           stdout=True):
+           file=sys.stdout):
     """Create swatches of `obj` in the terminal with colored text.
 
     Each swatch consists of a rectangle of a color followed by its value (and name if known).
@@ -42,9 +43,10 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
         height: The height (in number of lines) of the colored rectangles.
         tabular: Whether the colored rectangle, color name and color value should be printed each
             in its separate column. Only used if `obj` is a :class:`~colorir.palette.Palette`.
-        stdout: If ``True``, prints the swatch to the standard output, rather than returning
-            it as a string.
+        file: If ``None`` returns the swatch as a string. Otherwise, this argument must be a file object and
+            is passed to `print`.
     """
+    longest_name = None
     # Assume single ColorLike
     if isinstance(obj, (ColorBase, str, tuple)):
         obj = [obj]
@@ -60,7 +62,7 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
     for i, c_val in enumerate(obj):
         rect_str = color_str(" " * width, bg_color=c_val)
         val_str = f" {c_val}"
-        if isinstance(obj, palette.Palette):
+        if longest_name is not None:
             name = obj.color_names[i]
             spacing = tabular * " " * (longest_name - len(name))
             val_str = ' ' + name + spacing + val_str
@@ -70,9 +72,9 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
         for _ in range(height - 1):
             ret_str += rect_str + '\n'
     ret_str.lstrip("\n")
-    if not stdout:
+    if file is None:
         return ret_str
-    print(ret_str)
+    print(ret_str, file=file)
 
 
 def show(obj: Union[ColorLike,
@@ -84,7 +86,7 @@ def show(obj: Union[ColorLike,
          height=None,
          interactive=True):
     import tkinter as tk
-    from . import tkinter_utils as tku
+    from . import _tkinter_utils as tku
 
     win = tk.Tk()
     win.resizable(False, False)
@@ -133,7 +135,6 @@ def show(obj: Union[ColorLike,
             width=width,
             height=height
         )
-
     wgt.pack()
     win.mainloop()
 
@@ -219,8 +220,8 @@ def simplified_dist(color1: ColorLike,
     d_g = rgba1[1] - rgba2[1]
     d_b = rgba1[2] - rgba2[2]
     return sqrt((2 + avg_r) * d_r ** 2
-                 + 4 * d_g ** 2
-                 + (3 - avg_r) * d_b ** 2)
+                + 4 * d_g ** 2
+                + (3 - avg_r) * d_b ** 2)
 
 
 # TODO doc (mention 2000 not working properly in colormath and kwargs for delta-e funcs)
@@ -317,5 +318,5 @@ def _to_srgb(rgba):
         if rgba[i] <= 255 * 0.0031308:
             rgba[i] *= 12.92
         else:
-            rgba[i] = 255 * (1.055 * pow(rgba[i] / 255, 1/2.4) - 0.055)
+            rgba[i] = 255 * (1.055 * pow(rgba[i] / 255, 1 / 2.4) - 0.055)
     return tuple(rgba)

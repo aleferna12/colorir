@@ -293,7 +293,7 @@ rdylbu - *stack palette*
 rdylgn - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/rdylbu.png
+.. image:: images/palettes/rdylgn.png
 
 ylgn - *stack palette*
 ++++++++++++++++++++++
