@@ -138,6 +138,17 @@ class Grad:
 
 # TODO doc
 class PolarGrad(Grad):
+    """Similar to `Grad` but can calculate the shortest path for HUE interpolation.
+
+    Args:
+        shortest: Whether to use the shortest path to interpolate colors with a HUE component. If ``False``,
+            acts like `Grad`.
+        colors: Iterable of colors that compose the gradient. There can be more than two colors in
+            this iterable.
+        color_format: Color format specifying how to output colors. Defaults to
+            :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+        color_sys: Color system in which the colors will be interpolated.
+    """
     def __init__(self,
                  colors,
                  color_format=None,
