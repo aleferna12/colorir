@@ -67,16 +67,17 @@ class ColorBase(metaclass=abc.ABCMeta):
     def __hash__(self):
         return hash(tuple(self._rgba))
 
-    def get_format(self) -> "colorir.color_format.ColorFormat":
+    @property
+    def format(self) -> "colorir.color_format.ColorFormat":
         """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
         color object."""
         format_ = {param: getattr(self, param) for param in self._format_params}
         return colorir.color_format.ColorFormat(self.__class__, **format_)
 
     def grayscale(self):
-        """Converts this color to a grayscale representation in the same format using CIELuv
+        """Converts this color to a grayscale representation in the same format using CIELab
         lightness component."""
-        return self.get_format().format(CIELuv(self.cieluv().l, 0, 0))
+        return self.format.format(CIELuv(self.cieluv().l, 0, 0))
 
     def hex(self, **kwargs) -> "Hex":
         """Converts the current color to a hexadecimal representation.
@@ -175,6 +176,7 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
     Notes:
         This class is abstract and should not be instantiated.
     """
+
     @abc.abstractmethod
     def __new__(cls, specs, a, rgba, include_a, round_to):
         specs = list(specs)
@@ -250,6 +252,7 @@ class sRGB(ColorTupleBase):
             this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
+
     def __new__(cls,
                 r: float,
                 g: float,
@@ -323,6 +326,7 @@ class HSL(ColorPolarBase):
             this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
+
     def __new__(cls,
                 h: float,
                 s: float,
@@ -394,6 +398,7 @@ class HSV(ColorPolarBase):
             this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
     """
+
     def __new__(cls,
                 h: float,
                 s: float,
@@ -464,6 +469,7 @@ class CMYK(ColorTupleBase):
             this parameter to 0 ensures that the components will be of type `int`. The default,
             -1, means that the components won't be rounded at all.
     """
+
     def __new__(cls, c: float, m: float, y: float, k: float, a: float = None, max_cmyka=1,
                 include_a=False,
                 round_to=-1):
@@ -533,6 +539,7 @@ class CMY(ColorTupleBase):
             this parameter to 0 ensures that the components will be of type `int`. The default,
             -1, means that the components won't be rounded at all.
     """
+
     def __new__(cls,
                 c: float,
                 m: float,
@@ -745,7 +752,6 @@ class HCLab(ColorPolarBase):
                 rgb.clamped_rgb_g * 255,
                 rgb.clamped_rgb_b * 255,
                 a / max_a * 255)
-
         obj = super().__new__(cls,
                               (h, c, l),
                               a,
@@ -813,6 +819,7 @@ class Hex(ColorBase, str):
         >>> Hex("ff0000", include_a=True, tail_a=True)
         Hex('#ff0000ff')
     """
+
     def __new__(cls,
                 hex_str: str,
                 uppercase=False,

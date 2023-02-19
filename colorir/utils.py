@@ -14,6 +14,7 @@ from .gradient import Grad
 
 __all__ = [
     "swatch",
+    "show",
     "simplified_dist",
     "color_dist",
     "random_color",
@@ -72,6 +73,69 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
     if not stdout:
         return ret_str
     print(ret_str)
+
+
+def show(obj: Union[ColorLike,
+                    List[ColorLike],
+                    "palette.Palette",
+                    "palette.StackPalette",
+                    "Grad"],
+         width=None,
+         height=None,
+         interactive=True):
+    import tkinter as tk
+    from . import tkinter_utils as tku
+
+    win = tk.Tk()
+    win.resizable(False, False)
+
+    max_width = win.winfo_screenwidth()
+    max_height = win.winfo_screenheight()
+
+    if isinstance(obj, Grad):
+        if width is None:
+            width = min(max_width, max(0.4 * max_width, 50 * len(obj.colors)))
+        if height is None:
+            height = 0.1 * max_height
+        width, height = int(width), int(height)
+
+        colors = obj.n_colors(width)
+        color_names = None
+    else:
+        if isinstance(obj, palette.Palette):
+            colors = obj.colors
+            color_names = obj.color_names
+        elif isinstance(obj, (palette.StackPalette, list)):
+            colors = list(obj)
+            color_names = None
+        else:
+            colors = [config.DEFAULT_COLOR_FORMAT.format(obj)]
+            color_names = None
+
+        if height is None:
+            height = 0.1 * max_height
+        if width is None:
+            width = min(max_width, len(colors) * height)
+        width, height = int(width), int(height)
+
+    if interactive:
+        wgt = tku.PaletteWidget(
+            win,
+            colors,
+            color_names=color_names,
+            width=width,
+            height=height
+        )
+    else:
+        wgt = tku.StaticPaletteWidget(
+            win,
+            colors,
+            width=width,
+            height=height
+        )
+
+    wgt.pack()
+    win.mainloop()
 
 
 # Implemented this way rather than a sort_colors function because it can be combined with

@@ -74,7 +74,7 @@ class Window(tk.Tk):
 class FramedButton(tk.Frame):
     def __init__(self, parent, width, height, *args, **kwargs):
         super().__init__(parent, width=width, height=height)
-        self.pack_propagate(0)
+        self.pack_propagate(False)
         self.button = tk.Button(self, *args, **kwargs)
         self.button.pack(fill=tk.BOTH, expand=1)
 
