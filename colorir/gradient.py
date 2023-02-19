@@ -107,6 +107,10 @@ class Grad:
                 This allows sampling a small number of colors (such as two) without having it
                 return the same colors that were used to create the gradient in the first place.
         """
+        if n < 1:
+            raise ValueError("'n' must be a positive integer")
+        if n == 1:
+            return [self.perc(0.5)]
         colors = []
         sub = -1 if include_ends else 1
         for i in range(n):
