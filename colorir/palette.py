@@ -260,7 +260,8 @@ class Palette(PaletteBase):
                 found_palettes[palette_name] = json.loads(palette_file.read_text())
 
         palette_obj = cls(name=name, color_format=color_format)
-        if palettes is None: palettes = list(found_palettes)
+        if palettes is None:
+            palettes = list(found_palettes)
         # Reiterates based on user input order
         for palette_name in palettes:
             for c_name, c_rgba in found_palettes[palette_name].items():
@@ -292,7 +293,7 @@ class Palette(PaletteBase):
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
             return str(self)
-        return utils.swatch(self, stdout=False)
+        return utils.swatch(self, file=None)
 
     def __eq__(self, other):
         return self._color_dict.items() == other._color_dict.items()
@@ -705,7 +706,7 @@ class StackPalette(PaletteBase):
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
             return str(self)
-        return utils.swatch(self, stdout=False)
+        return utils.swatch(self, file=None)
 
     def __eq__(self, other):
         return self._color_stack == other._color_stack

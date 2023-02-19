@@ -207,7 +207,7 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
             return f"{self.__class__.__name__}{tuple.__repr__(self)}"
         if colorir.config.REPR_STYLE == "inherit":
             return str(self)
-        return colorir.utils.swatch(self, stdout=False)
+        return colorir.utils.swatch(self, file=None)
 
     def __eq__(self, other):
         if isinstance(other, ColorBase):
@@ -884,7 +884,7 @@ class Hex(ColorBase, str):
             return f"{self.__class__.__name__}({str.__repr__(self)})"
         if colorir.config.REPR_STYLE == "inherit":
             return str(self)
-        return colorir.utils.swatch(self, stdout=False)
+        return colorir.utils.swatch(self, file=None)
 
     def __eq__(self, other):
         if isinstance(other, ColorBase):

@@ -58,7 +58,7 @@ class Grad:
         self.color_sys = color_sys
         self.colors = [self.color_format.format(color) for color in colors]
         self._conv_colors = [color_sys._from_rgba(color._rgba, include_a=True)
-                                  for color in self.colors]
+                             for color in self.colors]
 
     def __str__(self):
         return f"{self.__class__.__name__}({self.colors})"

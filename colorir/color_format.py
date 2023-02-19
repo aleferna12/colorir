@@ -5,7 +5,7 @@ specifications. For example, both Kivy [1]_ and PyGame [2]_ use mostly RGB color
 building applications. However, Kivy expects the colors to have a maximum value of 1, while PyGame
 expects it to be 255. To bridge these expectations and allow the use of the same set of colors for
 multiple projects across different frameworks, the :class:`ColorFormat` class was created.
-This class can be used to build strictly defined formats which allows the creation and
+This class can be used to build strictly defined formats which act as a template for the creation and
 interpretation of colors using :meth:`ColorFormat.new_color()` and :meth:`ColorFormat.format()`
 respectively.
 
