@@ -48,7 +48,10 @@ class Grad:
             If left empty, interspaced points will be automatically generated. For example,
             the default for a list of three colors with domain == [0, 1] is [0, 0.5, 1].
             Must start/end in the values specified as boundaries in `domain`.
-            Also must have the same length as the `colors` argument.
+            Also, must have the same length as the `colors` argument.
+        discrete: If ``True``, does not interpolate the colors and instead return the
+            closest color to the input value (according to `color_coords`). Useful to plot
+            categorical
     """
 
     def __init__(self,
@@ -56,7 +59,8 @@ class Grad:
                  color_sys: Type[ColorBase] = CIELuv,
                  color_format=None,
                  color_coords: List[float] = None,
-                 domain=(0, 1)):
+                 domain=(0, 1),
+                 discrete=False):
         if color_sys == Hex:
             raise ValueError("only tuple-based color systems are supported")
         if domain[0] >= domain[1]:
@@ -78,6 +82,7 @@ class Grad:
                                                        round_to=-1) for color in self.colors]
         self.domain = list(domain)
         self.color_coords = np.array(color_coords)
+        self.discrete = discrete
 
     def __str__(self):
         return f"{self.__class__.__name__}({self.colors})"
@@ -94,11 +99,15 @@ class Grad:
         if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
             raise ValueError("'x' is out of the gradient domain")
         i = min(np.digitize(x, self.color_coords), len(self.colors) - 1)
-        new_color = self._linear_interp(
-            self._conv_colors[i - 1],
-            self._conv_colors[i],
-            (x - self.color_coords[i - 1]) / (self.color_coords[i] - self.color_coords[i - 1])
-        )
+        p = (x - self.color_coords[i - 1]) / (self.color_coords[i] - self.color_coords[i - 1])
+        if self.discrete:
+            new_color = self._conv_colors[i - 1 + round(p)]
+        else:
+            new_color = self._linear_interp(
+                self._conv_colors[i - 1],
+                self._conv_colors[i],
+                p
+            )
         # Sometimes this reinterpretation makes colors seem to not be linearly-interpolated
         # HCLuv(287, 99, 31) -> sRGB(131, 0, 185) -> HCLuv(286, 95, 35)
         # This is okay though
