@@ -25,7 +25,7 @@ import numpy as np
 from typing import Iterable, Type, List
 from . import config, utils
 from .color_class import sRGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex
-from .color_format import ColorLike
+from .color_format import ColorLike, ColorFormat
 
 __all__ = [
     "Grad",
@@ -53,6 +53,7 @@ class Grad:
             closest color to the input value (according to `color_coords`). Useful to plot
             categorical
     """
+    _color_format: "ColorFormat"
 
     def __init__(self,
                  colors: Iterable[ColorLike],
@@ -74,15 +75,24 @@ class Grad:
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
 
-        self.color_format = color_format
         self.color_sys = color_sys
-        self.colors = [self.color_format.format(color) for color in colors]
+        self.colors = colors
+        self.color_format = color_format
         self._conv_colors = [self.color_sys._from_rgba(color._rgba,
                                                        include_a=True,
                                                        round_to=-1) for color in self.colors]
         self.domain = list(domain)
         self.color_coords = np.array(color_coords)
         self.discrete = discrete
+
+    @property
+    def color_format(self):
+        return self._color_format
+
+    @color_format.setter
+    def color_format(self, val):
+        self._color_format = val
+        self.colors = [self.color_format.format(color) for color in self.colors]
 
     def __str__(self):
         return f"{self.__class__.__name__}({self.colors})"
