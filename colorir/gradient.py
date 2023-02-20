@@ -25,7 +25,7 @@ import numpy as np
 from typing import Iterable, Type
 
 from . import config, utils
-from .color_class import sRGB, CIELuv, ColorBase, HCLuv, ColorPolarBase
+from .color_class import sRGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex
 from .color_format import ColorLike
 
 __all__ = [
@@ -40,25 +40,47 @@ class Grad:
     """Linear interpolation gradient.
 
     Args:
-        colors: Iterable of colors that compose the gradient. There can be more than two colors in
-            this iterable.
+        colors: Iterable of colors that compose the gradient.
         color_format: Color format specifying how to output colors. Defaults to
             :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         color_sys: Color system in which the colors will be interpolated.
+        domain: Range (inclusive on both ends) from which colors can be interpolated.
+        color_coords: A list of the coordinates where each color in 'colors' is located in the gradient.
+            If left empty, interspaced points will be automatically generated. For example,
+            the default for a list of three colors with domain == [0, 1] is [0, 0.5, 1].
+            Must start/end in the values specified as boundaries in `domain`.
+            Also must have the same length as the `colors` argument.
     """
 
     def __init__(self,
                  colors: Iterable[ColorLike],
+                 color_sys: Type[ColorBase] = CIELuv,
                  color_format=None,
-                 color_sys: Type[ColorBase] = CIELuv):
+                 color_coords: list[float] = None,
+                 domain=(0, 1)):
+        if color_sys == Hex:
+            raise ValueError("only tuple-based color systems are supported")
+        if domain[0] >= domain[1]:
+            raise ValueError("'domain' must follow the format [lower_bound, upper_bound]")
+        if len(color_coords) != len(colors):
+            raise ValueError("'color_coords' must have same length as 'colors'")
+        if sorted([color_coords[0], color_coords[-1]]) != list(domain):
+            raise ValueError("the boundaries of 'domain' must be present in 'color_coords' as the first and "
+                             "last values")
+
+        if color_coords is None:
+            color_coords = np.linspace(domain[0], domain[1], len(colors))
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
 
         self.color_format = color_format
         self.color_sys = color_sys
         self.colors = [self.color_format.format(color) for color in colors]
-        self._conv_colors = [color_sys._from_rgba(color._rgba, include_a=True)
-                             for color in self.colors]
+        self._conv_colors = [self.color_sys._from_rgba(color._rgba,
+                                                       include_a=True,
+                                                       round_to=-1) for color in self.colors]
+        self.domain = list(domain)
+        self.color_coords = np.array(color_coords)
 
     def __str__(self):
         return f"{self.__class__.__name__}({self.colors})"
@@ -68,10 +90,28 @@ class Grad:
             return str(self)
         return utils.swatch(self, file=None)
 
-    def perc(self, p: float):
+    def __call__(self, x, restrict_domain=False):
+        return self.at(x, restrict_domain=restrict_domain)
+
+    def at(self, x, restrict_domain=False):
+        if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
+            raise ValueError("'x' is out of the gradient domain")
+        i = min(np.digitize(x, self.color_coords), len(self.colors) - 1)
+        new_color = self._linear_interp(
+            self._conv_colors[i - 1],
+            self._conv_colors[i],
+            (x - self.color_coords[i - 1]) / (self.color_coords[i] - self.color_coords[i - 1])
+        )
+        # Sometimes this reinterpretation makes colors seem to not be linearly-interpolated
+        # HCLuv(287, 99, 31) -> sRGB(131, 0, 185) -> HCLuv(286, 95, 35)
+        # This is okay though
+        return self.color_format._from_rgba(new_color._rgba)
+
+    def perc(self, p: float, restrict_domain=False):
         """Returns the color placed in a given percentage of the gradient.
 
         Args:
+            restrict_domain:
             p: Percentage of the gradient expressed in a range of 0-1 from which a color will be
                 drawn.
 
@@ -87,16 +127,8 @@ class Grad:
             >>> grad.perc(0.2)
             Hex('#e6005c')
         """
-        i = int(p * (len(self._conv_colors) - 1))
-        new_color = self._linear_interp(
-            self._conv_colors[i],
-            self._conv_colors[min([i + 1, len(self._conv_colors) - 1])],
-            p * (len(self._conv_colors) - 1) - i
-        )
-        # Sometimes this reinterpretation makes colors seem to not be linearly-interpolated
-        # HCLuv(287, 99, 31) -> sRGB(131, 0, 185) -> HCLuv(286, 95, 35)
-        # This is okay though
-        return self.color_format._from_rgba(new_color._rgba)
+        x = self.domain[0] + self.domain[1] * p
+        return self.at(x, restrict_domain=restrict_domain)
 
     def n_colors(self, n: int, include_ends=True):
         """Return `n` interspaced colors from the gradient.
@@ -110,13 +142,12 @@ class Grad:
         if n < 1:
             raise ValueError("'n' must be a positive integer")
         if n == 1:
-            return [self.perc(0.5)]
-        colors = []
-        sub = -1 if include_ends else 1
-        for i in range(n):
-            p = (i + (not include_ends)) / (n + sub)
-            colors.append(self.perc(p))
-        return colors
+            ps = [0.5]
+        elif include_ends:
+            ps = np.linspace(0, 1, n)
+        else:
+            ps = np.linspace(0, 1, n + 2)[1:-1]
+        return [self.perc(p) for p in ps]
 
     def to_cmap(self, name, N=256, gamma=1.0):
         """Converts this gradient into a matplotlib LinearSegmentedColormap.
@@ -147,21 +178,18 @@ class PolarGrad(Grad):
     Args:
         shortest: Whether to use the shortest path to interpolate colors with a HUE component. If ``False``,
             acts like `Grad`.
-        colors: Iterable of colors that compose the gradient. There can be more than two colors in
-            this iterable.
-        color_format: Color format specifying how to output colors. Defaults to
-            :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+        colors: Iterable of colors that compose the gradient.
         color_sys: Color system in which the colors will be interpolated.
     """
     def __init__(self,
                  colors,
-                 color_format=None,
                  color_sys=HCLuv,
-                 shortest=True):
+                 shortest=True,
+                 **kwargs):
         if not issubclass(color_sys, ColorPolarBase):
             raise ValueError("'color_sys' must be a subclass of 'ColorPolarBase'")
 
-        super().__init__(colors=colors, color_format=color_format, color_sys=color_sys)
+        super().__init__(colors=colors, color_sys=color_sys, **kwargs)
         self.shortest = shortest
 
     def _linear_interp(self, color1, color2, p: float):
@@ -202,8 +230,8 @@ class RGBGrad(Grad):
         .. [#] Ayke van Laethem at https://aykevl.nl/2019/12/colors
     """
 
-    def __init__(self, colors: Iterable[ColorLike], color_format=None, use_linear_rgb=True):
-        super().__init__(colors=colors, color_format=color_format, color_sys=sRGB)
+    def __init__(self, colors: Iterable[ColorLike], use_linear_rgb=True, **kwargs):
+        super().__init__(colors=colors, color_sys=sRGB, **kwargs)
         self.use_linear_rgb = use_linear_rgb
 
     def _linear_interp(self, color1, color2, p: float):
