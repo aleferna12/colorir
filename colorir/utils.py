@@ -2,7 +2,7 @@ import os
 import sys
 from math import sqrt
 from random import randint
-from typing import Union, List
+from typing import Union, List, Iterable
 
 import numpy as np
 from colormath.color_conversions import convert_color
@@ -94,7 +94,7 @@ def show(obj: Union[ColorLike,
         width:
         height:
         interactive: Whether clicking of the screen will copy the color value
-            to the clipboard and print the color on the terminal. Setting this
+            to the clipboard and swatch the color on the terminal. Setting this
             parameter to ``False`` results is a dramatic speed-up. By default,
             is set to ``True`` for small objects (less than 100 colors) and
             ``False`` otherwise.
@@ -156,9 +156,7 @@ def show(obj: Union[ColorLike,
     win.mainloop()
 
 
-# Implemented this way rather than a sort_colors function because it can be combined with
-# other keys (see color_picker example)
-def hue_sort_key(hue_classes=1,
+def hue_sort_key(hue_classes=None,
                  gray_thresh=12.0,
                  gray_start=True,
                  alt_lum=False,
@@ -172,7 +170,8 @@ def hue_sort_key(hue_classes=1,
 
     Args:
         hue_classes: Number hue categories. Inside each hue category colors will be sorted by
-            luminance rather than hue.
+            luminance rather than hue. When ``None``, colors are sorted only according to
+            their hue.
         gray_thresh: Chroma threshold bellow which a color will be considered a shade of gray.
         gray_start: Whether the colors considered shades of gray will be grouped at the start or
             end of the sorted iterable.
@@ -195,18 +194,28 @@ def hue_sort_key(hue_classes=1,
             h = gray_hue
             if not gray_start and alt_lum and hue_classes % 2 == 1:
                 l *= -1
-        elif hue_classes > 1:
+        elif hue_classes is not None:
             h = int(h * hue_classes)
             if alt_lum and h % 2 == (not gray_start):
                 l *= -1
 
-        if hue_classes == 1:
+        if hue_classes is None:
             return h
         if invert_lum:
             l *= -1
         return h, l
 
     return sort_key
+
+
+def hue_sorted(colors: Iterable[ColorLike], **kwargs) -> List[ColorLike]:
+    """Sort colors by their hue values. See :func:`~colorir.utils.hue_sort_key` for argument documentation.
+
+    Returns:
+        A list of sorted colors.
+    """
+    key = hue_sort_key(**kwargs)
+    return sorted(colors, key=key)
 
 
 def simplified_dist(color1: ColorLike,

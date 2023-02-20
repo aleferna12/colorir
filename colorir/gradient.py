@@ -189,10 +189,10 @@ class Grad:
 
 # TODO doc
 class PolarGrad(Grad):
-    """Similar to `Grad` but can calculate the shortest path for HUE interpolation.
+    """Similar to `Grad` but can calculate the shortest path for hue interpolation.
 
     Args:
-        shortest: Whether to use the shortest path to interpolate colors with a HUE component. If ``False``,
+        shortest: Whether to use the shortest path to interpolate colors with a hue component. If ``False``,
             acts like `Grad`.
         colors: Iterable of colors that compose the gradient.
         color_sys: Color system in which the colors will be interpolated.
