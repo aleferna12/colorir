@@ -62,14 +62,12 @@ class Grad:
             raise ValueError("only tuple-based color systems are supported")
         if domain[0] >= domain[1]:
             raise ValueError("'domain' must follow the format [lower_bound, upper_bound]")
+        if color_coords is None:
+            color_coords = np.linspace(domain[0], domain[1], len(colors))
         if len(color_coords) != len(colors):
             raise ValueError("'color_coords' must have same length as 'colors'")
         if sorted([color_coords[0], color_coords[-1]]) != list(domain):
-            raise ValueError("the boundaries of 'domain' must be present in 'color_coords' as the first and "
-                             "last values")
-
-        if color_coords is None:
-            color_coords = np.linspace(domain[0], domain[1], len(colors))
+            raise ValueError("the boundaries of 'domain' must be the first and last values of 'color_coords'")
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
 
