@@ -22,8 +22,7 @@ Examples:
     [Hex('#ff0000'), Hex('#e00066'), Hex('#be0090'), Hex('#9400b9'), Hex('#0000ff')]
 """
 import numpy as np
-from typing import Iterable, Type
-
+from typing import Iterable, Type, List
 from . import config, utils
 from .color_class import sRGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex
 from .color_format import ColorLike
@@ -56,7 +55,7 @@ class Grad:
                  colors: Iterable[ColorLike],
                  color_sys: Type[ColorBase] = CIELuv,
                  color_format=None,
-                 color_coords: list[float] = None,
+                 color_coords: List[float] = None,
                  domain=(0, 1)):
         if color_sys == Hex:
             raise ValueError("only tuple-based color systems are supported")
@@ -219,10 +218,11 @@ class RGBGrad(Grad):
         color_format: Color format specifying how to output colors. Defaults to
             :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         use_linear_rgb: Whether to use linear RGB rather than sRGB to create the gradient.
+            Defaults to ``True``.
 
     Notes:
         Often using linear RGB may result in a gradient that looks more natural to the human eye
-        [#]_
+        [#]_. THIS IS THE DEFAULT.
 
     References:
         .. [#] Ayke van Laethem at https://aykevl.nl/2019/12/colors
@@ -233,16 +233,15 @@ class RGBGrad(Grad):
         self.use_linear_rgb = use_linear_rgb
 
     def _linear_interp(self, color1, color2, p: float):
+        rgba_1 = color1._rgba
+        rgba_2 = color2._rgba
         if self.use_linear_rgb:
-            rgba_1 = utils._to_linear_rgb(color1._rgba)
-            rgba_2 = utils._to_linear_rgb(color2._rgba)
-        else:
-            rgba_1 = color1._rgba
-            rgba_2 = color2._rgba
+            rgba_1 = utils._to_linear_rgb(rgba_1 / 255)
+            rgba_2 = utils._to_linear_rgb(rgba_2 / 255)
 
-        new_rgba = tuple(rgba_1[i] + (rgba_2[i] - rgba_1[i]) * p for i in range(4))
+        new_rgba = rgba_1 + (rgba_2 - rgba_1) * p
         if self.use_linear_rgb:
-            new_rgba = utils._to_srgb(new_rgba)
+            new_rgba = utils._to_srgb(new_rgba) * 255
         return sRGB._from_rgba(new_rgba)
 
 

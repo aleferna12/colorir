@@ -25,14 +25,13 @@ from typing import List
 from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, LCHabColor, \
     CMYColor, CMYKColor
 from colormath.color_conversions import convert_color
-
 import colorir
 
 __all__ = [
     "ColorBase",
     "ColorTupleBase",
     "ColorPolarBase",
-    "sRGB",
+    "RGB",
     "HSV",
     "HSL",
     "CMY",
@@ -219,8 +218,7 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
 
 
 class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):
-    """Base class from which all color classes that are represented by tuples and have a hue
-     component in polar coordinates inherit.
+    """Mixin tag indicating that the color contains a polar HUE component.
 
     Notes:
         This class is abstract and should not be instantiated.
@@ -229,7 +227,7 @@ class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):
     max_h: float
 
 
-class sRGB(ColorTupleBase):
+class RGB(ColorTupleBase):
     """Represents a color in the RGB color space [#]_.
 
     References:
@@ -246,11 +244,13 @@ class sRGB(ColorTupleBase):
         max_a : What is the maximum value for the `a` component. Some common
             values for this parameter would be 100 or 1.
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
-            Setting it to ``True`` may result in an object such as :code:`sRGB(255, 255, 0,
-            255)` instead of :code:`sRGB(255, 255, 0)`, for exemple.
+            Setting it to ``True`` may result in an object such as :code:`RGB(255, 255, 0,
+            255)` instead of :code:`RGB(255, 255, 0)`, for example.
         round_to: Rounds the value of each color component to this many decimal places. Setting
             this parameter to 0 ensures that the components will be of type `int`. -1
             means that the components won't be rounded at all.
+        linear: Whether the values are linear RGB or sRGB. It is strongly advised not to keep values as
+            linear RGB, but it can be useful for quick conversions.
     """
 
     def __new__(cls,
@@ -258,10 +258,11 @@ class sRGB(ColorTupleBase):
                 g: float,
                 b: float,
                 a: float = None,
-                max_rgb=255,
+                max_rgb=1,
                 max_a=1,
                 include_a=False,
-                round_to=0):
+                round_to=-1,
+                linear=False):
         if a is None:
             a = max_a
         elif not 0 <= a <= max_a:
@@ -269,9 +270,12 @@ class sRGB(ColorTupleBase):
         if not all(0 <= spec <= max_rgb for spec in (r, g, b)):
             raise ValueError("'r', 'g' and 'b' must be greater than 0 and smaller than 'max_rgb'")
 
-        rgba = np.array((r, g, b, a), dtype=float) * 255
+        rgba = np.array((r, g, b, a), dtype=float)
         rgba[:3] /= max_rgb
         rgba[-1] /= max_a
+        if linear:
+            rgba = colorir.utils._to_srgb(rgba)
+        rgba *= 255
 
         obj = super().__new__(
             cls,
@@ -284,13 +288,18 @@ class sRGB(ColorTupleBase):
         obj.r, obj.g, obj.b = obj[:3]
         obj.max_rgb = max_rgb
         obj.max_a = max_a
-        obj._format_params += ["max_rgb", "max_a"]
+        obj.linear = linear
+        obj._format_params += ["max_rgb", "max_a", "linear"]
 
         return obj
 
     @classmethod
-    def _from_rgba(cls, rgba, max_rgb=255, max_a=1, include_a=False, round_to=0):
-        rgb = np.array(rgba[:-1]) / 255 * max_rgb
+    def _from_rgba(cls, rgba, max_rgb=1, max_a=1, include_a=False, round_to=-1, linear=False):
+        rgb = rgba / 255
+        if linear:
+            rgb = colorir.utils._to_linear_rgb(rgb)
+        rgb = rgb[:-1]
+        rgb *= max_rgb
 
         obj = super().__new__(cls,
                               rgb,
@@ -895,5 +904,6 @@ class Hex(ColorBase, str):
         return ColorBase.__hash__(self)
 
 
-# Alias
+# Aliases
 HexRGB = Hex
+sRGB = RGB

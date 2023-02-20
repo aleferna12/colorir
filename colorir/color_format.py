@@ -89,7 +89,6 @@ References:
     .. [2] PyGame library at https://www.pygame.org/.
 """
 from typing import Type, Union, NewType
-
 from . import color_class
 
 __all__ = [
@@ -209,7 +208,7 @@ class ColorFormat:
                              "ColorFormat")
 
 
-PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=255, max_a=255, round_to=0)
+PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.RGB, max_rgb=255, max_a=255, round_to=0)
 """Color format compatible with PyGame standards."""
 
 KIVY_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB,

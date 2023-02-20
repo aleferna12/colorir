@@ -3,6 +3,8 @@ import sys
 from math import sqrt
 from random import randint
 from typing import Union, List
+
+import numpy as np
 from colormath.color_conversions import convert_color
 from colormath.color_diff import *
 from colormath.color_objects import sRGBColor, LabColor
@@ -303,20 +305,14 @@ def color_str(string: str,
 
 # https://entropymine.com/imageworsener/srgbformula/
 def _to_linear_rgb(rgba):
-    rgba = list(rgba)
-    for i in range(3):
-        if rgba[i] <= 255 * 0.04045:
-            rgba[i] /= 12.92
-        else:
-            rgba[i] = 255 * pow(((rgba[i] / 255 + 0.055) / 1.055), 2.4)
-    return tuple(rgba)
+    """rgba must be in range 0-1"""
+    srgb = np.array(rgba[:-1])
+    lrgb = np.where(srgb <= 0.04045, srgb / 12.92, ((srgb + 0.055) / 1.055)**2.4)
+    return np.pad(lrgb, [(0, 1)], constant_values=rgba[-1])
 
 
 def _to_srgb(rgba):
-    rgba = list(rgba)
-    for i in range(3):
-        if rgba[i] <= 255 * 0.0031308:
-            rgba[i] *= 12.92
-        else:
-            rgba[i] = 255 * (1.055 * pow(rgba[i] / 255, 1 / 2.4) - 0.055)
-    return tuple(rgba)
+    """rgba must be in range 0-1"""
+    lrgb = np.array(rgba[:-1])
+    srgb = np.where(lrgb <= 0.0031308, lrgb * 12.92, 1.055 * lrgb**(1 / 2.4) - 0.055)
+    return np.pad(srgb, [(0, 1)], constant_values=rgba[-1])
