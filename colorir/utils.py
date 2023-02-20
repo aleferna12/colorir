@@ -86,15 +86,27 @@ def show(obj: Union[ColorLike,
                     "Grad"],
          width=None,
          height=None,
-         interactive=True):
+         interactive=None):
+    """Shows the object using tkinter.
+
+    Args:
+        obj:
+        width:
+        height:
+        interactive: Whether clicking of the screen will copy the color value
+            to the clipboard and print the color on the terminal. Setting this
+            parameter to ``False`` results is a dramatic speed-up. By default,
+            is set to ``True`` for small objects (less than 100 colors) and
+            ``False`` otherwise.
+    """
     import tkinter as tk
-    from . import _tkinter_utils as tku
+    from . import tkinter_utils as tku
 
     win = tk.Tk()
     win.resizable(False, False)
 
-    max_width = win.winfo_screenwidth()
-    max_height = win.winfo_screenheight()
+    max_width = win.winfo_screenwidth() * 0.8
+    max_height = win.winfo_screenheight() * 0.8
 
     if isinstance(obj, Grad):
         if width is None:
@@ -103,7 +115,8 @@ def show(obj: Union[ColorLike,
             height = 0.1 * max_height
         width, height = int(width), int(height)
 
-        colors = obj.n_colors(width)
+        # Each button is two pixels wide to make the widget lighter
+        colors = obj.n_colors(round(width / 2))
         color_names = None
     else:
         if isinstance(obj, palette.Palette):
@@ -122,6 +135,8 @@ def show(obj: Union[ColorLike,
             width = min(max_width, len(colors) * height)
         width, height = int(width), int(height)
 
+    if interactive is None:
+        interactive = True if len(colors) < 100 else False
     if interactive:
         wgt = tku.PaletteWidget(
             win,

@@ -1,5 +1,7 @@
 import tkinter as tk
 
+import numpy as np
+
 from . import config
 from .utils import color_str
 
@@ -8,7 +10,7 @@ class StaticPaletteWidget(tk.Canvas):
     def __init__(self, master, colors, width, height):
         super().__init__(master, width=width, height=height)
 
-        rect_w = int(width / len(colors))
+        rect_w = width / len(colors)
         for i, color in enumerate(colors):
             x = i * rect_w
             color = config.DEFAULT_COLOR_FORMAT.format(color).hex()
@@ -30,7 +32,8 @@ class ColorFrame(tk.Frame):
                              command=self.on_click,
                              bg=self.color.hex(),
                              activebackground=self.color.hex(),
-                             bd=0)
+                             bd=0,
+                             highlightthickness=0)
         self.btn.pack(fill=tk.BOTH, expand=1)
         self.pack_propagate(0)
 
@@ -57,6 +60,9 @@ class PaletteWidget(tk.Frame):
         root = self.get_root()
         if color_names is None:
             color_names = [""] * len(colors)
+        if len(colors) > width:
+            indexes = np.linspace(0, len(colors) - 1, width).round().astype(int)
+            colors = [colors[i] for i in indexes]
 
         btn_w = int(width / len(colors))
         for color, color_name in zip(colors, color_names):
