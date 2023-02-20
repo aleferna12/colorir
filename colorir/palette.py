@@ -52,6 +52,7 @@ from . import config
 from . import utils
 from .color_class import ColorBase, sRGB, HSL, HSV
 from .color_format import ColorFormat, ColorLike
+from .gradient import Grad
 
 _throw_exception = object()
 _builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
@@ -502,7 +503,6 @@ class StackPalette(PaletteBase):
     @PaletteBase.color_format.setter
     def color_format(self, color_format):
         PaletteBase.color_format.fset(self, color_format)
-
         self._color_stack = [color_format._from_rgba(color._rgba) for color in self._color_stack]
 
     @classmethod
@@ -714,6 +714,20 @@ class StackPalette(PaletteBase):
     def __add__(self, other):
         c_list = self.colors + other.colors
         return StackPalette(None, None, *c_list)
+
+    def resize(self, n, grad_class=Grad, **kwargs):
+        """Resizes the palette to be `n` elements long.
+
+        Args:
+            grad_class: Which gradient class to use for interpolation.
+            n: Number of elements in the final stack palette.
+            kwargs: Key-word arguments passed down to the internal gradient object.
+        Returns:
+            A new stack palette object. The name and color format of the current
+            palette will be copied.
+        """
+        colors = grad_class(colors=self.colors, **kwargs).n_colors(n)
+        return StackPalette(self.name, self.color_format, *colors)
 
     def swap(self, index1: int, index2: int):
         """Swap the places of two colors in the palette.
