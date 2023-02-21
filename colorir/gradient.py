@@ -24,7 +24,7 @@ Examples:
 import numpy as np
 from typing import Iterable, Type, List
 from . import config, utils
-from .color_class import sRGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex
+from .color_class import RGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex
 from .color_format import ColorLike, ColorFormat
 
 __all__ = [
@@ -119,7 +119,7 @@ class Grad:
                 p
             )
         # Sometimes this reinterpretation makes colors seem to not be linearly-interpolated
-        # HCLuv(287, 99, 31) -> sRGB(131, 0, 185) -> HCLuv(286, 95, 35)
+        # HCLuv(287, 99, 31) -> RGB(131, 0, 185) -> HCLuv(286, 95, 35)
         # This is okay though
         return self.color_format._from_rgba(new_color._rgba)
 
@@ -134,7 +134,7 @@ class Grad:
         Examples:
             Get purple inbetween red and blue:
 
-            >>> grad = Grad([sRGB(255, 0, 0), sRGB(0, 0, 255)])
+            >>> grad = Grad([RGB(1, 0, 0), RGB(0, 0, 1)])
             >>> grad.perc(0.5)
             Hex('#be0090')
 

@@ -116,7 +116,7 @@ class ColorFormat:
     Examples:
         >>> c_format = ColorFormat(color_class.sRGB, max_rgb=1)
         >>> c_format.new_color(1, 0, 0)
-        sRGB(1, 0, 0)
+        RGB(1, 0, 0)
 
         For more examples see the documentation of the :mod:`~colorir.color_format` module.
     """
@@ -152,7 +152,7 @@ class ColorFormat:
             ...                        max_a=1,
             ...                        include_a=True)
             >>> c_format.new_color(1, 0, 0)
-            sRGB(1, 0, 0, 1)
+            RGB(1, 0, 0, 1)
         """
         kwargs.update(self.format_params)
         return self.color_sys(*args, **kwargs)
@@ -172,13 +172,13 @@ class ColorFormat:
         Examples:
             >>> rgb_format = ColorFormat(color_class.sRGB, round_to=0)
             >>> rgb_format.format("#ff0000")
-            sRGB(255, 0, 0)
-            >>> rgb_format.format((255, 0, 0))
-            sRGB(255, 0, 0)
+            RGB(1, 0, 0)
+            >>> rgb_format.format((1, 0, 0))
+            RGB(1, 0, 0)
             >>> hex_format = ColorFormat(color_class.Hex)
             >>> hex_format.format("#ff0000")
             Hex('#ff0000')
-            >>> hex_format.format((255, 0, 0)) # Can't understand how to parse this tuple
+            >>> hex_format.format((1, 0, 0)) # Can't understand how to parse this tuple
             Traceback (most recent call last):
               ...
             ValueError: tried to interpret a tuple-formatted color object with a Hex ColorFormat

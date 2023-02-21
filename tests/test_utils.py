@@ -1,6 +1,5 @@
 import doctest
 import unittest
-
 from colorir import *
 
 config.REPR_STYLE = "traditional"
@@ -13,7 +12,7 @@ def load_tests(loader, tests, ignore):
 
 class TestDistance(unittest.TestCase):
     def test_simple_dist(self):
-        dist = utils.simplified_dist(sRGB(255, 255, 255), sRGB(0, 0, 0))
+        dist = utils.simplified_dist(RGB(1, 1, 1), RGB(0, 0, 0))
         self.assertAlmostEqual(dist, 765)
 
 

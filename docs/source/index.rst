@@ -158,7 +158,7 @@ We can also change the format of all colors in a palette at any time by re-assig
 
 >>> css.color_format = ColorFormat(color_sys=sRGB, max_rgba=1)
 >>> css.red
-sRGB(1.0, 0.0, 0.0)
+RGB(1.0, 0.0, 0.0)
 
 Alternatively, we can temporarily change the default color format system-wide so that new
 palettes default to it:
@@ -167,7 +167,7 @@ palettes default to it:
 >>> config.DEFAULT_COLOR_FORMAT = PYGAME_COLOR_FORMAT  # Change default format to a pre-defined PyGame-compatible color format
 >>> pygame_palette = Palette(red=(255, 0, 0), green="#00ff00")
 >>> pygame_palette.red
-sRGB(255, 0, 0)
+RGB(255, 0, 0)
 >>> pygame_palette.green
 Hex('#00ff00')
 

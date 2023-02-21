@@ -6,12 +6,12 @@ Colors can be compared, converted to and passed as arguments to different classe
 Examples:
     Create some colors and compare them:
 
-    >>> sRGB(255, 0, 0) == HSL(0, 1 , 0.5)
+    >>> RGB(1, 0, 0) == HSL(0, 1 , 0.5)
     True
 
     Convert an RGB color to CMYK:
 
-    >>> rgb_red = sRGB(255, 0, 0)
+    >>> rgb_red = RGB(1, 0, 0)
     >>> rgb_red.cmyk()
     CMYK(0.0, 1.0, 1.0, 0.0)
 
@@ -40,8 +40,7 @@ __all__ = [
     "CIELab",
     "HCLuv",
     "HCLab",
-    "Hex",
-    "HexRGB"
+    "Hex"
 ]
 
 
@@ -197,7 +196,7 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         return obj
 
     # It would be dangerous to change str conversion as the target framework could call it
-    # expecting (255, 0, 0) and get sRGB(255, 0, 0)
+    # expecting (255, 0, 0) and get RGB(255, 0, 0)
     def __str__(self):
         return tuple.__repr__(self)
 

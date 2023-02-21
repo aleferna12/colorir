@@ -1,10 +1,9 @@
 import os
 import sys
+import numpy as np
 from math import sqrt
 from random import randint
 from typing import Union, List, Iterable
-
-import numpy as np
 from colormath.color_conversions import convert_color
 from colormath.color_diff import *
 from colormath.color_objects import sRGBColor, LabColor
@@ -14,6 +13,9 @@ from . import palette
 from .color_class import ColorBase, HCLab
 from .color_format import ColorLike, ColorFormat
 from .gradient import Grad
+
+# Patch asscalar
+np.asscalar = lambda a: a.item()
 
 __all__ = [
     "swatch",
@@ -209,7 +211,7 @@ def hue_sort_key(hue_classes=None,
 
 
 def hue_sorted(colors: Iterable[ColorLike], **kwargs) -> List[ColorLike]:
-    """Sort colors by their hue values. See :func:`~colorir.utils.hue_sort_key` for argument documentation.
+    """Sort colors by their hue values. See :func:`~colorir.utils.hue_sort_key` for the arguments docs.
 
     Returns:
         A list of sorted colors.
@@ -330,13 +332,13 @@ def color_str(string: str,
 # https://entropymine.com/imageworsener/srgbformula/
 def _to_linear_rgb(rgba):
     """rgba must be in range 0-1"""
-    srgb = np.array(rgba[:-1])
-    lrgb = np.where(srgb <= 0.04045, srgb / 12.92, ((srgb + 0.055) / 1.055)**2.4)
-    return np.pad(lrgb, [(0, 1)], constant_values=rgba[-1])
+    srgb = _np.array(rgba[:-1])
+    lrgb = _np.where(srgb <= 0.04045, srgb / 12.92, ((srgb + 0.055) / 1.055) ** 2.4)
+    return _np.pad(lrgb, [(0, 1)], constant_values=rgba[-1])
 
 
 def _to_srgb(rgba):
     """rgba must be in range 0-1"""
-    lrgb = np.array(rgba[:-1])
-    srgb = np.where(lrgb <= 0.0031308, lrgb * 12.92, 1.055 * lrgb**(1 / 2.4) - 0.055)
-    return np.pad(srgb, [(0, 1)], constant_values=rgba[-1])
+    lrgb = _np.array(rgba[:-1])
+    srgb = _np.where(lrgb <= 0.0031308, lrgb * 12.92, 1.055 * lrgb ** (1 / 2.4) - 0.055)
+    return _np.pad(srgb, [(0, 1)], constant_values=rgba[-1])

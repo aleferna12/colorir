@@ -48,9 +48,11 @@ from pathlib import Path
 from typing import Union, List
 from warnings import warn
 
+import numpy as np
+
 from . import config
 from . import utils
-from .color_class import ColorBase, sRGB, HSL, HSV
+from .color_class import ColorBase, RGB, HSL, HSV
 from .color_format import ColorFormat, ColorLike
 from .gradient import Grad
 
@@ -266,10 +268,10 @@ class Palette(PaletteBase):
         # Reiterates based on user input order
         for palette_name in palettes:
             for c_name, c_rgba in found_palettes[palette_name].items():
-                c_rgba = (int(c_rgba[3:5], 16),
-                          int(c_rgba[5:7], 16),
-                          int(c_rgba[7:9], 16),
-                          int(c_rgba[1:3], 16))
+                c_rgba = np.array([int(c_rgba[3:5], 16),
+                                   int(c_rgba[5:7], 16),
+                                   int(c_rgba[7:9], 16),
+                                   int(c_rgba[1:3], 16)])
                 new_color = palette_obj.color_format._from_rgba(c_rgba)
                 old_color = palette_obj.get_color(c_name, new_color)
                 if new_color != old_color and warnings:
@@ -418,7 +420,7 @@ class Palette(PaletteBase):
             name: Name of the color to be removed.
 
         Examples:
-            >>> palette = Palette(red=sRGB(255, 0, 0))
+            >>> palette = Palette(red=RGB(1, 0, 0))
             >>> palette.remove("red")
             >>> "red" in palette.color_names
             False
@@ -565,7 +567,8 @@ class StackPalette(PaletteBase):
                 found_palettes[palette_name] = json.loads(palette_file.read_text())
 
         palette_obj = cls(name=name, color_format=color_format)
-        if palettes is None: palettes = list(found_palettes)
+        if palettes is None:
+            palettes = list(found_palettes)
         # Reiterates based on user input order
         for palette_name in palettes:
             for c_rgba in found_palettes[palette_name]:
@@ -592,7 +595,7 @@ class StackPalette(PaletteBase):
         Examples:
              Make a palette from red and its complementary color, cyan:
 
-             >>> spalette = StackPalette.new_complementary(2, sRGB(255, 0, 0))
+             >>> spalette = StackPalette.new_complementary(2, RGB(1, 0, 0))
              >>> spalette
              StackPalette(Hex('#ff0000'), Hex('#00ffff'))
 
@@ -637,7 +640,7 @@ class StackPalette(PaletteBase):
         Examples:
              Make a palette from red and its analogous color, orange:
 
-             >>> spalette = StackPalette.new_analogous(2, start=1, color=sRGB(255, 0, 0))
+             >>> spalette = StackPalette.new_analogous(2, start=1, color=RGB(1, 0, 0))
              >>> spalette
              StackPalette(Hex('#ff0000'), Hex('#ff8000'))
 
@@ -687,16 +690,30 @@ class StackPalette(PaletteBase):
         return n_spalette
 
     def __getitem__(self, item):
+        if isinstance(item, int):
+            return self._color_stack[item]
         if isinstance(item, list):
-            return [self._color_stack[i] for i in item]
-        return self._color_stack[item]
+            pal = StackPalette(color_format=self.color_format)
+            pal._color_stack = [self._color_stack[i] for i in item]
+            return pal
+        if isinstance(item, slice):
+            indexes = list(range(*item.indices(len(self))))
+            return self[indexes]
+        raise TypeError("index must be 'int', 'list' or 'slice'")
 
     def __setitem__(self, key, value):
-        if isinstance(key, list):
+        if isinstance(key, int):
+            self.update(key, value)
+        elif isinstance(key, list):
+            if len(key) != len(value):
+                raise ValueError("length of indexes and provided values must match")
             for i, val in zip(key, value):
                 self.update(i, val)
+        elif isinstance(key, slice):
+            indexes = list(range(*key.indices(len(self))))
+            self[indexes] = value
         else:
-            self.update(key, value)
+            raise TypeError("index must be 'int', 'list' or 'slice'")
 
     def __str__(self):
         name_str = self.name + ", " if self.name else ""

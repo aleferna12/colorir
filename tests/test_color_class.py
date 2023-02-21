@@ -1,5 +1,6 @@
 import doctest
 import unittest
+import numpy as np
 
 from colorir import *
 
@@ -12,13 +13,13 @@ def load_tests(loader, tests, ignore):
 
 
 class TestConversion(unittest.TestCase):
-    rgba = (50, 78, 5, 255)
+    rgba = np.array([50, 78, 5, 255])
 
     def test_rgb_conversion(self):
-        color = sRGB(50, 78, 5)
+        color = RGB(50, 78, 5, max_rgb=255)
         self.assertEqual(
             color,
-            sRGB._from_rgba(self.rgba)
+            RGB._from_rgba(self.rgba)
         )
         self.assertEqual(
             color,
