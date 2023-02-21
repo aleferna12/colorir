@@ -32,6 +32,7 @@ __all__ = [
     "ColorTupleBase",
     "ColorPolarBase",
     "RGB",
+    "sRGB",
     "HSV",
     "HSL",
     "CMY",
