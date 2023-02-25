@@ -248,7 +248,7 @@ class RGBGrad(Grad):
     """
 
     def __init__(self, colors: Iterable[ColorLike], use_linear_rgb=True, **kwargs):
-        super().__init__(colors=colors, color_sys=sRGB, **kwargs)
+        super().__init__(colors=colors, color_sys=RGB, **kwargs)
         self.use_linear_rgb = use_linear_rgb
 
     def _linear_interp(self, color1, color2, p: float):
@@ -261,7 +261,7 @@ class RGBGrad(Grad):
         new_rgba = rgba_1 + (rgba_2 - rgba_1) * p
         if self.use_linear_rgb:
             new_rgba = utils._to_srgb(new_rgba) * 255
-        return sRGB._from_rgba(new_rgba)
+        return RGB._from_rgba(new_rgba)
 
 
 # Alias
