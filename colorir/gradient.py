@@ -47,8 +47,7 @@ class Grad:
         color_coords: A list of the coordinates where each color in 'colors' is located in the gradient.
             If left empty, interspaced points will be automatically generated. For example,
             the default for a list of three colors with domain == [0, 1] is [0, 0.5, 1].
-            Must start/end in the values specified as boundaries in `domain`.
-            Also, must have the same length as the `colors` argument.
+            Must have the same length as the `colors` argument.
         discrete: If ``True``, does not interpolate the colors and instead return the
             closest color to the input value (according to `color_coords`). Useful to plot
             categorical
@@ -70,8 +69,6 @@ class Grad:
             color_coords = np.linspace(domain[0], domain[1], len(colors))
         if len(color_coords) != len(colors):
             raise ValueError("'color_coords' must have same length as 'colors'")
-        if sorted([color_coords[0], color_coords[-1]]) != list(domain):
-            raise ValueError("the boundaries of 'domain' must be the first and last values of 'color_coords'")
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
 
@@ -109,15 +106,18 @@ class Grad:
         if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
             raise ValueError("'x' is out of the gradient domain")
         i = min(np.digitize(x, self.color_coords), len(self.colors) - 1)
+        if i == 0:
+            return self.color_format._from_rgba(self._conv_colors[0]._rgba)
         p = (x - self.color_coords[i - 1]) / (self.color_coords[i] - self.color_coords[i - 1])
+        if p > 1:
+            return self.color_format._from_rgba(self._conv_colors[-1]._rgba)
         if self.discrete:
-            new_color = self._conv_colors[i - 1 + round(p)]
-        else:
-            new_color = self._linear_interp(
-                self._conv_colors[i - 1],
-                self._conv_colors[i],
-                p
-            )
+            return self.color_format._from_rgba(self._conv_colors[i - 1 + round(p)]._rgba)
+        new_color = self._linear_interp(
+            self._conv_colors[i - 1],
+            self._conv_colors[i],
+            p
+        )
         # Sometimes this reinterpretation makes colors seem to not be linearly-interpolated
         # HCLuv(287, 99, 31) -> RGB(131, 0, 185) -> HCLuv(286, 95, 35)
         # This is okay though
@@ -248,7 +248,7 @@ class RGBGrad(Grad):
     """
 
     def __init__(self, colors: Iterable[ColorLike], use_linear_rgb=True, **kwargs):
-        super().__init__(colors=colors, color_sys=sRGB, **kwargs)
+        super().__init__(colors=colors, color_sys=RGB, **kwargs)
         self.use_linear_rgb = use_linear_rgb
 
     def _linear_interp(self, color1, color2, p: float):
@@ -261,7 +261,7 @@ class RGBGrad(Grad):
         new_rgba = rgba_1 + (rgba_2 - rgba_1) * p
         if self.use_linear_rgb:
             new_rgba = utils._to_srgb(new_rgba) * 255
-        return sRGB._from_rgba(new_rgba)
+        return RGB._from_rgba(new_rgba)
 
 
 # Alias
