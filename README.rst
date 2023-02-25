@@ -5,7 +5,7 @@
 What is colorir?
 ----------------
 
-colorir is a package developed to unify your workflow with colors across different projects.
+colorir is a package that allows users to create, manipulate and store color palettes and schemes.
 
 With colorir you can:
 

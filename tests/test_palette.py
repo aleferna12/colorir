@@ -23,7 +23,7 @@ class TestPalette(unittest.TestCase):
     def test_save_load(self):
         colors = {f"c{i}": "%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for i in range(250)}
-        pal = Palette("test_sl", None, **colors)
+        pal = Palette(colors, name="test_sl")
         pal.save()
         pal2 = Palette.load("test_sl")
         self.assertEqual(pal, pal2)
@@ -35,13 +35,13 @@ class TestPalette(unittest.TestCase):
 
 class TestSwatchPalette(unittest.TestCase):
     def test_add_op(self):
-        spal = StackPalette(None, None, "ffffff") + StackPalette(None, None, "000000")
-        self.assertEqual(spal, StackPalette(None, None, "ffffff", "000000"))
+        spal = StackPalette(["ffffff"]) + StackPalette(["000000"])
+        self.assertEqual(spal, StackPalette(["ffffff", "000000"]))
 
     def test_save_load(self):
         colors = ["%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for _ in range(250)]
-        spal = StackPalette("test_sl", None, *colors)
+        spal = StackPalette(colors, name="test_sl")
         spal.save()
         spal2 = StackPalette.load("test_sl")
         self.assertEqual(spal, spal2)
@@ -49,7 +49,7 @@ class TestSwatchPalette(unittest.TestCase):
     def test_complementary(self):
         red = "ff0000"
         spal = StackPalette.new_complementary(3, red)
-        self.assertEqual(spal, StackPalette(None, None, red, "00ff00", "0000ff"))
+        self.assertEqual(spal, StackPalette([red, "00ff00", "0000ff"]))
 
     def test_analogous(self):
         red = HSV(0, 1, 1)
@@ -57,12 +57,12 @@ class TestSwatchPalette(unittest.TestCase):
         c_spal = StackPalette.new_analogous(3, color=red)
         cw_spal = StackPalette.new_analogous(3, color=red, start=1)
         ccw_spal = StackPalette.new_analogous(3, color=red, start=-1)
-        self.assertEqual(c_spal, StackPalette(None, None, HSV(330, 1, 1), red, HSV(30, 1, 1)))
-        self.assertEqual(cw_spal, StackPalette(None, None, red, HSV(30, 1, 1), HSV(60, 1, 1)))
-        self.assertEqual(ccw_spal, StackPalette(None, None, HSV(300, 1, 1), HSV(330, 1, 1), red))
+        self.assertEqual(c_spal, StackPalette([HSV(330, 1, 1), red, HSV(30, 1, 1)]))
+        self.assertEqual(cw_spal, StackPalette([red, HSV(30, 1, 1), HSV(60, 1, 1)]))
+        self.assertEqual(ccw_spal, StackPalette([HSV(300, 1, 1), HSV(330, 1, 1), red]))
         # Larger hue wheel sections
         wide_spal = StackPalette.new_analogous(3, sections=3, color=red)
-        self.assertEqual(wide_spal, StackPalette(None, None, HSV(240, 1, 1), red, HSV(120, 1, 1)))
+        self.assertEqual(wide_spal, StackPalette([HSV(240, 1, 1), red, HSV(120, 1, 1)]))
 
 
 class TestOtherFunctions(unittest.TestCase):
@@ -75,7 +75,7 @@ class TestOtherFunctions(unittest.TestCase):
         self.assertEqual(spals, ['test3'])
 
     def test_delete_palette(self):
-        n_pal = Palette("test_del", red="ff0000")
+        n_pal = Palette(name="test_del", red="ff0000")
         n_pal.save()
         self.assertIn("test_del", find_palettes())
         delete_palette("test_del")

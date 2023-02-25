@@ -161,21 +161,16 @@ class Palette(PaletteBase):
         colors: Colors that will be stored in this palette.
     """
     def __init__(self,
+                 colors: Dict[str, ColorLike] = None,
                  name: str = None,
                  color_format: ColorFormat = None,
-                 *,
-                 colors: Dict[str, ColorLike] = None,
                  **color_kwargs: ColorLike):
         super().__init__(name, color_format)
-        if colors and color_kwargs:
+        if colors is None:
+            colors = color_kwargs
+        elif color_kwargs:
             raise ValueError("colors can be passed either through the 'colors' parameter or through kwargs "
                              "but not both")
-        if colors is None:
-            if not color_kwargs:
-                warn("creating an empty palette with no arguments is deprecated since v1.4.0, "
-                     "instead specify 'colors' as an empty dict", DeprecationWarning)
-                colors = {}
-            colors = color_kwargs
 
         self._color_dict = {}
         for k, v in colors.items():
@@ -293,7 +288,19 @@ class Palette(PaletteBase):
         return palette_obj
 
     def __getattr__(self, item):
-        return self._color_dict[item]
+        return self.get_color(item)
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            return self.get_color(item)
+        elif isinstance(item, list):
+            pal = Palette(color_format=self.color_format)
+            pal._color_dict = {c_name: self._color_dict[c_name] for c_name in item}
+            return pal
+        raise TypeError(f"'Palette' indices must be 'str' or 'list', not '{type(item)}'")
+
+    def __dir__(self) -> List[str]:
+        return dir(Palette) + list(self.__dict__) + list(self._color_dict.keys())
 
     def __str__(self):
         name_str = self.name + ", " if self.name else ""
@@ -483,7 +490,7 @@ class StackPalette(PaletteBase):
     irrelevant.
 
     Examples:
-        >>> spalette = StackPalette("elementary", None, "ff0000", "00ff00", "0000ff")
+        >>> spalette = StackPalette(["ff0000", "00ff00", "0000ff"], name="elementary")
         >>> spalette[0]
         Hex('#ff0000')
 
@@ -497,17 +504,15 @@ class StackPalette(PaletteBase):
     """
 
     def __init__(self,
+                 colors: List[ColorLike] = None,
                  name: str = None,
-                 color_format: ColorFormat = None,
-                 *color_args: ColorLike,
-                 colors: List[ColorLike] = None):
+                 color_format: ColorFormat = None):
         super().__init__(name=name, color_format=color_format)
-        if color_args:
-            warn("use of *args for creating palettes is deprecated since v1.4.0, use the 'colors' argument instead",
-                 DeprecationWarning)
+        if colors is None:
+            colors = []
 
         self._color_stack = []
-        for color in color_args:
+        for color in colors:
             self.add(color)
 
     @property
@@ -712,7 +717,7 @@ class StackPalette(PaletteBase):
         if isinstance(item, slice):
             indexes = list(range(*item.indices(len(self))))
             return self[indexes]
-        raise TypeError("index must be 'int', 'list' or 'slice'")
+        raise TypeError(f"'StackPalette' indices must be 'int', 'list' or 'slice', not '{type(item)}'")
 
     def __setitem__(self, key, value):
         if isinstance(key, int):
@@ -743,7 +748,7 @@ class StackPalette(PaletteBase):
 
     def __add__(self, other):
         c_list = self.colors + other.colors
-        return StackPalette(None, None, *c_list)
+        return StackPalette(c_list)
 
     def resize(self, n, grad_class=Grad, **kwargs):
         """Resizes the palette to be `n` elements long.
@@ -765,7 +770,7 @@ class StackPalette(PaletteBase):
         Can be used to reorganize the palette if needed.
 
         Examples:
-            >>> spalette = StackPalette(None, None, "ff0000", "0000ff")
+            >>> spalette = StackPalette(["ff0000", "0000ff"])
             >>> spalette
             StackPalette(Hex('#ff0000'), Hex('#0000ff'))
             >>> spalette.swap(0, 1)
@@ -813,7 +818,7 @@ class StackPalette(PaletteBase):
         Examples:
             Create a slightly dark shade of red:
 
-            >>> spalette = StackPalette(None, None, "dd0000")
+            >>> spalette = StackPalette(["dd0000"])
             >>> spalette[0]
             Hex('#dd0000')
 
@@ -832,7 +837,7 @@ class StackPalette(PaletteBase):
         stack.
 
         Examples:
-            >>> spalette = StackPalette(None, None, "#ff0000")
+            >>> spalette = StackPalette(["#ff0000"])
             >>> "#ff0000" in spalette
             True
             >>> spalette.remove()
@@ -851,7 +856,7 @@ class StackPalette(PaletteBase):
         Examples:
             Create a new :class:`StackPalette` and save it to the current directory:
 
-            >>> spalette = StackPalette("elementary", None, "ff0000", "00ff00", "0000ff")
+            >>> spalette = StackPalette(["ff0000", "00ff00", "0000ff"], name="elementary")
             >>> spalette.save()
         """
         if self.name is None:
@@ -876,7 +881,7 @@ class StackPalette(PaletteBase):
                 stack palette.
         """
         if len(names) == len(set(names)) == len(self._color_stack):
-            return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
+            return Palette(name=self.name, color_format=self.color_format, **dict(zip(names, self._color_stack)))
         raise ValueError("'names' must have the same length as this 'StackPalette' and no "
                          "duplicates")
 
