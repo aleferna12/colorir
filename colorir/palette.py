@@ -46,7 +46,7 @@ import json
 import os
 import numpy as np
 from pathlib import Path
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Iterable
 from warnings import warn
 from . import config
 from . import utils
@@ -161,7 +161,7 @@ class Palette(PaletteBase):
         colors: Colors that will be stored in this palette.
     """
     def __init__(self,
-                 colors: Dict[str, ColorLike] = None,
+                 colors: Union["Palette", Dict[str, ColorLike]] = None,
                  name: str = None,
                  color_format: ColorFormat = None,
                  **color_kwargs: ColorLike):
@@ -171,6 +171,8 @@ class Palette(PaletteBase):
         elif color_kwargs:
             raise ValueError("colors can be passed either through the 'colors' parameter or through kwargs "
                              "but not both")
+        if isinstance(colors, Palette):
+            colors = colors.to_dict()
 
         self._color_dict = {}
         for k, v in colors.items():
@@ -504,7 +506,7 @@ class StackPalette(PaletteBase):
     """
 
     def __init__(self,
-                 colors: List[ColorLike] = None,
+                 colors: Iterable[ColorLike] = None,
                  name: str = None,
                  color_format: ColorFormat = None):
         super().__init__(name=name, color_format=color_format)
