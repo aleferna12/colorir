@@ -44,12 +44,10 @@ Examples:
 import abc
 import json
 import os
-from pathlib import Path
-from typing import Union, List
-from warnings import warn
-
 import numpy as np
-
+from pathlib import Path
+from typing import Union, List, Dict
+from warnings import warn
 from . import config
 from . import utils
 from .color_class import ColorBase, RGB, HSL, HSV
@@ -165,8 +163,19 @@ class Palette(PaletteBase):
     def __init__(self,
                  name: str = None,
                  color_format: ColorFormat = None,
-                 **colors: ColorLike):
+                 *,
+                 colors: Dict[str, ColorLike] = None,
+                 **color_kwargs: ColorLike):
         super().__init__(name, color_format)
+        if colors and color_kwargs:
+            raise ValueError("colors can be passed either through the 'colors' parameter or through kwargs "
+                             "but not both")
+        if colors is None:
+            if not color_kwargs:
+                warn("creating an empty palette with no arguments is deprecated since v1.4.0, "
+                     "instead specify 'colors' as an empty dict", DeprecationWarning)
+                colors = {}
+            colors = color_kwargs
 
         self._color_dict = {}
         for k, v in colors.items():
@@ -199,7 +208,7 @@ class Palette(PaletteBase):
              search_cwd=True,
              name: str = None,
              color_format: ColorFormat = None,
-             warnings=True):
+             warnings=True) -> "Palette":
         """Factory method that loads previously created palettes into a :class:`Palette` instance.
 
         A palette is a file containing json-formatted information about colors that ends with the
@@ -490,11 +499,15 @@ class StackPalette(PaletteBase):
     def __init__(self,
                  name: str = None,
                  color_format: ColorFormat = None,
-                 *colors: ColorLike):
+                 *color_args: ColorLike,
+                 colors: List[ColorLike] = None):
         super().__init__(name=name, color_format=color_format)
+        if color_args:
+            warn("use of *args for creating palettes is deprecated since v1.4.0, use the 'colors' argument instead",
+                 DeprecationWarning)
 
         self._color_stack = []
-        for color in colors:
+        for color in color_args:
             self.add(color)
 
     @property
@@ -514,7 +527,7 @@ class StackPalette(PaletteBase):
              search_builtins=True,
              search_cwd=True,
              name: str = None,
-             color_format: ColorFormat = None):
+             color_format: ColorFormat = None) -> "StackPalette":
         """Factory method that loads previously created stack palettes into a
         :class:`StackPalette` instance.
 
