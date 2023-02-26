@@ -4,7 +4,7 @@ Examples:
     Get purple inbetween red and blue:
 
     >>> grad = Grad(["ff0000", "0000ff"])
-    >>> grad.perc(0.5)
+    >>> grad(0.5)  # By default interpolates in CIELuv
     Hex('#be0090')
 
     Depending on your use-case, it may be useful to rather interpolate colors in a cilindrical
@@ -13,13 +13,25 @@ Examples:
     color components:
 
     >>> p_grad = PolarGrad(["ff0000", "0000ff"])
-    >>> p_grad.perc(0.5)
+    >>> p_grad(0.5)
     Hex('#f000cc')
 
     Get 5 colors interspaced in the gradient:
 
     >>> grad.n_colors(5)
     [Hex('#ff0000'), Hex('#e00066'), Hex('#be0090'), Hex('#9400b9'), Hex('#0000ff')]
+
+    You can use the 'domain' argument to change the range in which values are interpolated:
+
+    >>> grad = Grad(["ff0000", "0000ff"], domain=[4, 8])
+    >>> grad(6)
+    Hex('#be0090')
+
+    And the 'color_coords' argument to specify the position of the input colors in the gradient:
+
+    >>> grad = Grad(["ff0000", "00ff00", "0000ff"], domain=[0, 1], color_coords=[0, 0.75, 1])  # Green sits closer to blue than to red
+    >>> grad(0.75)
+    Hex('#00ff00')
 """
 import numpy as np
 from typing import Iterable, Type, List
@@ -96,7 +108,7 @@ class Grad:
         self._colors = [self.color_format.format(color) for color in self._colors]
 
     def __str__(self):
-        return f"{self.__class__.__name__}({self.colors})"
+        return f"{self.__class__.__name__}({self._colors})"
 
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
@@ -109,7 +121,7 @@ class Grad:
     def at(self, x, restrict_domain=False):
         if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
             raise ValueError("'x' is out of the gradient domain")
-        i = min(np.digitize(x, self.color_coords), len(self.colors) - 1)
+        i = min(np.digitize(x, self.color_coords), len(self._colors) - 1)
         if i == 0:
             return self.color_format._from_rgba(self._conv_colors[0]._rgba)
         p = (x - self.color_coords[i - 1]) / (self.color_coords[i] - self.color_coords[i - 1])

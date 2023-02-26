@@ -96,7 +96,7 @@ method:
 >>> palette.add("cyan", "#00ffff")
 >>> palette.add("yellow", HSL(60, 1, 0.5))  # We can pass colors in formats other than hex as well
 >>> palette.add("magenta", CIELAB(60, -98, -60))  # They will be internally converted to match the rest of the palette
->>> palette.swatch()
+>>> palette
 
 .. raw:: html
 
