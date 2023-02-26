@@ -57,7 +57,7 @@ def swatch(obj,
         obj = [obj]
     elif isinstance(obj, Grad):
         # Seven steps for each color transition = 7 * (n - 1) - (n - 2)
-        obj = obj.n_colors(6 * len(obj._colors) - 5, include_ends=True)
+        obj = obj.n_colors(6 * len(obj.colors) - 5, include_ends=True)
     elif isinstance(obj, palette.Palette):
         longest_name = max([len(name) for name in obj.color_names])
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
@@ -109,7 +109,7 @@ def show(obj,
 
     if isinstance(obj, Grad):
         if width is None:
-            width = min(max_width, max(0.4 * max_width, 50 * len(obj._colors)))
+            width = min(max_width, max(0.4 * max_width, 50 * len(obj.colors)))
         if height is None:
             height = 0.1 * max_height
         width, height = int(width), int(height)

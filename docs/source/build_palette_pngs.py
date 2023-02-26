@@ -13,10 +13,10 @@ pals.update({name: Palette.load(name).to_stackpalette() for name in find_palette
 for pal_name, pal in pals.items():
     if not TRUNCATE_PALETTE:
         size = (min(len(pal), MAX_COLORS) * IMG_HEIGHT, (len(pal) // MAX_COLORS + 1) * IMG_HEIGHT)
-        iterable = pal._colors
+        iterable = pal.colors
     else:
         size = (min(len(pal), MAX_COLORS + 1) * IMG_HEIGHT, IMG_HEIGHT)
-        iterable = pal._colors[:MAX_COLORS]
+        iterable = pal.colors[:MAX_COLORS]
     im = Image.new("RGBA", size=size)
     draw = ImageDraw.Draw(im)
     for i, color in enumerate(iterable):
@@ -26,7 +26,7 @@ for pal_name, pal in pals.items():
                        fill=color,
                        width=0,
                        outline="#000000")
-    if TRUNCATE_PALETTE and len(pal._colors) > MAX_COLORS:
+    if TRUNCATE_PALETTE and len(pal.colors) > MAX_COLORS:
         ellipsis_dir = os.path.join(os.path.dirname(__file__), "images/ellipsis.png")
         ellipsis_png = Image.open(ellipsis_dir)
         ellipsis_png = ellipsis_png.resize((IMG_HEIGHT, IMG_HEIGHT))

@@ -96,7 +96,7 @@ class Grad:
         self._colors = [self.color_format.format(color) for color in self._colors]
 
     def __str__(self):
-        return f"{self.__class__.__name__}({self._colors})"
+        return f"{self.__class__.__name__}({self.colors})"
 
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
@@ -109,7 +109,7 @@ class Grad:
     def at(self, x, restrict_domain=False):
         if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
             raise ValueError("'x' is out of the gradient domain")
-        i = min(np.digitize(x, self.color_coords), len(self._colors) - 1)
+        i = min(np.digitize(x, self.color_coords), len(self.colors) - 1)
         if i == 0:
             return self.color_format._from_rgba(self._conv_colors[0]._rgba)
         p = (x - self.color_coords[i - 1]) / (self.color_coords[i] - self.color_coords[i - 1])
