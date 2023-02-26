@@ -24,16 +24,17 @@ API
 What is colorir?
 ----------------
 
-colorir is a package developed to unify your workflow with colors across different projects.
+colorir is a package that allows users to manipulate colors and palettes.
 
 With colorir you can:
 
-- Keep a unified selection of colors you like and use them in your different projects;
-- Use these colors directly as input for other graphical or web frameworks;
+- Create palettes and save them to use in different projects;
+- Have access to a curated selection of unique color palettes and color names;
 - Easily convert between different color systems and formats;
 - Create gradients between colors and sample from them;
 - Easily visualize swatches of colors in the terminal;
-- And much more!
+- Pass color values directly as input for other graphical or web frameworks;
+- And more!
 
 colorir was designed to be your best friend when dealing with colors so that you won't ever need to write this kind of code again:
 
@@ -42,10 +43,10 @@ colorir was designed to be your best friend when dealing with colors so that you
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     CSS_ALICEBLUE = (240, 248, 255)
-    COOL_PURPLE = (11, 0, 51)
-    MY_FAVORITE_GREEN = (113, 180, 141)
-    TOP_NOTCH_RED = (131, 34, 50)
-    # ... unnecessarily long and ugly list of colors
+    BACKGROUND_COLOR = (11, 0, 51)
+    FONT_COLOR = (113, 180, 141)
+    LINE_PLOT_COLOR = (131, 34, 50)
+    # ... long and ugly list of colors
 
 Installation
 ------------
@@ -63,12 +64,11 @@ To install colorir with pip use following command:
 Quick-Start
 -----------
 
-Create a palette with the additive elementary colors and call it 'elementary':
+Create a palette with the additive elementary colors:
 
->>> palette = Palette(name="elementary",
-...                   red=Hex("#ff0000"),
-...                   green=Hex("00ff00"), # No need to include the # symbol
-...                   blue=Hex("#0000ff"))
+>>> palette = Palette(red="#ff0000",
+...                   green="#00ff00",
+...                   blue="#0000ff")
 
 Following CSS color-naming conventions, our color names are all lowercase with no
 underscores, but you may name a color as you wish as long as it complies with python's
@@ -90,12 +90,12 @@ Let's take a look at our palette in the terminal:
       <span style="background-color:#0000ff"> &emsp; </span> &nbsp; <span style="color:#0000ff"> blue #0000ff </span>
     </p>
 
-We can add colors by providing a name and a color-like object to the :meth:`Palette.add() <colorir.palette.Palette.add()>`
+To add colors to a palette use the :meth:`Palette.add() <colorir.palette.Palette.add()>`
 method:
 
 >>> palette.add("cyan", "#00ffff")
->>> palette.add("yellow", "#ffff00")
->>> palette.add("magenta", HSL(300, 1, 0.5))
+>>> palette.add("yellow", HSL(60, 1, 0.5))  # We can pass colors in formats other than hex as well
+>>> palette.add("magenta", CIELAB(60, -98, -60))  # They will be internally converted to match the rest of the palette
 >>> palette.swatch()
 
 .. raw:: html
@@ -119,48 +119,37 @@ method:
       <span style="background-color:#ff00ff"> &emsp; </span> &nbsp; <span style="color:#ff00ff"> magenta #ff00ff </span>
     </p>
 
-Note how we passed hex strings as arguments without initializing :class:`~colorir.color_class.Hex` colors this time. This is because objects that hold colors in the colorir package can interpret strings and tuples as colors implicitly! To know more about what can be interpreted as a color in colorir, read the documentation of the :mod:`~colorir.color_format` module.
+To access the colors in a palette we can use dot attribute syntax:
 
-We also passed an :class:`~colorir.color_class.HSL` object for "magenta". By default, a new palette such as ours converts any input color to  :class:`~colorir.color_class.Hex` objects, but we will see in a bit how to change this to work with other color formats.
-
-To then modify a color after it has been added, use the :meth:`Palette.update() <colorir.palette.Palette.update()>` method:
-
->>> palette.update("magenta", "#ff11ff") # Mix some green component into the magenta
-
-Now suppose we want to finally use the colors we added to our palette. For that we can get them individually as attributes of the palette:
-
->>> palette.cyan
+>>> palette.cyan  # palette['cyan'] also works
 Hex('#00ffff')
 
-Or we can get them all at once with the :attr:`Palette.colors <colorir.palette.Palette.colors>` property:
+To interpolate colors we can use :class:`~colorir.gradient.Grad`:
 
->>> palette.colors
-[Hex('#ff0000'), Hex('#00ff00'), Hex('#0000ff'), Hex('#00ffff'), Hex('#ffff00'), Hex('#ff11ff')]
+>>> grad = Grad([palette.yellow, palette.cyan])
+>>> grad(0.5)  # Get color between yellow and cyan by interpolating them
+Hex('#bffeb7')
 
-Since we are done using our palette for now, let's save it to the default palette directory:
+By default, :class:`~colorir.gradient.Grad` interpolates in :class:`~colorir.color_class.CIELuv` space, but many
+:mod:`color classes <colorir.color_class>` are supported.
 
->>> palette.save()
+To save a palette use :meth:`Palette.save() <colorir.palette.Palette.save()>`:
 
-We can then later load the palette (even from other projects if we wish!):
+>>> palette.save(name="elementary")  # Save palette in the default palette directory
+
+You can then later reload the palette in another script with :meth:`Palette.load() <colorir.palette.Palette.load()>`:
 
 >>> palette = Palette.load("elementary")
 
-When loading or instantiating a palette, a :class:`~colorir.color_format.ColorFormat` may be
+When loading or creating a palette, a :class:`~colorir.color_format.ColorFormat` may be
 passed to the constructor to specify how we want its colors to be represented:
 
 >>> c_format = ColorFormat(color_sys=HSL)
 >>> css = Palette.load("css", color_format=c_format)
 >>> css.red
-HSL(0.0, 1.0, 0.5)
+HSL(0.0, 1.0, 0.5)  # Tuple HSL representation
 
-We can also change the format of all colors in a palette at any time by re-assigning its
-:attr:`Palette.color_format <colorir.palette.Palette.color_format>` property:
-
->>> css.color_format = ColorFormat(color_sys=sRGB, max_rgba=1)
->>> css.red
-RGB(1.0, 0.0, 0.0)
-
-Alternatively, we can temporarily change the default color format system-wide so that new
+Alternatively, we can temporarily change the default color format project-wide so that new
 palettes default to it:
 
 >>> from colorir import config, PYGAME_COLOR_FORMAT
@@ -169,20 +158,10 @@ palettes default to it:
 >>> pygame_palette.red
 RGB(255, 0, 0)
 >>> pygame_palette.green
-Hex('#00ff00')
-
-This makes it easy to configure colorir to work with any color format right out of the box!
-
-By default, the default color format is lowercase hex strings, like what you expect to find
-working with web development or matplotlib.
-
->>> from colorir import config, WEB_COLOR_FORMAT
->>> config.DEFAULT_COLOR_FORMAT = WEB_COLOR_FORMAT # Change default back to web-compatible
->>> web_palette = Palette.load("css")
->>> web_palette.red
-Hex('#ff0000')
+RGB(0, 255, 0)  # The green hex code is now converted to RGB format
 
 It is worth noting that all color classes inherit either ``tuple`` or ``str``, meaning that
-no conversion is needed when passing them to other frameworks such as PyGame, Kivy and HTML embedding templates like Jinja.
+no conversion is needed when passing them to other frameworks such as PyGame, Kivy and HTML embedding
+templates like Jinja.
 
 For more information, see the :doc:`examples` and consult colorir's :doc:`api`.

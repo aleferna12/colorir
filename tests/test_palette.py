@@ -16,15 +16,15 @@ for file in Path(config.DEFAULT_PALETTES_DIR).glob("*"):
 
 
 class TestPalette(unittest.TestCase):
-    def test_add_op(self):
-        pal = Palette(c1="ffffff") + Palette(c2="000000")
+    def test_and_op(self):
+        pal = Palette(c1="ffffff") & Palette(c2="000000")
         self.assertEqual(pal, Palette(c1="ffffff", c2="000000"))
 
     def test_save_load(self):
         colors = {f"c{i}": "%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for i in range(250)}
-        pal = Palette(colors, name="test_sl")
-        pal.save()
+        pal = Palette(colors)
+        pal.save(name="test_sl")
         pal2 = Palette.load("test_sl")
         self.assertEqual(pal, pal2)
 
@@ -34,15 +34,15 @@ class TestPalette(unittest.TestCase):
 
 
 class TestSwatchPalette(unittest.TestCase):
-    def test_add_op(self):
-        spal = StackPalette(["ffffff"]) + StackPalette(["000000"])
+    def test_and_op(self):
+        spal = StackPalette(["ffffff"]) & StackPalette(["000000"])
         self.assertEqual(spal, StackPalette(["ffffff", "000000"]))
 
     def test_save_load(self):
         colors = ["%02x%02x%02x" % (randint(0, 255), randint(0, 255), randint(0, 255))
                   for _ in range(250)]
-        spal = StackPalette(colors, name="test_sl")
-        spal.save()
+        spal = StackPalette(colors)
+        spal.save(name="test_sl")
         spal2 = StackPalette.load("test_sl")
         self.assertEqual(spal, spal2)
 
@@ -75,8 +75,8 @@ class TestOtherFunctions(unittest.TestCase):
         self.assertEqual(spals, ['test3'])
 
     def test_delete_palette(self):
-        n_pal = Palette(name="test_del", red="ff0000")
-        n_pal.save()
+        n_pal = Palette(red="ff0000")
+        n_pal.save("test_del")
         self.assertIn("test_del", find_palettes())
         delete_palette("test_del")
         self.assertNotIn("test_del", find_palettes())

@@ -21,13 +21,14 @@ References:
 import abc
 import colorsys
 import numpy as np
-from typing import List
+from typing import List, Union
 from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, LCHabColor, \
     CMYColor, CMYKColor
 from colormath.color_conversions import convert_color
 import colorir
 
 __all__ = [
+    "ColorLike",
     "ColorBase",
     "ColorTupleBase",
     "ColorPolarBase",
@@ -74,9 +75,13 @@ class ColorBase(metaclass=abc.ABCMeta):
         return colorir.color_format.ColorFormat(self.__class__, **format_)
 
     def grayscale(self):
-        """Converts this color to a grayscale representation in the same format using CIELab
+        """Converts this color to a grayscale representation in the same format using CIE
         lightness component."""
         return self.format.format(CIELuv(self.cieluv().l, 0, 0))
+
+    def __invert__(self):
+        """Gets the inverse RGB of this color."""
+        return self.format._from_rgba(np.append(255 - self._rgba[:-1], self._rgba[-1]))
 
     def hex(self, **kwargs) -> "Hex":
         """Converts the current color to a hexadecimal representation.
@@ -907,3 +912,6 @@ class Hex(ColorBase, str):
 # Aliases
 HexRGB = Hex
 sRGB = RGB
+
+ColorLike = Union[ColorBase, str, tuple]
+"""Type constant that describes common representations of colors in python."""

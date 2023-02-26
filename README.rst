@@ -5,17 +5,17 @@
 What is colorir?
 ----------------
 
-colorir is a package that allows users to create, manipulate and store color palettes and schemes.
+colorir is a package that allows users to manipulate colors and palettes.
 
 With colorir you can:
 
-- Create palettes of your favorite colors to use in your different projects;
-- Pass color values directly as input for other graphical or web frameworks;
+- Create palettes and save them to use in different projects;
 - Have access to a curated selection of unique color palettes and color names;
 - Easily convert between different color systems and formats;
 - Create gradients between colors and sample from them;
 - Easily visualize swatches of colors in the terminal;
-- And much more!
+- Pass color values directly as input for other graphical or web frameworks;
+- And more!
 
 colorir was designed to be your best friend when dealing with colors so that you won't ever need to write this kind of code again:
 
@@ -24,10 +24,10 @@ colorir was designed to be your best friend when dealing with colors so that you
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     CSS_ALICEBLUE = (240, 248, 255)
-    COOL_PURPLE = (11, 0, 51)
-    MY_FAVORITE_GREEN = (113, 180, 141)
-    TOP_NOTCH_RED = (131, 34, 50)
-    # ... unnecessarily long and ugly list of colors
+    BACKGROUND_COLOR = (11, 0, 51)
+    FONT_COLOR = (113, 180, 141)
+    LINE_PLOT_COLOR = (131, 34, 50)
+    # ... long and ugly list of colors
 
 Getting Started
 ---------------
@@ -51,7 +51,7 @@ Now let's see how colorir can be used along other frameworks!
 
     import tkinter as tk
 
-    colors = Palette.load()  # Load colors
+    colors = Palette.load()  # Load all known colors
 
     win = tk.Tk()
     win.configure(bg=colors.magicmint)  # Set background to 'magicmint' color

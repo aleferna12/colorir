@@ -3,15 +3,15 @@ import sys
 import numpy as np
 from math import sqrt
 from random import randint
-from typing import Union, List, Iterable
+from typing import List, Iterable, get_args
 from colormath.color_conversions import convert_color
 from colormath.color_diff import *
 from colormath.color_objects import sRGBColor, LabColor
 
 from . import config
 from . import palette
-from .color_class import ColorBase, HCLab
-from .color_format import ColorLike, ColorFormat
+from .color_class import ColorBase, HCLab, ColorLike
+from .color_format import ColorFormat
 from .gradient import Grad
 
 # Patch asscalar
@@ -29,13 +29,13 @@ __all__ = [
 ]
 
 
-def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.StackPalette"],
+def swatch(obj,
            colored_text=True,
            width=3,
            height=1,
            tabular=True,
            file=sys.stdout):
-    """Create swatches of `obj` in the terminal with colored text.
+    """Swatches a colorir object in the terminal.
 
     Each swatch consists of a rectangle of a color followed by its value (and name if known).
 
@@ -53,11 +53,11 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
     """
     longest_name = None
     # Assume single ColorLike
-    if isinstance(obj, (ColorBase, str, tuple)):
+    if isinstance(obj, get_args(ColorLike)):
         obj = [obj]
     elif isinstance(obj, Grad):
         # Seven steps for each color transition = 7 * (n - 1) - (n - 2)
-        obj = obj.n_colors(6 * len(obj.colors) - 5, include_ends=True)
+        obj = obj.n_colors(6 * len(obj._colors) - 5, include_ends=True)
     elif isinstance(obj, palette.Palette):
         longest_name = max([len(name) for name in obj.color_names])
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
@@ -82,15 +82,11 @@ def swatch(obj: Union[ColorLike, List[ColorLike], "palette.Palette", "palette.St
     print(ret_str, file=file)
 
 
-def show(obj: Union[ColorLike,
-                    List[ColorLike],
-                    "palette.Palette",
-                    "palette.StackPalette",
-                    "Grad"],
+def show(obj,
          width=None,
          height=None,
          interactive=None):
-    """Shows the object using tkinter.
+    """Shows a colorir object using tkinter.
 
     Args:
         obj:
@@ -113,7 +109,7 @@ def show(obj: Union[ColorLike,
 
     if isinstance(obj, Grad):
         if width is None:
-            width = min(max_width, max(0.4 * max_width, 50 * len(obj.colors)))
+            width = min(max_width, max(0.4 * max_width, 50 * len(obj._colors)))
         if height is None:
             height = 0.1 * max_height
         width, height = int(width), int(height)

@@ -88,11 +88,10 @@ References:
     .. [1] Kivy: Cross-platform Python Framework for NUI Development at https://kivy.org/.
     .. [2] PyGame library at https://www.pygame.org/.
 """
-from typing import Type, Union, NewType
+from typing import Type
 from . import color_class
 
 __all__ = [
-    "ColorLike",
     "ColorFormat",
     "PYGAME_COLOR_FORMAT",
     "TKINTER_COLOR_FORMAT",
@@ -100,9 +99,6 @@ __all__ = [
     "WEB_COLOR_FORMAT",
     "MATPLOTLIB_COLOR_FORMAT"
 ]
-
-ColorLike = NewType("ColorLike", Union["color_class.ColorBase", str, tuple, list])
-"""Type constant that describes common representations of colors in python."""
 
 
 class ColorFormat:
@@ -161,7 +157,7 @@ class ColorFormat:
     def _from_rgba(self, rgba):
         return self.color_sys._from_rgba(rgba, **self.format_params)
 
-    def format(self, color: ColorLike) -> "color_class.ColorBase":
+    def format(self, color: "color_class.ColorLike") -> "color_class.ColorBase":
         """Tries to format a color-like object into this color format.
 
         Because there are multiple implementations of tuple-based color systems, the `color`

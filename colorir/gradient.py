@@ -24,8 +24,8 @@ Examples:
 import numpy as np
 from typing import Iterable, Type, List
 from . import config, utils
-from .color_class import RGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex
-from .color_format import ColorLike, ColorFormat
+from .color_class import RGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex, ColorLike
+from .color_format import ColorFormat, MATPLOTLIB_COLOR_FORMAT
 
 __all__ = [
     "Grad",
@@ -73,14 +73,18 @@ class Grad:
             color_format = config.DEFAULT_COLOR_FORMAT
 
         self.color_sys = color_sys
-        self.colors = colors
+        self._colors = colors
         self.color_format = color_format
         self._conv_colors = [self.color_sys._from_rgba(color._rgba,
                                                        include_a=True,
-                                                       round_to=-1) for color in self.colors]
+                                                       round_to=-1) for color in self._colors]
         self.domain = list(domain)
         self.color_coords = np.array(color_coords)
         self.discrete = discrete
+
+    @property
+    def colors(self):
+        return list(self._colors)
 
     @property
     def color_format(self):
@@ -89,10 +93,10 @@ class Grad:
     @color_format.setter
     def color_format(self, val):
         self._color_format = val
-        self.colors = [self.color_format.format(color) for color in self.colors]
+        self._colors = [self.color_format.format(color) for color in self._colors]
 
     def __str__(self):
-        return f"{self.__class__.__name__}({self.colors})"
+        return f"{self.__class__.__name__}({self._colors})"
 
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
@@ -105,7 +109,7 @@ class Grad:
     def at(self, x, restrict_domain=False):
         if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
             raise ValueError("'x' is out of the gradient domain")
-        i = min(np.digitize(x, self.color_coords), len(self.colors) - 1)
+        i = min(np.digitize(x, self.color_coords), len(self._colors) - 1)
         if i == 0:
             return self.color_format._from_rgba(self._conv_colors[0]._rgba)
         p = (x - self.color_coords[i - 1]) / (self.color_coords[i] - self.color_coords[i - 1])
@@ -143,7 +147,7 @@ class Grad:
             >>> grad.perc(0.2)
             Hex('#e6005c')
         """
-        x = self.domain[0] + self.domain[1] * p
+        x = p * (self.domain[1] - self.domain[0]) + self.domain[0]
         return self.at(x, restrict_domain=restrict_domain)
 
     def n_colors(self, n: int, include_ends=True):
@@ -165,17 +169,17 @@ class Grad:
             ps = np.linspace(0, 1, n + 2)[1:-1]
         return [self.perc(p) for p in ps]
 
-    def to_cmap(self, name, N=256, gamma=1.0):
+    def to_cmap(self, name="", N=256, gamma=1.0):
         """Converts this gradient into a matplotlib LinearSegmentedColormap.
 
         Args:
-            name: Passed down to LinearSegmentedColormap constructor.
-            N: Passed down to LinearSegmentedColormap constructor.
-            gamma: Passed down to LinearSegmentedColormap constructor.
+            N: Number of discrete colors in the resulting color map.
+            name: Passed down to color map constructor.
+            gamma: Passed down to color map constructor.
         """
         from matplotlib.colors import LinearSegmentedColormap
 
-        colors = [color.hex(include_a=True, tail_a=True) for color in self.n_colors(N)]
+        colors = [MATPLOTLIB_COLOR_FORMAT.format(color) for color in self.n_colors(N)]
         return LinearSegmentedColormap.from_list(name=name, colors=colors, N=N, gamma=gamma)
 
     def _linear_interp(self, color1, color2, p: float):
