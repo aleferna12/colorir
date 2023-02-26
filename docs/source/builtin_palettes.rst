@@ -30,39 +30,6 @@ Web colors of CSS and HTML.
 
 .. image:: images/palettes/css.png
 
-Birds of Brazil
----------------
-
-Palettes that pay homage to the beautiful compositions painted in the feathers of birds native to my home country, Brazil.
-
-precious_tanager - *stack palette*
-++++++++++++++++++++++++++++++++++
-
-Colors of the south-american *Tangara preciosa*.
-
-.. image:: images/palettes/precious_tanager.png
-
-scarlet_macaw - *stack palette*
-+++++++++++++++++++++++++++++++
-
-Colors of the parrot *Ara macao*.
-
-.. image:: images/palettes/scarlet_macaw.png
-
-toco_toucan - *stack palette*
-+++++++++++++++++++++++++++++
-
-Colors of the largest species of toucan, *Ramphastos toco*.
-
-.. image:: images/palettes/toco_toucan.png
-
-hyacinth_macaw - *stack palette*
-++++++++++++++++++++++++++++++++
-
-Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the RGB color space.
-
-.. image:: images/palettes/hyacinth_macaw.png
-
 Originals
 ---------
 
@@ -70,6 +37,8 @@ Palettes created by me that don't fit other categories.
 
 carnival - *stack palette*
 ++++++++++++++++++++++++++
+
+Similarly to `spectral_` spans over a wide span of hue values, making it a good fit for categorical data.
 
 .. image:: images/palettes/carnival.png
 
@@ -140,6 +109,39 @@ sunset - *stack palette*
 
 .. image:: images/palettes/sunset.png
 
+Birds of Brazil
+---------------
+
+Palettes that pay homage to the beautiful compositions painted in the feathers of birds native to my home country, Brazil.
+
+precious_tanager - *stack palette*
+++++++++++++++++++++++++++++++++++
+
+Colors of the south-american *Tangara preciosa*.
+
+.. image:: images/palettes/precious_tanager.png
+
+scarlet_macaw - *stack palette*
++++++++++++++++++++++++++++++++
+
+Colors of the parrot *Ara macao*.
+
+.. image:: images/palettes/scarlet_macaw.png
+
+toco_toucan - *stack palette*
++++++++++++++++++++++++++++++
+
+Colors of the largest species of toucan, *Ramphastos toco*.
+
+.. image:: images/palettes/toco_toucan.png
+
+hyacinth_macaw - *stack palette*
+++++++++++++++++++++++++++++++++
+
+Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the RGB color space.
+
+.. image:: images/palettes/hyacinth_macaw.png
+
 Color Brewer
 ------------
 
@@ -184,6 +186,8 @@ set3 - *palette*
 ++++++++++++++++
 
 .. image:: images/palettes/set3.png
+
+.. _spectral:
 
 spectral - *stack palette*
 ++++++++++++++++++++++++++
