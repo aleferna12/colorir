@@ -68,6 +68,11 @@ Originals
 
 Palettes created by me that don't fit other categories.
 
+carnival - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/carnival.png
+
 .. _passion:
 
 passion - *palette*
