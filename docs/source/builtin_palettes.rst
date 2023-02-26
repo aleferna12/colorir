@@ -71,7 +71,7 @@ Palettes created by me that don't fit other categories.
 carnival - *stack palette*
 ++++++++++++++++++++++++++
 
-Similarly to `spectral_` spans over a wide span of hue values, making it a good fit for categorical data.
+Similarly to `spectral`_ spans over a wide span of hue values, making it a good fit for categorical data.
 
 .. image:: images/palettes/carnival.png
 
