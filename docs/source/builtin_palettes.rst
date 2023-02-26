@@ -11,7 +11,7 @@ Some of the following palettes have named colors (considered palettes), while in
 Essentials
 ----------
 
-Palettes that provide access to commonly used colors.
+Palettes that provide access to commonly used colors by name.
 
 basic - *palette*
 +++++++++++++++++
