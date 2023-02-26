@@ -29,7 +29,7 @@ Examples:
 
     And the 'color_coords' argument to specify the position of the input colors in the gradient:
 
-    >>> grad = Grad(["ff0000", "00ff00", "0000ff"], domain=[0, 1], color_coords=[0, 0.75, 1])  # Green sits closer to blue than to red
+    >>> grad = Grad(["ff0000", "00ff00", "0000ff"], color_coords=[0, 0.75, 1])  # Green sits closer to blue than to red
     >>> grad(0.75)
     Hex('#00ff00')
 """
