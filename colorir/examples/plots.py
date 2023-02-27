@@ -7,7 +7,7 @@ imdata = (np.outer(np.linspace(-1, 1, 100), np.linspace(-1, 1, 100)) + 1) / 2
 colors = Palette.load()  # Load all colors available
 
 # Discrete colormap from palette
-pal = StackPalette.load("carnival").resize(8)  # Loads spectral palette and resize it to get 8 color categories
+pal = StackPalette.load("carnival").resize(8)  # Load the palette and resize it to get 8 color categories
 ys = [np.random.random(10) + 1 for i in range(len(pal))]
 axes[0, 0].stackplot(np.arange(10), *ys, colors=pal)
 axes[0, 0].set_title("Stacked data")
