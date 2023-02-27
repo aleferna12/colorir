@@ -15,10 +15,13 @@ Where `app` is one of:
 
 .. _plots:
 
-Creating, Manipulating and Plotting Palettes
+Plotting with Colorir
 --------------------------------------------
 
-In this example we will use colorir to create color gradients and then use them to plot some data with matplotlib.
+.. image:: images/plots.png
+	:width: 300px
+
+In this example we will use colorir to create color palettes and gradients and then use them to plot some data.
 
 .. literalinclude:: ../../colorir/examples/plots.py
 
@@ -42,9 +45,9 @@ Just like with any other example, the color picker can be executed with:
 Color Wheel with Kivy
 ---------------------
 
+.. image:: images/color_wheel.png
+	:width: 300px
+
 A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.Grad`.
 
 .. literalinclude:: ../../colorir/examples/color_wheel.py
-
-.. image:: images/color_wheel.png
-	:width: 300px

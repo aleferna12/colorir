@@ -16,6 +16,12 @@ Examples:
     >>> p_grad(0.5)
     Hex('#f000cc')
 
+    You can control how the hue is interpolated with the `hue_lerp` attribute:
+
+    >>> p_grad.hue_lerp = "longest"  # Calculates the longest distance between the hue of red and blue
+    >>> p_grad(0.5)  # Now we get green instead of purple
+    Hex('#008800')
+
     Get 5 colors interspaced in the gradient:
 
     >>> grad.n_colors(5)
@@ -203,34 +209,42 @@ class Grad:
         )
 
 
-# TODO doc
 class PolarGrad(Grad):
     """Similar to `Grad` but can calculate the shortest path for hue interpolation.
 
     Args:
-        shortest: Whether to use the shortest path to interpolate colors with a hue component. If ``False``,
-            acts like `Grad`.
+        hue_lerp: Which method to apply to hue interpolation. Options are: ``None``, "increase",
+            "decrease", "shortest" and "longest".
+            ``None`` means that the hue will be treated as any other color component and interpolated normally.
+            "increment" and "decrement" indicate that the hue can only be incremented or
+            decremented respectively.
+            "shortest" and "longest" make sure that the hue is interpolated in the shortest or longest
+            paths between the colors. Default is "shortest".
         colors: Iterable of colors that compose the gradient.
         color_sys: Color system in which the colors will be interpolated.
     """
     def __init__(self,
                  colors,
                  color_sys=HCLuv,
-                 shortest=True,
+                 hue_lerp="shortest",
                  **kwargs):
         if not issubclass(color_sys, ColorPolarBase):
             raise ValueError("'color_sys' must be a subclass of 'ColorPolarBase'")
+        if hue_lerp not in [None, "increment", "decrement", "shortest", "longest"]:
+            raise ValueError("'hue_lerp' must be None, 'increment', 'decrement', 'shortest' or 'longest'")
 
         super().__init__(colors=colors, color_sys=color_sys, **kwargs)
-        self.shortest = shortest
+        self.hue_lerp = hue_lerp
 
     def _linear_interp(self, color1, color2, p: float):
-        d = abs(color2.h - color1.h)
-        if not self.shortest or d <= color1.max_h / 2:
+        d = abs(color1.h - color2.h)
+        if self.hue_lerp is None \
+                or (self.hue_lerp == "shortest" and d <= color1.max_h / 2) \
+                or (self.hue_lerp == "longest" and d > color1.max_h / 2):
             return super()._linear_interp(color1=color1, color2=color2, p=p)
 
         array1, array2 = np.array(color1), np.array(color2)
-        if color1.h > color2.h:
+        if self.hue_lerp == "increment" or (self.hue_lerp != "decrement" and color1.h > color2.h):
             array1, array2 = array2, array1
             p = 1 - p
         array1[0] += color1.max_h
