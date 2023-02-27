@@ -2,7 +2,7 @@ from kivy.config import Config
 Config.set('graphics', 'width', '400')
 Config.set('graphics', 'height', '400')
 from kivy.app import App
-from kivy.graphics import Ellipse, Color
+from kivy.graphics import Ellipse, Rectangle, Color
 from kivy.uix.widget import Widget
 from colorir import config, KIVY_COLOR_FORMAT, Grad, HSV
 
@@ -20,6 +20,8 @@ class WheelScreen(Widget):
 
         iter_angle = 360 / ELLIPSE_STEPS
         with self.canvas:
+            Rectangle(pos=(0, 0), size=(400, 400))  # Draw background
+
             for j in range(ELLIPSE_SEGMENTS + 1):
                 s = 1 - j / ELLIPSE_SEGMENTS
                 # Sample colors throughout the hue range for this saturation
