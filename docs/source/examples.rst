@@ -19,7 +19,7 @@ Plotting with Colorir
 --------------------------------------------
 
 .. image:: images/plots.png
-	:width: 300px
+	:width: 400px
 
 In this example we will use colorir to create color palettes and gradients and then use them to plot some data.
 
