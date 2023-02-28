@@ -127,16 +127,16 @@ class PaletteBase(metaclass=abc.ABCMeta):
             n = len(self)
         return closest[:n]
 
-    def to_cmap(self, N: int = None):
+    def to_cmap(self, n: int = None):
         """Converts this palette into a matplotlib ListedColormap.
 
         Args:
-            N: Passed down to ListedColormap constructor.
+            n: Passed down to ListedColormap constructor.
         """
         from matplotlib.colors import ListedColormap
 
         colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
-        return ListedColormap(colors, N=N)
+        return ListedColormap(colors, N=n)
 
 
 class Palette(PaletteBase):

@@ -93,9 +93,8 @@ class Grad:
         self.color_sys = color_sys
         self._colors = colors
         self.color_format = color_format
-        self._conv_colors = [self.color_sys._from_rgba(color._rgba,
-                                                       include_a=True,
-                                                       round_to=-1) for color in self._colors]
+        self._conv_colors = [self.color_sys._from_rgba(color._rgba, include_a=True, round_to=-1)
+                             for color in self._colors]
         self.domain = list(domain)
         self.color_coords = np.array(color_coords)
         self.discrete = discrete
@@ -113,6 +112,13 @@ class Grad:
         self._color_format = val
         self._colors = [self.color_format.format(color) for color in self._colors]
 
+    @property
+    def color_edges(self):
+        edges = []
+        for c1, c2 in zip(self.color_coords, self.color_coords[1:]):
+            edges.append((c1 + c2) / 2)
+        return edges
+
     def __str__(self):
         return f"{self.__class__.__name__}({self._colors})"
 
@@ -124,7 +130,7 @@ class Grad:
     def __call__(self, x, restrict_domain=False):
         return self.at(x, restrict_domain=restrict_domain)
 
-    def at(self, x, restrict_domain=False):
+    def at(self, x, restrict_domain=False) -> ColorBase:
         if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
             raise ValueError("'x' is out of the gradient domain")
         i = min(np.digitize(x, self.color_coords), len(self._colors) - 1)
@@ -145,7 +151,7 @@ class Grad:
         # This is okay though
         return self.color_format._from_rgba(new_color._rgba)
 
-    def perc(self, p: float, restrict_domain=False):
+    def perc(self, p: float, restrict_domain=False) -> ColorBase:
         """Returns the color placed in a given percentage of the gradient.
 
         Args:
@@ -168,7 +174,7 @@ class Grad:
         x = p * (self.domain[1] - self.domain[0]) + self.domain[0]
         return self.at(x, restrict_domain=restrict_domain)
 
-    def n_colors(self, n: int, include_ends=True):
+    def n_colors(self, n: int, include_ends=True) -> List[ColorBase]:
         """Return `n` interspaced colors from the gradient.
 
         Args:
@@ -187,20 +193,39 @@ class Grad:
             ps = np.linspace(0, 1, n + 2)[1:-1]
         return [self.perc(p) for p in ps]
 
-    def to_cmap(self, name="", N=256, gamma=1.0):
+    def to_cmap(self, name="", n=256, gamma=1.0):
         """Converts this gradient into a matplotlib LinearSegmentedColormap.
 
         Args:
-            N: Number of discrete colors in the resulting color map.
+            n: Number of discrete colors in the resulting color map.
             name: Passed down to color map constructor.
             gamma: Passed down to color map constructor.
         """
         from matplotlib.colors import LinearSegmentedColormap
 
-        colors = [MATPLOTLIB_COLOR_FORMAT.format(color) for color in self.n_colors(N)]
-        return LinearSegmentedColormap.from_list(name=name, colors=colors, N=N, gamma=gamma)
+        colors = [MATPLOTLIB_COLOR_FORMAT.format(color) for color in self.n_colors(n)]
+        return LinearSegmentedColormap.from_list(name=name, colors=colors, N=n, gamma=gamma)
 
-    def _linear_interp(self, color1, color2, p: float):
+    def to_plotly_colorscale(self, n=256):
+        """Make a color scale according to plotly's format definition.
+
+        Args:
+            n: Number of internal interpolations to perform before creating the color scale. Increases
+                the accuracy of the color scale. This argument is not used if the gradient is discrete.
+        """
+        colorscale = []
+        if not self.discrete:
+            for p in np.linspace(0, 1, n):
+                colorscale.append((p, self.perc(p).hex()))
+            return colorscale
+        scale_pos = [0] + self.color_edges + [1]
+        for i, pos in enumerate(scale_pos[:-1]):
+            color = self.colors[i].hex()
+            colorscale.append((pos, color))
+            colorscale.append((scale_pos[i + 1], color))
+        return colorscale
+
+    def _linear_interp(self, color1, color2, p: float) -> ColorBase:
         """Receives two colors in 'self.color_sys' format (expected to include_a) and returns a
         new color in the same format."""
         color1, color2 = np.array(color1), np.array(color2)
@@ -236,7 +261,7 @@ class PolarGrad(Grad):
         super().__init__(colors=colors, color_sys=color_sys, **kwargs)
         self.hue_lerp = hue_lerp
 
-    def _linear_interp(self, color1, color2, p: float):
+    def _linear_interp(self, color1, color2, p: float) -> ColorBase:
         d = abs(color1.h - color2.h)
         if self.hue_lerp is None \
                 or (self.hue_lerp == "shortest" and d <= color1.max_h / 2) \
@@ -281,7 +306,7 @@ class RGBGrad(Grad):
         super().__init__(colors=colors, color_sys=RGB, **kwargs)
         self.use_linear_rgb = use_linear_rgb
 
-    def _linear_interp(self, color1, color2, p: float):
+    def _linear_interp(self, color1, color2, p: float) -> ColorBase:
         rgba_1 = color1._rgba
         rgba_2 = color2._rgba
         if self.use_linear_rgb:
