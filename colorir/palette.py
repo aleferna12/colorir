@@ -96,37 +96,6 @@ class PaletteBase(metaclass=abc.ABCMeta):
     def __iter__(self):
         return iter(self.colors)
 
-    def most_similar(self, color: ColorLike, n=1, method="CIE76"):
-        """Finds the `n` most similar colors to `color` in this palette.
-
-        Args:
-            color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
-                resembles the color to which others will be compared in search of similar results.
-            n: How many similar colors to be retrieved. -1 means all colors from the palette will
-                be returned from most similar to least.
-            method: Method for calculating color distance. See the documentation of
-                :func:`~colorir.utils.color_dist()`.
-
-        Examples:
-            >>> palette = Palette(red="#ff0000", blue="#0000ff")
-            >>> palette.most_similar("#880000")
-            Hex('#ff0000')
-
-        Returns:
-            A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color_class.ColorBase` if `n` != 1. If the return type is a list, the
-            colors will be ordered from most similar to least.
-        """
-        color = self.color_format.format(color)
-        closest = sorted(self.colors,
-                         key=lambda color2: utils.color_dist(color, color2, method=method))
-        if n == 1:
-            return closest[0]
-        elif n < 0:
-            n = len(self)
-        return closest[:n]
-
     def to_cmap(self, n: int = None):
         """Converts this palette into a matplotlib ListedColormap.
 
@@ -506,6 +475,17 @@ class Palette(PaletteBase):
             pal.add(c_name, ~c_val)
         return pal
 
+    def most_similar(self, color: ColorLike, n=1, method="CIE76"):
+        closest = sorted(zip(self.color_names, self.colors),
+                         key=lambda tup: utils.color_dist(color, tup[1], method))
+        if n == 1:
+            return closest[0]
+        if n < 1:
+            n = len(self)
+        pal = Palette(color_format=self.color_format)
+        pal._color_dict = dict(closest[:n])
+        return pal
+
 
 class StackPalette(PaletteBase):
     """Class that handles anonymous indexed colors stored as a stack.
@@ -789,27 +769,6 @@ class StackPalette(PaletteBase):
         colors = grad_class(colors=self.colors, **kwargs).n_colors(n)
         return StackPalette(colors=colors, color_format=self.color_format)
 
-    def swap(self, index1: int, index2: int):
-        """Swap the places of two colors in the palette.
-
-        Can be used to reorganize the palette if needed.
-
-        Examples:
-            >>> spalette = StackPalette(["ff0000", "0000ff"])
-            >>> spalette
-            StackPalette([#ff0000, #0000ff])
-            >>> spalette.swap(0, 1)
-            >>> spalette
-            StackPalette([#0000ff, #ff0000])
-
-        Args:
-            index1: The index of the first color.
-            index2: The index of the second color.
-        """
-        c_temp = self._color_stack[index1]
-        self._color_stack[index1] = self._color_stack[index2]
-        self._color_stack[index2] = c_temp
-
     def add(self, color: ColorLike):
         """Adds a color to the end of the stack palette.
 
@@ -919,6 +878,37 @@ class StackPalette(PaletteBase):
         for color in self.colors:
             pal.add(color.grayscale())
         return pal
+
+    def most_similar(self, color: ColorLike, n=1, method="CIE76"):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        Args:
+            color: The value of the color of reference. Can be an instance of any
+                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
+                resembles the color to which others will be compared in search of similar results.
+            n: How many similar colors to be retrieved from most similar to least.
+                -1 means all colors will be returned.
+            method: Method for calculating color distance. See the documentation of
+                :func:`~colorir.utils.color_dist()`.
+
+        Examples:
+            >>> palette = StackPalette(["#ff0000", "#0000ff"])
+            >>> palette.most_similar("#880000")
+            Hex('#ff0000')
+
+        Returns:
+            A single color object if `n` == 1 or a StackPalette if `n` != 1.
+        """
+        color = self.color_format.format(color)
+        closest = sorted(self.colors,
+                         key=lambda color2: utils.color_dist(color, color2, method=method))
+        if n == 1:
+            return closest[0]
+        pal = StackPalette(color_format=self.color_format)
+        pal._color_stack = closest
+        if n < 0:
+            return pal
+        return pal[:n]
 
     def __invert__(self):
         """Returns a copy of this object but with its colors inverted in RGB space.
