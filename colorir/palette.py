@@ -476,6 +476,21 @@ class Palette(PaletteBase):
         return pal
 
     def most_similar(self, color: ColorLike, n=1, method="CIE76"):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        Args:
+            color: The value of the color of reference.
+            n: How many colors to be retrieved from most similar to least. -1 means all colors will be returned.
+            method: Method for calculating color distance. See the documentation of the function `color_dist`.
+
+        Examples:
+            >>> palette = Palette(red="#ff0000", blue="#0000ff")
+            >>> palette.most_similar("#880000")
+            ('red', Hex('#ff0000'))
+
+        Returns:
+            A tuple (color_name, color) if `n` == 1 or a `Palette` if `n` != 1.
+        """
         closest = sorted(zip(self.color_names, self.colors),
                          key=lambda tup: utils.color_dist(color, tup[1], method))
         if n == 1:
@@ -883,13 +898,9 @@ class StackPalette(PaletteBase):
         """Finds the `n` most similar colors to `color` in this palette.
 
         Args:
-            color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
-                resembles the color to which others will be compared in search of similar results.
-            n: How many similar colors to be retrieved from most similar to least.
-                -1 means all colors will be returned.
-            method: Method for calculating color distance. See the documentation of
-                :func:`~colorir.utils.color_dist()`.
+            color: The value of the color of reference.
+            n: How many colors to be retrieved from most similar to least. -1 means all colors will be returned.
+            method: Method for calculating color distance. See the documentation of `color_dist`.
 
         Examples:
             >>> palette = StackPalette(["#ff0000", "#0000ff"])
@@ -897,7 +908,7 @@ class StackPalette(PaletteBase):
             Hex('#ff0000')
 
         Returns:
-            A single color object if `n` == 1 or a StackPalette if `n` != 1.
+            A single color object if `n` == 1 or a `StackPalette` if `n` != 1.
         """
         color = self.color_format.format(color)
         closest = sorted(self.colors,
