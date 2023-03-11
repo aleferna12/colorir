@@ -137,11 +137,6 @@ Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`
 
 .. image:: images/palettes/pigments.png
 
-sunset - *stack palette*
-++++++++++++++++++++++++
-
-.. image:: images/palettes/sunset.png
-
 Color Brewer
 ------------
 
@@ -329,8 +324,6 @@ Carto
 
 Palettes from the Carto project.
 
-"sunset" was renamed to "carto_sunset" for compatibility reasons.
-
 burg - *stack palette*
 ++++++++++++++++++++++
 
@@ -416,6 +409,11 @@ magenta - *stack palette*
 
 .. image:: images/palettes/magenta.png
 
+sunset - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/sunset.png
+
 sunsetdark - *stack palette*
 ++++++++++++++++++++++++++++
 
@@ -495,11 +493,6 @@ vivid - *stack palette*
 +++++++++++++++++++++++
 
 .. image:: images/palettes/vivid.png
-
-carto_sunset - *stack palette*
-++++++++++++++++++++++++++++++
-
-.. image:: images/palettes/carto_sunset.png
 
 Matplotlib
 ----------
