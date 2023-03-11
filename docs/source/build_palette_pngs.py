@@ -3,7 +3,7 @@ from colorir import *
 import os
 
 TRUNCATE_PALETTE = False
-MAX_COLORS = 20
+MAX_COLORS = 21
 IMG_HEIGHT = 25
 
 pal_pngs_dir = os.path.join(os.path.dirname(__file__), "images/palettes")
