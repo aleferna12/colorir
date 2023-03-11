@@ -763,7 +763,7 @@ Palettes from `plotly <https://plotly.com/>`_.
 
 "icefire" was renamed to "plotly_icefire" for compatibility reasons.
 
-lotly - *stack palette*
+plotly - *stack palette*
 ++++++++++++++++++++++++
 
 .. image:: images/palettes/plotly.png
