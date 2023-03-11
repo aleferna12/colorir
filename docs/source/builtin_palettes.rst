@@ -646,6 +646,11 @@ jet - *stack palette*
 
 .. image:: images/palettes/jet.png
 
+turbo - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/turbo.png
+
 ocean - *stack palette*
 +++++++++++++++++++++++
 
@@ -812,11 +817,6 @@ plotly3 - *stack palette*
 +++++++++++++++++++++++++
 
 .. image:: images/palettes/plotly3.png
-
-turbo - *stack palette*
-+++++++++++++++++++++++
-
-.. image:: images/palettes/turbo.png
 
 algae - *stack palette*
 +++++++++++++++++++++++
