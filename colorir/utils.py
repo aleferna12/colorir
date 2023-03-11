@@ -104,12 +104,14 @@ def show(obj,
     """
     if inline:
         try:
+            from IPython.display import display
             # For some reason this function is not in globals()... so we gotta try it
             if get_ipython().__class__.__name__ == "ZMQInteractiveShell":
-                return make_image(obj, width, height)
-        except (ImportError, NameError):
+                display(make_image(obj, width, height))
+                return
+        except ImportError:
             pass
-    show_tkinter(obj, width, height, interactive)
+        show_tkinter(obj, width, height, interactive)
 
 
 def show_tkinter(obj, width, height, interactive):
@@ -174,10 +176,10 @@ def make_image(obj, width, height):
     from PIL import Image
 
     if height is None:
-        height = 50
+        height = 64
     if isinstance(obj, Grad):
         if width is None:
-            width = 500
+            width = 512
         colors = obj.n_colors(width)
     else:
         if not isinstance(obj, (palette.PaletteBase, list)):
