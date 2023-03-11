@@ -187,7 +187,7 @@ def make_image(obj, width, height):
         colors = list(obj)
         if width is None:
             width = height * len(colors)
-    img = np.array([color._rgba for color in colors], dtype="uint8")
+    img = np.array([config.DEFAULT_COLOR_FORMAT.format(color)._rgba for color in colors], dtype="uint8")
     # Add height dim
     img = np.reshape(img, (1, img.shape[0], 4))
     img = img.repeat(height, axis=0).repeat(width // len(colors), axis=1)
