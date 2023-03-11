@@ -85,10 +85,13 @@ def swatch(obj,
 def show(obj,
          width=None,
          height=None,
-         interactive=None):
-    """Shows a colorir object using tkinter.
+         interactive=None,
+         inline=True):
+    """Shows a colorir object inlined on a Jupyter notebook or using tkinter.
 
     Args:
+        inline: If running on a Jupyter notebook, whether to display the object inline.
+            Requires Pillow to be installed.
         obj:
         width:
         height:
@@ -96,8 +99,20 @@ def show(obj,
             to the clipboard and swatch the color on the terminal. Setting this
             parameter to ``False`` results is a dramatic speed-up. By default,
             is set to ``True`` for small objects (less than 100 colors) and
-            ``False`` otherwise.
+            ``False`` otherwise. Only has an effect if not running on a
+            Jupyter notebook with `inline` == ``True``.
     """
+    if inline:
+        try:
+            # For some reason this function is not in globals()... so we gotta try it
+            if get_ipython().__class__.__name__ == "ZMQInteractiveShell":
+                return make_image(obj, width, height)
+        except (ImportError, NameError):
+            pass
+    show_tkinter(obj, width, height, interactive)
+
+
+def show_tkinter(obj, width, height, interactive):
     import tkinter as tk
     from . import tkinter_utils as tku
 
@@ -153,6 +168,28 @@ def show(obj,
         )
     wgt.pack()
     win.mainloop()
+
+
+def make_image(obj, width, height):
+    from PIL import Image
+
+    if height is None:
+        height = 50
+    if isinstance(obj, Grad):
+        if width is None:
+            width = 500
+        colors = obj.n_colors(width)
+    else:
+        if not isinstance(obj, (palette.PaletteBase, list)):
+            obj = [config.DEFAULT_COLOR_FORMAT.format(obj)]
+        colors = list(obj)
+        if width is None:
+            width = height * len(colors)
+    img = np.array([color._rgba for color in colors], dtype="uint8")
+    # Add height dim
+    img = np.reshape(img, (1, img.shape[0], 4))
+    img = img.repeat(height, axis=0).repeat(width // len(colors), axis=1)
+    return Image.fromarray(img, "RGBA")
 
 
 def hue_sort_key(hue_classes=None,
