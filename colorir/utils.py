@@ -109,7 +109,7 @@ def show(obj,
             if get_ipython().__class__.__name__ == "ZMQInteractiveShell":
                 display(make_image(obj, width, height))
                 return
-        except ImportError:
+        except (ImportError, NameError):
             pass
         show_tkinter(obj, width, height, interactive)
 

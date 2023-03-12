@@ -9,21 +9,22 @@ After installing colorir, example applications can be executed from the shell wi
 
 Where `app` is one of:
 
-- `plots`_
+- `custom_palettes`_
 - `color_picker`_
 - `color_wheel`_
 
-.. _plots:
+.. _custom_palettes:
 
-Plotting with Colorir
---------------------------------------------
+Custom palettes for plotting
+----------------------------
 
-.. image:: images/plots.png
+.. image:: images/custom_palettes.png
 	:width: 400px
 
-In this example we will use colorir to create color palettes and gradients and then use them to plot some data.
+In this example we will use colorir to create custom color palettes
+and gradients and then use them to plot some data.
 
-.. literalinclude:: ../../colorir/examples/plots.py
+.. literalinclude:: ../../colorir/examples/custom_palettes.py
 
 .. _color_picker:
 
