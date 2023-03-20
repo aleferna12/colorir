@@ -1,5 +1,11 @@
+import json
+import csv
+from pathlib import Path
+
 import numpy as np
 import plotly.graph_objs as go
+from urllib.request import urlopen
+from plotly.io import templates as plotly_templates
 from plotly.subplots import make_subplots
 from colorir import *
 
@@ -13,7 +19,9 @@ palettes = {k: palettes[k] for k in sorted(palettes)}
 max_pal_size = max(len(pal) for pal in palettes.values())
 carnival = StackPalette.load("carnival")
 
-fig = make_subplots(2, 2)
+fig = make_subplots(2, 4,
+                    specs=[[{"type": "scatter"}, {"type": "scatter"}, {"type": "choropleth", "colspan": 2}, None],
+                           [{"type": "scatter"}, {"type": "contour"}, None,                                 None]])
 for i in range(max_pal_size):
     fig.add_trace(go.Scatter(
         x=np.arange(50),
@@ -25,17 +33,19 @@ for i in range(max_pal_size):
         showlegend=False,
         visible=i < len(carnival),
     ), row=1, col=1)
-# We re-iterate to change the order in which the traces are added
+
+# We re-iterate to keep fig.data ordered
 for i in range(max_pal_size):
     fig.add_trace(go.Scatter(
         x=np.arange(20),
-        y=np.random.random(20) * (1 - i/max_pal_size) + 2 + i/max_pal_size,
+        y=np.random.random(20) * (1 - i / max_pal_size) + 2 + i / max_pal_size,
         stackgroup=0,
         line_color=carnival[i % len(carnival)],
         marker_color=carnival[i % len(carnival)],
         showlegend=False,
         visible=i < len(carnival),
-    ), row=1, col=2)
+    ), row=2, col=1)
+
 for i in range(max_pal_size):
     markers = np.random.randint(3, 5)
     fig.add_trace(go.Scatter(
@@ -48,7 +58,8 @@ for i in range(max_pal_size):
         marker_color=carnival[i % len(carnival)],
         showlegend=False,
         visible=i < len(carnival),
-    ), row=2, col=1)
+    ), row=1, col=2)
+
 fig.add_trace(go.Contour(
     z=[[None, None, None, 12, 13, 14, 15, 16],
        [None, 1, None, 11, None, None, None, 17],
@@ -61,18 +72,44 @@ fig.add_trace(go.Contour(
     colorscale=Grad(carnival).to_plotly_colorscale(),
     showscale=False
 ), row=2, col=2)
-fig.update_layout(width=700, height=700)
+
+locations = []
+unemp = []
+with open(Path(__file__).parent / "country_data.csv") as file:
+    for row in list(csv.reader(file.read().split("\n")[:-1])):
+        locations.append(row[0])
+        unemp.append(float(row[1]))
+fig.add_trace(go.Choropleth(
+    locations=locations,
+    z=unemp,
+    colorscale=Grad(carnival).to_plotly_colorscale(),
+    showscale=False
+), row=1, col=3)
+
+fig.update_layout(mapbox_zoom=8,
+                  width=1400, height=700)
 
 buttons = []
 for pal_name, pal in palettes.items():
+    restyle_dict = {
+        "marker.color": [None] * len(fig.data),
+        "line.color": [None] * len(fig.data),
+        "colorscale": [None] * len(fig.data),
+        "visible": [True] * len(pal) + [False] * (max_pal_size - len(pal))
+    }
+    for i, trace in enumerate(fig.data):
+        index = min(i % max_pal_size, len(pal) - 1)
+        if isinstance(trace, go.Scatter):
+            restyle_dict["marker.color"][i] = pal[index]
+            restyle_dict["line.color"][i] = pal[index]
+        elif isinstance(trace, (go.Contour, go.Choropleth)):
+            restyle_dict["colorscale"][i] = Grad(pal).to_plotly_colorscale()
     buttons.append(go.layout.updatemenu.Button(
         label=pal_name,
         method="restyle",
-        args=[{"marker.color": list(pal.resize(max_pal_size, repeat=True)),
-               "line.color": list(pal.resize(max_pal_size, repeat=True)),
-               "colorscale": [Grad(pal).to_plotly_colorscale()],
-               "visible": [True] * len(pal) + [False] * (max_pal_size - len(pal))}],
+        args=[restyle_dict]
     ))
+
 fig.update_layout(updatemenus=[
     go.layout.Updatemenu(
         buttons=buttons,
@@ -85,14 +122,17 @@ fig.update_layout(updatemenus=[
     go.layout.Updatemenu(
         buttons=[
             go.layout.updatemenu.Button(
-                args=[{"theme": "plotly_dark"}],
-                label="Dark mode",
+                # We have to index with the key because of some lazy access magic plotly implements
+                args=[{"template": plotly_templates[template]}],
+                label=template,
                 method="relayout"
-            )
+            ) for template in sorted(plotly_templates)
         ],
-        type="buttons",
-        x=0.5, y=1.1,
+        type='dropdown',
+        direction='down',
+        x=0.50, y=1.1,
         showactive=True,
+        active=sorted(plotly_templates).index("plotly")
     )
 ])
 fig.show("browser")
