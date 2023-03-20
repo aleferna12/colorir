@@ -1,10 +1,7 @@
-import json
 import csv
-from pathlib import Path
-
 import numpy as np
 import plotly.graph_objs as go
-from urllib.request import urlopen
+from pathlib import Path
 from plotly.io import templates as plotly_templates
 from plotly.subplots import make_subplots
 from colorir import *
