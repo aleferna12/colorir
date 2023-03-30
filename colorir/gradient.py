@@ -39,11 +39,13 @@ Examples:
     >>> grad(0.75)
     Hex('#00ff00')
 """
+
 import numpy as np
+from copy import copy, deepcopy
 from typing import Iterable, Type, List
 from . import config, utils
 from .color_class import RGB, CIELuv, ColorBase, HCLuv, ColorPolarBase, Hex, ColorLike
-from .color_format import ColorFormat, MATPLOTLIB_COLOR_FORMAT
+from .color_format import MATPLOTLIB_COLOR_FORMAT
 
 __all__ = [
     "Grad",
@@ -70,7 +72,6 @@ class Grad:
             closest color to the input value (according to `color_coords`). Useful to plot
             categorical
     """
-    _color_format: "ColorFormat"
 
     def __init__(self,
                  colors: Iterable[ColorLike],
@@ -91,26 +92,20 @@ class Grad:
             color_format = config.DEFAULT_COLOR_FORMAT
 
         self.color_sys = color_sys
-        self._colors = colors
         self.color_format = color_format
-        self._conv_colors = [self.color_sys._from_rgba(color._rgba, include_a=True, round_to=-1)
-                             for color in self._colors]
         self.domain = list(domain)
         self.color_coords = np.array(color_coords)
         self.discrete = discrete
+        self.colors = colors
 
     @property
     def colors(self):
         return list(self._colors)
 
-    @property
-    def color_format(self):
-        return self._color_format
-
-    @color_format.setter
-    def color_format(self, val):
-        self._color_format = val
-        self._colors = [self.color_format.format(color) for color in self._colors]
+    @colors.setter
+    def colors(self, value):
+        self._colors = [self.color_format.format(color) for color in value]
+        self._update_conv_colors()
 
     @property
     def color_edges(self):
@@ -129,6 +124,25 @@ class Grad:
 
     def __call__(self, x, restrict_domain=False):
         return self.at(x, restrict_domain=restrict_domain)
+
+    # noinspection PyDefaultArgument
+    def __deepcopy__(self, memodict={}):
+        obj = copy(self)
+        obj._colors = list(obj._colors)
+        obj._conv_colors = list(obj._conv_colors)
+        obj.domain = list(obj.domain)
+        obj.color_coords = np.array(obj.color_coords)
+        return obj
+
+    def __invert__(self):
+        obj = deepcopy(self)
+        obj.colors = [~color for color in obj._colors]
+        return obj
+
+    def grayscale(self):
+        obj = deepcopy(self)
+        obj.colors = [color.grayscale() for color in obj._colors]
+        return obj
 
     def at(self, x, restrict_domain=False) -> ColorBase:
         if restrict_domain and (x < self.domain[0] or x > self.domain[1]):
@@ -232,6 +246,13 @@ class Grad:
         return self.color_sys(
             *(color1 + (color2 - color1) * p)
         )
+
+    def _update_conv_colors(self):
+        self._conv_colors = []
+        for color in self._colors:
+            color = self.color_format.format(color)
+            color = self.color_sys._from_rgba(color._rgba, include_a=True, round_to=-1)
+            self._conv_colors.append(color)
 
 
 class PolarGrad(Grad):

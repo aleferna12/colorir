@@ -278,7 +278,7 @@ class Palette(PaletteBase):
     def __and__(self, other):
         """Join two palettes sequentially.
 
-        Repeating color names will be ignored.
+        Repeated color names wil raise an exception.
 
         Examples:
 

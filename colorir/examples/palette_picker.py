@@ -15,10 +15,16 @@ for name in find_palettes(kind=StackPalette):
 palettes = {k: palettes[k] for k in sorted(palettes)}
 max_pal_size = max(len(pal) for pal in palettes.values())
 carnival = StackPalette.load("carnival")
+carnival_colorscale = Grad(carnival).to_plotly_colorscale()
 
-fig = make_subplots(2, 4,
-                    specs=[[{"type": "scatter"}, {"type": "scatter"}, {"type": "choropleth", "colspan": 2}, None],
-                           [{"type": "scatter"}, {"type": "contour"}, None,                                 None]])
+fig = make_subplots(
+    2, 4,
+    specs=[[{"type": "scatter"}, {"type": "scatter"}, {"type": "choropleth", "colspan": 2}, None],
+           [{"type": "violin"}, {"type": "contour"}, {"type": "surface"}, None]]
+)
+
+# We will refer to this list to determine how to restyle the trace when changing palettes
+restyle = []
 for i in range(max_pal_size):
     fig.add_trace(go.Scatter(
         x=np.arange(50),
@@ -30,32 +36,53 @@ for i in range(max_pal_size):
         showlegend=False,
         visible=i < len(carnival),
     ), row=1, col=1)
+    restyle.append("dynamic_categ")
 
-# We re-iterate to keep fig.data ordered
-for i in range(max_pal_size):
-    fig.add_trace(go.Scatter(
-        x=np.arange(20),
-        y=np.random.random(20) * (1 - i / max_pal_size) + 2 + i / max_pal_size,
-        stackgroup=0,
-        line_color=carnival[i % len(carnival)],
-        marker_color=carnival[i % len(carnival)],
+    fig.add_trace(go.Violin(
+        x=np.random.standard_normal(20) - i / 2,
+        y0=max_pal_size - i,
+        orientation='h',
+        side="positive",
+        width=3,
+        line_color=carnival[(max_pal_size - i) % len(carnival)],
         showlegend=False,
         visible=i < len(carnival),
+        hoverinfo="skip"
     ), row=2, col=1)
+    restyle.append("dynamic_categ")
 
-for i in range(max_pal_size):
-    markers = np.random.randint(3, 5)
-    fig.add_trace(go.Scatter(
-        x=np.arange(markers) + np.random.random(markers) + i,
-        y=(np.random.random(markers) - 0.5) + np.random.random() * 4,
-        line_width=3,
-        marker_size=10,
-        marker_line_width=2,
-        line_color=carnival[i % len(carnival)],
-        marker_color=carnival[i % len(carnival)],
-        showlegend=False,
-        visible=i < len(carnival),
-    ), row=1, col=2)
+locations = []
+pop = []
+lifeexp = []
+gdppercapita = []
+with open(Path(__file__).parent / "gapminder.csv") as file:
+    for row in csv.DictReader(file.read().split("\n")[:-1]):
+        locations.append(row["iso"])
+        pop.append(int(row["pop"]))
+        lifeexp.append(float(row["lifeExp"]))
+        gdppercapita.append(float(row["gdpPercap"]))
+fig.add_trace(go.Scatter(
+    x=gdppercapita,
+    y=lifeexp,
+    mode="markers",
+    marker=go.scatter.Marker(
+        size=pop,
+        sizemode="area",
+        sizeref=max(pop) / 3600,
+        color=np.random.choice(np.array(carnival), size=len(pop))
+    ),
+    showlegend=False
+), row=1, col=2)
+restyle.append("static_categ")
+fig.update_xaxes(type="log", row=1, col=2)
+
+fig.add_trace(go.Choropleth(
+    locations=locations,
+    z=gdppercapita,
+    colorscale=carnival_colorscale,
+    colorbar=go.choropleth.ColorBar(tickvals=[])
+), row=1, col=3)
+restyle.append("colorscale")
 
 fig.add_trace(go.Contour(
     z=[[None, None, None, 12, 13, 14, 15, 16],
@@ -66,25 +93,32 @@ fig.add_trace(go.Contour(
        [None, None, None, 27, None, None, None, 21],
        [None, None, None, 26, 25, 24, 23, 22]],
     connectgaps=True,
-    colorscale=Grad(carnival).to_plotly_colorscale(),
+    colorscale=carnival_colorscale,
     showscale=False
 ), row=2, col=2)
+restyle.append("colorscale")
 
-locations = []
-unemp = []
-with open(Path(__file__).parent / "country_data.csv") as file:
-    for row in list(csv.reader(file.read().split("\n")[:-1])):
-        locations.append(row[0])
-        unemp.append(float(row[1]))
-fig.add_trace(go.Choropleth(
-    locations=locations,
-    z=unemp,
-    colorscale=Grad(carnival).to_plotly_colorscale(),
+with open(Path(__file__).parent / "surface_data.csv") as file:
+    surface_data = list(csv.reader(file.read().split("\n")[:-1]))
+surface_data = np.array(surface_data, dtype=float)
+fig.add_trace(go.Surface(
+    z=surface_data,
+    contours=dict(z=dict(show=True, usecolormap=True)),
+    colorscale=carnival_colorscale,
     showscale=False
-), row=1, col=3)
+), row=2, col=3)
+fig.update_layout(scene=dict(
+    xaxis=dict(showticklabels=False, title=""),
+    yaxis=dict(showticklabels=False, title=""),
+    zaxis=dict(showticklabels=False, title="")
+))
+restyle.append("colorscale")
 
+fig.update_xaxes(showticklabels=False)
+fig.update_yaxes(showticklabels=False)
 fig.update_layout(mapbox_zoom=8,
-                  width=1400, height=700)
+                  width=1400,
+                  height=700)
 
 buttons = []
 for pal_name, pal in palettes.items():
@@ -92,14 +126,19 @@ for pal_name, pal in palettes.items():
         "marker.color": [None] * len(fig.data),
         "line.color": [None] * len(fig.data),
         "colorscale": [None] * len(fig.data),
-        "visible": [True] * len(pal) + [False] * (max_pal_size - len(pal))
+        "visible": [True] * len(fig.data)
     }
     for i, trace in enumerate(fig.data):
-        index = min(i % max_pal_size, len(pal) - 1)
-        if isinstance(trace, go.Scatter):
-            restyle_dict["marker.color"][i] = pal[index]
-            restyle_dict["line.color"][i] = pal[index]
-        elif isinstance(trace, (go.Contour, go.Choropleth)):
+        if restyle[i] == "dynamic_categ":
+            color_index = int(i / 2)
+            if color_index >= len(pal):
+                restyle_dict["visible"][i] = False
+            else:
+                restyle_dict["marker.color"][i] = pal[color_index]
+                restyle_dict["line.color"][i] = pal[color_index]
+        elif restyle[i] == "static_categ":
+            restyle_dict["marker.color"][i] = np.random.choice(np.array(pal), size=len(pop))
+        elif restyle[i] == "colorscale":
             restyle_dict["colorscale"][i] = Grad(pal).to_plotly_colorscale()
     buttons.append(go.layout.updatemenu.Button(
         label=pal_name,
@@ -107,31 +146,54 @@ for pal_name, pal in palettes.items():
         args=[restyle_dict]
     ))
 
-fig.update_layout(updatemenus=[
-    go.layout.Updatemenu(
-        buttons=buttons,
-        type='dropdown',
-        direction='down',
-        x=0.25, y=1.1,
-        showactive=True,
-        active=list(palettes).index("carnival")
-    ),
-    go.layout.Updatemenu(
-        buttons=[
-            go.layout.updatemenu.Button(
-                # We have to index with the key because of some lazy access magic plotly implements
-                args=[{"template": plotly_templates[template]}],
-                label=template,
-                method="relayout"
-            ) for template in sorted(plotly_templates)
-        ],
-        type='dropdown',
-        direction='down',
-        x=0.50, y=1.1,
-        showactive=True,
-        active=sorted(plotly_templates).index("plotly")
-    )
-])
+fig.update_layout(
+    updatemenus=[
+        go.layout.Updatemenu(
+            buttons=buttons,
+            type='dropdown',
+            direction='down',
+            x=0.15, y=1.1,
+            showactive=True,
+            active=list(palettes).index("carnival")
+        ),
+        go.layout.Updatemenu(
+            buttons=[
+                go.layout.updatemenu.Button(
+                    # We have to index with the key because of some lazy access magic plotly implements
+                    args=[{"template": plotly_templates[template]}],
+                    label=template,
+                    method="relayout"
+                ) for template in sorted(plotly_templates)
+            ],
+            type='dropdown',
+            direction='down',
+            x=0.30, y=1.1,
+            showactive=True,
+            active=sorted(plotly_templates).index("plotly")
+        ),
+    ],
+    # TODO: fix this shit
+    annotations=[
+        go.layout.Annotation(
+            text="Palette:",
+            font=dict(size=12),
+            x=0,
+            y=1.1,
+            xref="paper",
+            yref="paper",
+            showarrow=False
+        ),
+        go.layout.Annotation(
+            text="Template:",
+            font=dict(size=12),
+            x=0.25,
+            y=1.1,
+            xref="paper",
+            yref="paper",
+            showarrow=False
+        ),
+    ]
+)
 fig.show("browser")
 
 # Line + scatter

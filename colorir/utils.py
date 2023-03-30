@@ -25,8 +25,35 @@ __all__ = [
     "random_color",
     "color_str",
     "hue_sort_key",
-    "hue_sorted"
+    "hue_sorted",
+    "grayscale",
+    "inverse",
+    "blend"
 ]
+
+
+def blend(color1, color2, perc=0.5, grad_class=Grad, **kwargs):
+    return grad_class([color1, color2]).perc(perc)
+
+
+def grayscale(obj):
+    """Returns a grayscale representation of a colorir object"""
+    if isinstance(obj, list):
+        return [color.grayscale() for color in obj]
+    # Assume single colorlike
+    elif isinstance(obj, get_args(ColorLike)):
+        obj = config.DEFAULT_COLOR_FORMAT.format(obj)
+    return obj.grayscale()
+
+
+def inverse(obj):
+    """Returns an RGB-inverted representation of a colorir object"""
+    if isinstance(obj, list):
+        return [~color for color in obj]
+    # Assume single colorlike
+    elif isinstance(obj, get_args(ColorLike)):
+        obj = config.DEFAULT_COLOR_FORMAT.format(obj)
+    return ~obj
 
 
 def swatch(obj,
@@ -52,14 +79,14 @@ def swatch(obj,
             is passed to `print`.
     """
     longest_name = None
-    # Assume single ColorLike
-    if isinstance(obj, get_args(ColorLike)):
-        obj = [obj]
-    elif isinstance(obj, Grad):
+    if isinstance(obj, Grad):
         # Seven steps for each color transition = 7 * (n - 1) - (n - 2)
         obj = obj.n_colors(6 * len(obj.colors) - 5, include_ends=True)
     elif isinstance(obj, palette.Palette):
         longest_name = max([len(name) for name in obj.color_names])
+    # Assume single ColorLike
+    elif not isinstance(obj, list):
+        obj = [obj]
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
     os.system("")

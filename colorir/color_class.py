@@ -25,6 +25,7 @@ from typing import List, Union
 from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, LCHabColor, \
     CMYColor, CMYKColor
 from colormath.color_conversions import convert_color
+
 import colorir
 
 __all__ = [
@@ -67,6 +68,13 @@ class ColorBase(metaclass=abc.ABCMeta):
     def __hash__(self):
         return hash(tuple(self._rgba))
 
+    def __invert__(self):
+        """Gets the inverse RGB of this color."""
+        return self.format._from_rgba(np.append(255 - self._rgba[:-1], self._rgba[-1]))
+
+    def __mod__(self, other):
+        return colorir.blend(self, other)
+
     @property
     def format(self) -> "colorir.color_format.ColorFormat":
         """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
@@ -78,10 +86,6 @@ class ColorBase(metaclass=abc.ABCMeta):
         """Converts this color to a grayscale representation in the same format using CIE
         lightness component."""
         return self.format.format(CIELuv(self.cieluv().l, 0, 0))
-
-    def __invert__(self):
-        """Gets the inverse RGB of this color."""
-        return self.format._from_rgba(np.append(255 - self._rgba[:-1], self._rgba[-1]))
 
     def hex(self, **kwargs) -> "Hex":
         """Converts the current color to a hexadecimal representation.
@@ -221,6 +225,22 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
     def __hash__(self):
         return ColorBase.__hash__(self)
 
+    def __add__(self, other):
+        vals = tuple(map(lambda x, y: x + y, self, other))
+        return self.format.format(vals)
+
+    def __sub__(self, other):
+        vals = tuple(map(lambda x, y: x - y, self, other))
+        return self.format.format(vals)
+
+    def __mul__(self, other):
+        vals = tuple(map(lambda x, y: x * y, self, other))
+        return self.format.format(vals)
+
+    def __truediv__(self, other):
+        vals = tuple(map(lambda x, y: x / y, self, other))
+        return self.format.format(vals)
+
 
 class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):
     """Mixin tag indicating that the color contains a polar HUE component.
@@ -315,6 +335,8 @@ class RGB(ColorTupleBase):
         obj.r, obj.g, obj.b = obj[:3]
         obj.max_rgb = max_rgb
         obj.max_a = max_a
+        obj.linear = linear
+        obj._format_params += ["max_rgb", "max_a", "linear"]
         return obj
 
 
@@ -804,6 +826,7 @@ class HCLab(ColorPolarBase):
         return obj
 
 
+# noinspection PyCallingNonCallable
 class Hex(ColorBase, str):
     """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 
