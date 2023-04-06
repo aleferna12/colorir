@@ -258,6 +258,14 @@ class Palette(PaletteBase):
             return pal
         raise TypeError(f"'Palette' indices must be 'str' or 'list', not '{type(item)}'")
 
+    def __setitem__(self, key, value):
+        if not isinstance(key, str):
+            raise TypeError("key must be a string")
+        if key in self._color_dict:
+            self.update(key, value)
+            return
+        self.add(key, value)
+
     def __dir__(self) -> List[str]:
         return dir(Palette) + list(self.__dict__) + list(self._color_dict.keys())
 
