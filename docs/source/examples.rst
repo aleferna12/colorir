@@ -10,8 +10,9 @@ After installing colorir, example applications can be executed from the shell wi
 Where `app` is one of:
 
 - `custom_palettes`_
-- `color_picker`_
 - `color_wheel`_
+- `palette_picker`_
+- `color_picker`_
 
 .. _custom_palettes:
 
@@ -24,7 +25,29 @@ Custom palettes for plotting
 In this example we will use colorir to create custom color palettes
 and gradients and then use them to plot some data.
 
+.. _color_wheel:
+
+Color Wheel with Kivy
+---------------------
+
+.. image:: images/color_wheel.png
+	:width: 300px
+
+A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.Grad`.
+
+.. literalinclude:: ../../colorir/examples/color_wheel.py
+
+.. _palette_picker:
+
 .. literalinclude:: ../../colorir/examples/custom_palettes.py
+
+Palette Picker with Plotly
+--------------------------
+
+A plotly application that allows us to select a palette to
+see if it's fit to plot different types of data.
+
+.. literalinclude:: ../../colorir/examples/palette_picker.py
 
 .. _color_picker:
 
@@ -40,15 +63,3 @@ Just like with any other example, the color picker can be executed with:
 	$ python -m colorir color_picker
 
 .. literalinclude:: ../../colorir/examples/color_picker.py
-
-.. _color_wheel:
-
-Color Wheel with Kivy
----------------------
-
-.. image:: images/color_wheel.png
-	:width: 300px
-
-A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.Grad`.
-
-.. literalinclude:: ../../colorir/examples/color_wheel.py
