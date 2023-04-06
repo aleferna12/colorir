@@ -63,7 +63,12 @@ class ColorBase(metaclass=abc.ABCMeta):
         pass
 
     def __eq__(self, other):
-        return all(self._rgba == other._rgba) if isinstance(other, ColorBase) else False
+        try:
+            if not isinstance(other, ColorBase):
+                other = colorir.config.DEFAULT_COLOR_FORMAT.format(other)
+            return np.all(np.rint(self._rgba) == np.rint(other._rgba))
+        except ValueError:
+            return False
 
     def __hash__(self):
         return hash(tuple(self._rgba))
@@ -216,11 +221,6 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         if colorir.config.REPR_STYLE == "inherit":
             return str(self)
         return colorir.utils.swatch(self, file=None)
-
-    def __eq__(self, other):
-        if isinstance(other, ColorBase):
-            return ColorBase.__eq__(self, other)
-        return tuple.__eq__(self, other)
 
     def __hash__(self):
         return ColorBase.__hash__(self)
@@ -864,8 +864,10 @@ class Hex(ColorBase, str):
                 include_a=False,
                 tail_a=False):
         hex_str = hex_str.lstrip("#")
-        if not 6 <= len(hex_str) <= 9:
-            raise ValueError("'hex_str' length must be between 6 and 9 (inclusive)")
+        if len(hex_str) not in (3, 6, 8):
+            raise ValueError("'hex_str' length must be 3, 6 or 8 (excluding the optional '#')")
+        if len(hex_str) == 3:
+            hex_str = "".join(i + j for i, j in zip(hex_str, hex_str))
         if len(hex_str) < 8:
             i = 0
             a = 255
@@ -922,11 +924,6 @@ class Hex(ColorBase, str):
         if colorir.config.REPR_STYLE == "inherit":
             return str(self)
         return colorir.utils.swatch(self, file=None)
-
-    def __eq__(self, other):
-        if isinstance(other, ColorBase):
-            return ColorBase.__eq__(self, other)
-        return str.__eq__(self, other)
 
     def __hash__(self):
         return ColorBase.__hash__(self)
