@@ -4,7 +4,7 @@ from colorir import *
 
 fig, axes = plt.subplots(2, 2)
 imdata = (np.outer(np.linspace(-1, 1, 100), np.linspace(-1, 1, 100)) + 1) / 2
-colors = Palette.load()  # Load all colors available
+cs = Palette.load()  # Load all colors available
 
 # Discrete colormap from palette
 pal = StackPalette.load("carnival").resize(8)  # Load the palette and resize it to get 8 color categories
@@ -15,18 +15,19 @@ axes[0, 0].set_title("Stacked data")
 # Discrete PuBu & GnBu
 pubu = StackPalette.load("pubu")
 gnbu = StackPalette.load("gnbu")
+# Fuse palettes with the & operator
 pal = pubu & gnbu[::-1]
 im1 = axes[0, 1].imshow(imdata, cmap=pal.resize(13).to_cmap())
 axes[0, 1].set_title("Discrete PuBu & GnBu")
 
 # Divergent purple and yellow gradient
-grad = PolarGrad([colors.cyan, colors.eggyolk, colors.magenta])
+grad = PolarGrad([cs.cyan, cs.eggyolk, cs.magenta])
 im2 = axes[1, 0].imshow(imdata, cmap=grad.to_cmap())
 axes[1, 0].set_title("Divergent cyan magenta")
 
 # Non-linear gradient
 # Place the white closer to the end of the gradient instead of in the middle by setting 'color_coords'
-grad = PolarGrad([colors.darkred, colors.white, colors.darkblue], color_coords=[0, 2/3, 1])
+grad = PolarGrad([cs.darkred, cs.white, cs.darkblue], color_coords=[0, 2 / 3, 1])
 im3 = axes[1, 1].imshow(imdata, cmap=grad.to_cmap())
 axes[1, 1].set_title("Non-linear gradient")
 
