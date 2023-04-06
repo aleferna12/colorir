@@ -93,6 +93,7 @@ from . import color_class
 
 __all__ = [
     "ColorFormat",
+    "FormatError",
     "PYGAME_COLOR_FORMAT",
     "TKINTER_COLOR_FORMAT",
     "KIVY_COLOR_FORMAT",
@@ -177,7 +178,7 @@ class ColorFormat:
             >>> hex_format.format((1, 0, 0)) # Can't understand how to parse this tuple
             Traceback (most recent call last):
               ...
-            ValueError: tried to interpret a tuple-formatted color object with a Hex ColorFormat
+            colorir.color_format.FormatError: tried to interpret a tuple-formatted color with a Hex-based ColorFormat
 
         Args:
             color: The value of the color to be formatted. Can be an instance of any
@@ -185,23 +186,40 @@ class ColorFormat:
                 resembles the format of the color you want to format.
         """
         if isinstance(color, color_class.ColorBase):
-            return self._from_rgba(color._rgba)
-        elif isinstance(color, str):
-            # Try to preserve input options (none implemented now but who knows)
+            with _wrap_format_error():
+                return self._from_rgba(color._rgba)
+        if isinstance(color, str):
+            # Try to preserve input options
             if self.color_sys == color_class.Hex:
-                return self.new_color(color)
+                with _wrap_format_error():
+                    return self.new_color(color)
             # No alpha in the string, safe to interpret with Hex
             if len(color) < 8:
                 # Fallback to Hex default args
-                return self._from_rgba(color_class.Hex(color)._rgba)
-            raise ValueError("tried to interpret a string-formatted color that contains an alpha"
-                             "component with a non-Hex ColorFormat")
-        if self.color_sys != color_class.Hex:
-            # Assume that the color system is tuple-based
-            return self.new_color(*color)
-        else:
-            raise ValueError("tried to interpret a tuple-formatted color object with a Hex "
-                             "ColorFormat")
+                with _wrap_format_error():
+                    return self._from_rgba(color_class.Hex(color)._rgba)
+            raise FormatError("tried to interpret a string-formatted color that contains an alpha"
+                              "component with a non-Hex ColorFormat")
+        if hasattr(color, "__iter__"):
+            if self.color_sys == color_class.Hex:
+                raise FormatError("tried to interpret a tuple-formatted color with a Hex-based ColorFormat")
+            with _wrap_format_error():
+                return self.new_color(*color)
+        raise FormatError()
+
+
+class FormatError(Exception):
+    def __init__(self, message="An error occurred when trying to format this color"):
+        super().__init__(message)
+
+
+class _wrap_format_error:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            raise FormatError()
 
 
 PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.RGB, max_rgb=255, max_a=255, round_to=0)

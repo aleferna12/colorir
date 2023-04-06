@@ -66,9 +66,9 @@ class ColorBase(metaclass=abc.ABCMeta):
         try:
             if not isinstance(other, ColorBase):
                 other = colorir.config.DEFAULT_COLOR_FORMAT.format(other)
-            return np.all(np.rint(self._rgba) == np.rint(other._rgba))
-        except ValueError:
-            return False
+            return all(np.rint(self._rgba) == np.rint(other._rgba))
+        except colorir.color_format.FormatError:
+            return NotImplemented
 
     def __hash__(self):
         return hash(tuple(self._rgba))
@@ -224,6 +224,14 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
 
     def __hash__(self):
         return ColorBase.__hash__(self)
+
+    def __eq__(self, other):
+        colorbase_eq = ColorBase.__eq__(self, other)
+        # If other is ColorBase than we trust the result of eq
+        if isinstance(other, ColorBase):
+            return colorbase_eq
+        # Otherwise we also try tuple.__eq__
+        return any([colorbase_eq is True, tuple.__eq__(self, other) is True])
 
     def __add__(self, other):
         vals = tuple(map(lambda x, y: x + y, self, other))
@@ -927,6 +935,14 @@ class Hex(ColorBase, str):
 
     def __hash__(self):
         return ColorBase.__hash__(self)
+
+    def __eq__(self, other):
+        colorbase_eq = ColorBase.__eq__(self, other)
+        # If other is ColorBase than we trust the result of eq
+        if isinstance(other, ColorBase):
+            return colorbase_eq
+        # Otherwise we also try str.__eq__
+        return any([colorbase_eq is True, str.__eq__(self, other) is True])
 
 
 # Aliases
