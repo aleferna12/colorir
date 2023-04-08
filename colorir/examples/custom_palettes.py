@@ -17,7 +17,9 @@ pubu = StackPalette.load("pubu")
 gnbu = StackPalette.load("gnbu")
 # Fuse palettes with the & operator
 pal = pubu & gnbu[::-1]
-im1 = axes[0, 1].imshow(imdata, cmap=pal.resize(13).to_cmap())
+# Make a discrete gradient from the palette
+grad = Grad(pal.resize(13), discrete=True)
+im1 = axes[0, 1].imshow(imdata, cmap=grad.to_cmap())
 axes[0, 1].set_title("Discrete PuBu & GnBu")
 
 # Divergent purple and yellow gradient

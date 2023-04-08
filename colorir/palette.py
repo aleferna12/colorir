@@ -96,17 +96,6 @@ class PaletteBase(metaclass=abc.ABCMeta):
     def __iter__(self):
         return iter(self.colors)
 
-    def to_cmap(self, n: int = None):
-        """Converts this palette into a matplotlib ListedColormap.
-
-        Args:
-            n: Passed down to ListedColormap constructor.
-        """
-        from matplotlib.colors import ListedColormap
-
-        colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
-        return ListedColormap(colors, N=n)
-
 
 class Palette(PaletteBase):
     """Class that holds colors values associated with names.

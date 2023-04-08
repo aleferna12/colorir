@@ -70,7 +70,7 @@ class Grad:
             Must have the same length as the `colors` argument.
         discrete: If ``True``, does not interpolate the colors and instead return the
             closest color to the input value (according to `color_coords`). Useful to plot
-            categorical
+            categorical data.
     """
 
     def __init__(self,
@@ -207,18 +207,17 @@ class Grad:
             ps = np.linspace(0, 1, n + 2)[1:-1]
         return [self.perc(p) for p in ps]
 
-    def to_cmap(self, name="", n=256, gamma=1.0):
-        """Converts this gradient into a matplotlib LinearSegmentedColormap.
+    def to_cmap(self, name=None, n=256):
+        """Converts this gradient into a matplotlib ListedColormap.
 
         Args:
             n: Number of discrete colors in the resulting color map.
             name: Passed down to color map constructor.
-            gamma: Passed down to color map constructor.
         """
-        from matplotlib.colors import LinearSegmentedColormap
+        from matplotlib.colors import ListedColormap
 
         colors = [MATPLOTLIB_COLOR_FORMAT.format(color) for color in self.n_colors(n)]
-        return LinearSegmentedColormap.from_list(name=name, colors=colors, N=n, gamma=gamma)
+        return ListedColormap(colors, N=n, name=name)
 
     def to_plotly_colorscale(self, n=256):
         """Make a color scale according to plotly's format definition.
