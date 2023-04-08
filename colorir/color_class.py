@@ -846,7 +846,8 @@ class Hex(ColorBase, str):
 
     Args:
         hex_str: Hexadecimal string from which the :class:`Hex` instance will be built.
-            May or may not include a "#" character in its beginning.
+            The format can be a string of 6 digits, 8 digits (with an alpha specifier in the beginning or the end),
+            or 3 digits, optionally including a '#' character.
         uppercase: Whether the color will be represented in uppercase or lowercase.
         include_a: Whether to include the opacity parameter `a` in the constructed string.
             Setting it to ``True`` may result in an object such as :code:`Hex('#ffffff00')`
