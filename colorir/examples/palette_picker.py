@@ -20,21 +20,24 @@ carnival_colorscale = Grad(carnival).to_plotly_colorscale()
 fig = make_subplots(
     2, 4,
     specs=[[{"type": "scatter"}, {"type": "scatter"}, {"type": "choropleth", "colspan": 2}, None],
-           [{"type": "violin"}, {"type": "contour"}, {"type": "surface"}, None]]
+           [{"type": "violin"}, {"type": "contour"}, {"type": "histogram"}, {"type": "surface"}]]
 )
 
 # We will refer to this list to determine how to restyle the trace when changing palettes
 restyle = []
 for i in range(max_pal_size):
+    y = [i]
+    for j in range(49):
+        y.append(y[-1] + 2 * (np.random.random() - 0.5))
     fig.add_trace(go.Scatter(
         x=np.arange(50),
-        y=np.random.random(50) + i * 2,
+        y=y,
         line_width=1,
         marker_size=10,
         line_color=carnival[i % len(carnival)],
         marker_color=carnival[i % len(carnival)],
         showlegend=False,
-        visible=i < len(carnival),
+        visible=i < len(carnival)
     ), row=1, col=1)
     restyle.append("dynamic_categ")
 
@@ -80,7 +83,7 @@ fig.add_trace(go.Choropleth(
     locations=locations,
     z=gdppercapita,
     colorscale=carnival_colorscale,
-    colorbar=go.choropleth.ColorBar(tickvals=[])
+    colorbar=go.choropleth.ColorBar(x=1.05, tickvals=[])
 ), row=1, col=3)
 restyle.append("colorscale")
 
@@ -94,9 +97,22 @@ fig.add_trace(go.Contour(
        [None, None, None, 26, 25, 24, 23, 22]],
     connectgaps=True,
     colorscale=carnival_colorscale,
-    showscale=False
+    showscale=False,
 ), row=2, col=2)
 restyle.append("colorscale")
+
+fig.add_trace(go.Histogram2d(
+    x=np.concatenate([np.random.beta(4, 2, 100000), np.random.beta(2, 4, 100000)]),
+    y=np.concatenate([np.random.beta(4, 2, 100000), np.random.beta(2, 4, 100000)]),
+    nbinsx=50,
+    nbinsy=50,
+    colorscale=carnival_colorscale,
+    showscale=False
+), row=2, col=3)
+restyle.append("colorscale")
+fig.update_xaxes(constrain="domain", row=2, col=3)
+fig.update_yaxes(scaleanchor="x5", scaleratio=1, row=2, col=3)
+
 
 with open(Path(__file__).parent / "surface_data.csv") as file:
     surface_data = list(csv.reader(file.read().split("\n")[:-1]))
@@ -106,13 +122,25 @@ fig.add_trace(go.Surface(
     contours=dict(z=dict(show=True, usecolormap=True)),
     colorscale=carnival_colorscale,
     showscale=False
-), row=2, col=3)
+), row=2, col=4)
 fig.update_layout(scene=dict(
     xaxis=dict(showticklabels=False, title=""),
     yaxis=dict(showticklabels=False, title=""),
     zaxis=dict(showticklabels=False, title="")
 ))
 restyle.append("colorscale")
+
+# This is just a dummy trace to display the discrete palette as a colorbar
+fig.add_trace(go.Scatter(
+    x=[None],
+    y=[None],
+    mode='markers',
+    marker_colorscale=Grad(carnival, discrete=True).to_plotly_colorscale(),
+    marker_showscale=True,
+    marker_colorbar=go.scatter.marker.ColorBar(tickvals=[]),
+    showlegend=False
+))
+restyle.append("discrete_colorscale")
 
 fig.update_xaxes(showticklabels=False)
 fig.update_yaxes(showticklabels=False)
@@ -124,6 +152,8 @@ buttons = []
 for pal_name, pal in palettes.items():
     restyle_dict = {
         "marker.color": [None] * len(fig.data),
+        "marker.colorscale": [None] * len(fig.data),
+        "marker.colorbar": [None] * len(fig.data),
         "line.color": [None] * len(fig.data),
         "colorscale": [None] * len(fig.data),
         "visible": [True] * len(fig.data)
@@ -140,6 +170,9 @@ for pal_name, pal in palettes.items():
             restyle_dict["marker.color"][i] = np.random.choice(np.array(pal), size=len(pop))
         elif restyle[i] == "colorscale":
             restyle_dict["colorscale"][i] = Grad(pal).to_plotly_colorscale()
+        elif restyle[i] == "discrete_colorscale":
+            restyle_dict["marker.colorscale"][i] = Grad(pal, discrete=True).to_plotly_colorscale()
+            restyle_dict["marker.colorbar"][i] = go.scatter.marker.ColorBar(tickvals=[])
     buttons.append(go.layout.updatemenu.Button(
         label=pal_name,
         method="restyle",
@@ -152,7 +185,7 @@ fig.update_layout(
             buttons=buttons,
             type='dropdown',
             direction='down',
-            x=0.15, y=1.1,
+            x=0.17, y=1.1,
             showactive=True,
             active=list(palettes).index("carnival")
         ),
@@ -167,12 +200,11 @@ fig.update_layout(
             ],
             type='dropdown',
             direction='down',
-            x=0.30, y=1.1,
+            x=0.35, y=1.1,
             showactive=True,
             active=sorted(plotly_templates).index("plotly")
         ),
     ],
-    # TODO: fix this shit
     annotations=[
         go.layout.Annotation(
             text="Palette:",
@@ -188,6 +220,7 @@ fig.update_layout(
             font=dict(size=12),
             x=0.25,
             y=1.1,
+            xanchor="right",
             xref="paper",
             yref="paper",
             showarrow=False
@@ -195,5 +228,3 @@ fig.update_layout(
     ]
 )
 fig.show("browser")
-
-# Line + scatter
