@@ -1,7 +1,6 @@
 API
 ===
 
-
 .. toctree::
 
     palette

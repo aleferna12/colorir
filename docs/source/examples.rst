@@ -25,6 +25,8 @@ Custom palettes for plotting
 In this example we will use colorir to create custom color palettes
 and gradients and then use them to plot some data.
 
+.. literalinclude:: ../../colorir/examples/custom_palettes.py
+
 .. _color_wheel:
 
 Color Wheel with Kivy
@@ -39,13 +41,13 @@ A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.G
 
 .. _palette_picker:
 
-.. literalinclude:: ../../colorir/examples/custom_palettes.py
-
 Palette Picker with Plotly
 --------------------------
 
-A plotly application that allows us to select a palette to
-see if it's fit to plot different types of data.
+.. image:: images/palette_picker.png
+	:width: 300px
+
+A plotly application used to test palettes with different data types.
 
 .. literalinclude:: ../../colorir/examples/palette_picker.py
 
@@ -54,7 +56,11 @@ see if it's fit to plot different types of data.
 Color Picker with Tkinter
 -------------------------
 
-A simple color picker that shows all the palettes available on our current directory (+ the built-in palettes) and copies the names of a color to the clipboard when we click on it.
+.. image:: images/color_picker.png
+	:width: 300px
+
+A simple color picker that shows all the palettes available on our current directory (+ the built-in palettes)
+and copies the names of a color to the clipboard when we click on it.
 
 Just like with any other example, the color picker can be executed with:
 

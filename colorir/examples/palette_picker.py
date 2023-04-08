@@ -18,9 +18,11 @@ carnival = StackPalette.load("carnival")
 carnival_colorscale = Grad(carnival).to_plotly_colorscale()
 
 fig = make_subplots(
-    2, 4,
-    specs=[[{"type": "scatter"}, {"type": "scatter"}, {"type": "choropleth", "colspan": 2}, None],
-           [{"type": "violin"}, {"type": "contour"}, {"type": "histogram"}, {"type": "surface"}]]
+    4, 2,
+    specs=[[{"type": "scatter"}, {"type": "violin"}],
+           [{"type": "scatter"}, {"type": "contour"}],
+           [{"type": "histogram"}, {"type": "surface"}],
+           [{"type": "choropleth", "colspan": 2}, None]]
 )
 
 # We will refer to this list to determine how to restyle the trace when changing palettes
@@ -51,7 +53,7 @@ for i in range(max_pal_size):
         showlegend=False,
         visible=i < len(carnival),
         hoverinfo="skip"
-    ), row=2, col=1)
+    ), row=1, col=2)
     restyle.append("dynamic_categ")
 
 locations = []
@@ -75,17 +77,9 @@ fig.add_trace(go.Scatter(
         color=np.random.choice(np.array(carnival), size=len(pop))
     ),
     showlegend=False
-), row=1, col=2)
+), row=2, col=1)
 restyle.append("static_categ")
-fig.update_xaxes(type="log", row=1, col=2)
-
-fig.add_trace(go.Choropleth(
-    locations=locations,
-    z=gdppercapita,
-    colorscale=carnival_colorscale,
-    colorbar=go.choropleth.ColorBar(x=1.05, tickvals=[])
-), row=1, col=3)
-restyle.append("colorscale")
+fig.update_xaxes(type="log", row=2, col=1)
 
 fig.add_trace(go.Contour(
     z=[[None, None, None, 12, 13, 14, 15, 16],
@@ -108,10 +102,10 @@ fig.add_trace(go.Histogram2d(
     nbinsy=50,
     colorscale=carnival_colorscale,
     showscale=False
-), row=2, col=3)
+), row=3, col=1)
 restyle.append("colorscale")
-fig.update_xaxes(constrain="domain", row=2, col=3)
-fig.update_yaxes(scaleanchor="x5", scaleratio=1, row=2, col=3)
+fig.update_xaxes(constrain="domain", row=3, col=1)
+fig.update_yaxes(scaleanchor="x5", scaleratio=1, row=3, col=1)
 
 
 with open(Path(__file__).parent / "surface_data.csv") as file:
@@ -122,12 +116,20 @@ fig.add_trace(go.Surface(
     contours=dict(z=dict(show=True, usecolormap=True)),
     colorscale=carnival_colorscale,
     showscale=False
-), row=2, col=4)
+), row=3, col=2)
 fig.update_layout(scene=dict(
     xaxis=dict(showticklabels=False, title=""),
     yaxis=dict(showticklabels=False, title=""),
     zaxis=dict(showticklabels=False, title="")
 ))
+restyle.append("colorscale")
+
+fig.add_trace(go.Choropleth(
+    locations=locations,
+    z=gdppercapita,
+    colorscale=carnival_colorscale,
+    colorbar=go.choropleth.ColorBar(x=1.1, y=1, yanchor="top", tickvals=[], len=0.4)
+), row=4, col=1)
 restyle.append("colorscale")
 
 # This is just a dummy trace to display the discrete palette as a colorbar
@@ -137,7 +139,7 @@ fig.add_trace(go.Scatter(
     mode='markers',
     marker_colorscale=Grad(carnival, discrete=True).to_plotly_colorscale(),
     marker_showscale=True,
-    marker_colorbar=go.scatter.marker.ColorBar(tickvals=[]),
+    marker_colorbar=go.scatter.marker.ColorBar(y=1, yanchor="top", tickvals=[], len=0.4),
     showlegend=False
 ))
 restyle.append("discrete_colorscale")
@@ -145,8 +147,8 @@ restyle.append("discrete_colorscale")
 fig.update_xaxes(showticklabels=False)
 fig.update_yaxes(showticklabels=False)
 fig.update_layout(mapbox_zoom=8,
-                  width=1400,
-                  height=700)
+                  width=700,
+                  height=1300)
 
 buttons = []
 for pal_name, pal in palettes.items():
@@ -172,7 +174,7 @@ for pal_name, pal in palettes.items():
             restyle_dict["colorscale"][i] = Grad(pal).to_plotly_colorscale()
         elif restyle[i] == "discrete_colorscale":
             restyle_dict["marker.colorscale"][i] = Grad(pal, discrete=True).to_plotly_colorscale()
-            restyle_dict["marker.colorbar"][i] = go.scatter.marker.ColorBar(tickvals=[])
+            restyle_dict["marker.colorbar"][i] = go.scatter.marker.ColorBar(y=1, yanchor="top", tickvals=[], len=0.4)
     buttons.append(go.layout.updatemenu.Button(
         label=pal_name,
         method="restyle",
@@ -185,7 +187,7 @@ fig.update_layout(
             buttons=buttons,
             type='dropdown',
             direction='down',
-            x=0.17, y=1.1,
+            x=0.4, y=1.1,
             showactive=True,
             active=list(palettes).index("carnival")
         ),
@@ -200,7 +202,7 @@ fig.update_layout(
             ],
             type='dropdown',
             direction='down',
-            x=0.35, y=1.1,
+            x=0.8, y=1.1,
             showactive=True,
             active=sorted(plotly_templates).index("plotly")
         ),
@@ -218,7 +220,7 @@ fig.update_layout(
         go.layout.Annotation(
             text="Template:",
             font=dict(size=12),
-            x=0.25,
+            x=0.55,
             y=1.1,
             xanchor="right",
             xref="paper",
