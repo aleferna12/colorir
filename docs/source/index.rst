@@ -123,20 +123,40 @@ method:
 To access the colors in a palette we can use dot attribute syntax:
 
 >>> palette.cyan  # palette['cyan'] also works
-Hex('#00ffff')
 
-To interpolate colors we can use :class:`~colorir.gradient.Grad`:
+.. raw:: html
 
->>> grad = Grad([palette.yellow, palette.cyan])
->>> grad(0.5)  # Get color between yellow and cyan by interpolating them
-Hex('#bffeb7')
+    <span style="background-color:#00ffff"> &emsp; </span> &nbsp; <span style="color:#00ffff"> #00ffff </span>
 
-By default, :class:`~colorir.gradient.Grad` interpolates in :class:`~colorir.color_class.CIELuv` space, but many
-:mod:`color classes <colorir.color_class>` are supported.
+We can make manipulate the properties of a color by adding and removing color
+components from other color systems:
+
+>>> palette.cyan - CIELab(50, 0, 0)  # Remove 50 CIELab lightness from cyan
+
+.. raw:: html
+
+    <span style="background-color:#007477"> &emsp; </span> &nbsp; <span style="color:#007477"> #007477 </span>
+
+>>> palette.cyan - HCLab(0, 25, 0)  # Remove 25 HCLab saturation from cyan
+
+.. raw:: html
+
+    <span style="background-color:#a5f3f2"> &emsp; </span> &nbsp; <span style="color:#a5f3f2"> #a5f3f2 </span>
+
+To interpolate colors we can use :func:`~colorir.utils.blend()`:
+
+>>> blend(palette.yellow, palette.cyan, 0.5)  # Get color at 50% between yellow and cyan
+
+.. raw:: html
+
+    <span style="background-color:#bffeb7"> &emsp; </span> &nbsp; <span style="color:#bffeb7"> #bffeb7 </span>
+
+:func:`~colorir.utils.blend()` is actually a wrapper around the :class:`~colorir.gradient.Grad` class, which supports
+interpolation in many different color systems.
 
 To save a palette use :meth:`Palette.save() <colorir.palette.Palette.save()>`:
 
->>> palette.save(name="elementary")  # Save palette in the default palette directory
+>>> palette.save(name="elementary")  # Name palette 'elementary' and save it in the default palette directory
 
 You can then later reload the palette in another script with :meth:`Palette.load() <colorir.palette.Palette.load()>`:
 

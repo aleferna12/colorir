@@ -15,6 +15,24 @@ Examples:
     >>> rgb_red.cmyk()
     CMYK(0.0, 1.0, 1.0, 0.0)
 
+    Color arithmetic makes it easy to change the properties of a color.
+    The operations are performed element-wise in the format of the color used as the right operand,
+    allowing specific color components to be changed in the color on the left of the operator.
+    If the right operand is not a color, but rather a tuple, than the left color is not converted
+    prior to the operation being performed.
+
+    Add some CIE lightness to the color black (right operand is CIELab, meaning that the Hex color will be converted
+    to CIELab before adding 50 to its lighness value and then converted back to Hex):
+
+    >>> Hex("#000000") + CIELab(50, 0, 0)
+    Hex('#777777')
+
+    Make a red 50% less saturated by multiplying its saturation component by 0.5 (here no conversion is performed
+    because the right operand is a tuple rather than a color class):
+
+    >>> HSV(0.0, 1.0, 1.0) * (1, 0.5, 1)
+    HSV(0.0, 0.5, 1.0)
+
 References:
     .. [#] Wikipedia at https://en.wikipedia.org/wiki/Color_model.
 """
@@ -86,18 +104,23 @@ class ColorBase(metaclass=abc.ABCMeta):
         return self.format._from_rgba(np.append(255 - self._rgba[:-1], self._rgba[-1]))
 
     def __mod__(self, other):
+        """Blends two colors at 50% using :func:`colorir.util.blend()`."""
         return colorir.blend(self, other)
 
     def __add__(self, other):
+        """Adds two colors or a color (as the left operand) and a tuple (as the right operand) together."""
         return self._arithm_func(other, operator.add)
 
     def __sub__(self, other):
+        """Subtracts one color from another or a tuple (the right operand) from a color (the left operand)."""
         return self._arithm_func(other, operator.sub)
 
     def __mul__(self, other):
+        """Multiplies two colors or a color (as the left operand) and a tuple (as the right operand) together."""
         return self._arithm_func(other, operator.mul)
 
     def __truediv__(self, other):
+        """Divides two colors or a color (as the left operand) and a tuple (as the right operand) together."""
         return self._arithm_func(other, operator.truediv)
 
     def grayscale(self):
@@ -777,7 +800,7 @@ class HCLuv(ColorPolarBase):
                               round_to=round_to)
         obj.h, obj.c, obj.l = obj[:3]
         obj.max_h = max_h
-        obj.max_sla = max_a
+        obj.max_a = max_a
         obj._format_params += ["max_h", "max_a"]
 
         return obj
@@ -833,7 +856,7 @@ class HCLab(ColorPolarBase):
                               round_to=round_to)
         obj.h, obj.c, obj.l = obj[:3]
         obj.max_h = max_h
-        obj.max_sla = max_a
+        obj.max_a = max_a
         obj._format_params += ["max_h", "max_a"]
 
         return obj

@@ -37,28 +37,12 @@ Getting started with colorir can be as simple as:
 .. code-block:: python
 
     sky = Palette.load("sky")  # Loads the sky palette
-    sky_grad = PolarGrad([sky.sunrise, sky.highnoon])  # Creates a gradient from "sunrise" to "highnoon"
+    sky_grad = PolarGrad([sky.sunrise, sky.highnoon])  # Creates a gradient from the color "sunrise" to the color "highnoon"
     swatch(sky)  # Shows colorir objects in the terminal
     swatch(sky_grad)
 
 This code should print both the palette and the gradient directly in your terminal:
 
 .. image:: docs/source/images/readme_sky.png
-
-Now let's see how colorir can be used along other frameworks!
-
-.. code-block:: python
-
-    import tkinter as tk
-
-    colors = Palette.load()  # Load all known colors
-
-    win = tk.Tk()
-    win.configure(bg=colors.magicmint)  # Set background to 'magicmint' color
-    win.mainloop()
-
-.. image:: docs/source/images/readme_example.png
-
-The power of colorir comes from the fact that you can adjust it to work seamlessly with almost any graphical or web framework, not only tkinter!
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.

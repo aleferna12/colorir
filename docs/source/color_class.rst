@@ -5,7 +5,7 @@ Color Classes
 	:members:
 	:undoc-members:
 	:show-inheritance:
-	:exclude-members: ColorBase, ColorTupleBase
+	:exclude-members: ColorBase, ColorTupleBase, ColorPolarBase
 
 .. autoclass:: ColorBase
 	:members:

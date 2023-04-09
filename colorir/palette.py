@@ -8,37 +8,37 @@ Every color in a :class:`Palette` has a name associated with it. If unnamed colo
 to your particular use case, you may want to use a :class:`StackPalette` instead.
 
 Examples:
-    Create a palette with the color red:
+    Create a palette:
 
     >>> palette = Palette(red="#ff0000")
 
-    Add the color blue:
+    Add colors:
 
     >>> palette.add("blue", "#0000ff")
 
-    Get the value for red:
+    Get the value of colors:
 
     >>> palette.red
     Hex('#ff0000')
 
-    Get names of all colors:
-
-    >>> palette.color_names
-    ['red', 'blue']
-
-    Remove red:
+    Remove colors:
 
     >>> palette.remove("red")
     >>> "red" in palette.color_names
     False
 
-    Name the palette and save it to the default directory:
+    Save a palette:
 
     >>> palette.save(name="single_blue")
 
-    Load it again from elsewhere later:
+    Load saved palettes:
 
     >>> palette = Palette.load("single_blue")
+
+    Append two palettes together:
+
+    >>> Palette(red="f00", blue="00f") & Palette(green="0f0", yellow="0ff")
+    Palette(red=#ff0000, blue=#0000ff, green=#00ff00, yellow=#00ffff)
 """
 import abc
 import json
@@ -88,12 +88,15 @@ class PaletteBase(metaclass=abc.ABCMeta):
         self._color_format = color_format
 
     def __len__(self):
+        """Returns the number of colors in the palette."""
         return len(self.colors)
 
     def __contains__(self, item):
+        """Returns ```True`` if the color is found in the palette and ``False`` otherwise."""
         return self.color_format.format(item) in self.colors
 
     def __iter__(self):
+        """Iterates over the colors in the palette."""
         return iter(self.colors)
 
 
@@ -255,6 +258,9 @@ class Palette(PaletteBase):
             return
         self.add(key, value)
 
+    def __delitem__(self, key):
+        self.remove(key)
+
     def __dir__(self) -> List[str]:
         return dir(Palette) + list(self.__dict__) + list(self._color_dict.keys())
 
@@ -285,6 +291,20 @@ class Palette(PaletteBase):
         pal = Palette(self, color_format=self.color_format)
         for c_name, c_val in other.to_dict().items():
             pal.add(c_name, c_val)
+        return pal
+
+    def __invert__(self):
+        """Returns a copy of this object but with its colors inverted in RGB space.
+
+        Examples:
+
+            >>> palette = Palette(red="ff0000", yellow="ffff00")
+            >>> ~palette
+            Palette(red=#00ffff, yellow=#0000ff)
+        """
+        pal = Palette(color_format=self.color_format)
+        for c_name, c_val in self.to_dict().items():
+            pal.add(c_name, ~c_val)
         return pal
 
     def get_color(self,
@@ -456,20 +476,6 @@ class Palette(PaletteBase):
         pal = Palette(color_format=self.color_format)
         for c_name, c_val in self.to_dict().items():
             pal.add(c_name, c_val.grayscale())
-        return pal
-
-    def __invert__(self):
-        """Returns a copy of this object but with its colors inverted in RGB space.
-
-        Examples:
-
-            >>> palette = Palette(red="ff0000", yellow="ffff00")
-            >>> ~palette
-            Palette(red=#00ffff, yellow=#0000ff)
-        """
-        pal = Palette(color_format=self.color_format)
-        for c_name, c_val in self.to_dict().items():
-            pal.add(c_name, ~c_val)
         return pal
 
     def most_similar(self, color: ColorLike, n=1, method="CIE76"):
@@ -756,6 +762,20 @@ class StackPalette(PaletteBase):
         c_list = self.colors + other.colors
         return StackPalette(c_list, color_format=self.color_format)
 
+    def __invert__(self):
+        """Returns a copy of this object but with its colors inverted in RGB space.
+
+        Examples:
+
+            >>> spalette = StackPalette(["ff0000", "ffff00"])
+            >>> ~spalette
+            StackPalette([#00ffff, #0000ff])
+        """
+        pal = StackPalette(color_format=self.color_format)
+        for color in self.colors:
+            pal.add(~color)
+        return pal
+
     def resize(self, n: int, repeat=False, grad_class=Grad, **kwargs):
         """Resizes the palette to be `n` elements long by interpolating or repeating colors.
 
@@ -917,20 +937,6 @@ class StackPalette(PaletteBase):
         if n < 0:
             return pal
         return pal[:n]
-
-    def __invert__(self):
-        """Returns a copy of this object but with its colors inverted in RGB space.
-
-        Examples:
-
-            >>> spalette = StackPalette(["ff0000", "ffff00"])
-            >>> ~spalette
-            StackPalette([#00ffff, #0000ff])
-        """
-        pal = StackPalette(color_format=self.color_format)
-        for color in self.colors:
-            pal.add(~color)
-        return pal
 
 
 def find_palettes(palettes_dir: str = None,
