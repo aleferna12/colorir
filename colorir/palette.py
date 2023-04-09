@@ -35,7 +35,7 @@ Examples:
 
     >>> palette = Palette.load("single_blue")
 
-    Append two palettes together:
+    Concatenate two palettes together:
 
     >>> Palette(red="f00", blue="00f") & Palette(green="0f0", yellow="0ff")
     Palette(red=#ff0000, blue=#0000ff, green=#00ff00, yellow=#00ffff)
