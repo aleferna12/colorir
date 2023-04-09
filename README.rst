@@ -2,7 +2,7 @@ Colorir
 =======
 
 .. image:: docs/source/images/readme_palette_picker.png
-    :width: 1000px
+    :width: 800px
 
 .. note::
 
