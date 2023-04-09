@@ -11,7 +11,7 @@ Some of the following palettes have named colors (considered palettes), while in
 Essentials
 ----------
 
-Palettes that provide access to commonly used colors.
+Palettes that provide access to commonly used colors by name.
 
 basic - *palette*
 +++++++++++++++++
@@ -59,7 +59,7 @@ Colors of the largest species of toucan, *Ramphastos toco*.
 hyacinth_macaw - *stack palette*
 ++++++++++++++++++++++++++++++++
 
-Colors of the parrot *Anodorhynchus hyacinthinus*. The two first colors of these palette make for a beautiful gradient when interpolated in the HCLuv color space.
+Colors of the parrot *Anodorhynchus hyacinthinus*.
 
 .. image:: images/palettes/hyacinth_macaw.png
 
@@ -67,6 +67,13 @@ Originals
 ---------
 
 Palettes created by me that don't fit other categories.
+
+carnival - *stack palette*
+++++++++++++++++++++++++++
+
+Similarly to `spectral`_ spans over a wide span of hue values, making it a good fit for categorical data.
+
+.. image:: images/palettes/carnival.png
 
 .. _passion:
 
@@ -130,11 +137,6 @@ Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`
 
 .. image:: images/palettes/pigments.png
 
-sunset - *stack palette*
-++++++++++++++++++++++++
-
-.. image:: images/palettes/sunset.png
-
 Color Brewer
 ------------
 
@@ -179,6 +181,8 @@ set3 - *palette*
 ++++++++++++++++
 
 .. image:: images/palettes/set3.png
+
+.. _spectral:
 
 spectral - *stack palette*
 ++++++++++++++++++++++++++
@@ -293,7 +297,7 @@ rdylbu - *stack palette*
 rdylgn - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/rdylbu.png
+.. image:: images/palettes/rdylgn.png
 
 ylgn - *stack palette*
 ++++++++++++++++++++++
@@ -315,8 +319,187 @@ ylorrd - *stack palette*
 
 .. image:: images/palettes/ylorrd.png
 
+Carto
+-----
+
+Palettes from the Carto project.
+
+burg - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/burg.png
+
+burgyl - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/burgyl.png
+
+redor - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/redor.png
+
+oryel - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/oryel.png
+
+peach - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/peach.png
+
+pinkyl - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/pinkyl.png
+
+mint - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/mint.png
+
+blugrn - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/blugrn.png
+
+darkmint - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/darkmint.png
+
+emrld - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/emrld.png
+
+ag_grnyl - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/ag_grnyl.png
+
+bluyl - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/bluyl.png
+
+teal - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/teal.png
+
+tealgrn - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/tealgrn.png
+
+purp - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/purp.png
+
+purpor - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/purpor.png
+
+magenta - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/magenta.png
+
+sunset - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/sunset.png
+
+sunsetdark - *stack palette*
+++++++++++++++++++++++++++++
+
+.. image:: images/palettes/sunsetdark.png
+
+ag_sunset - *stack palette*
++++++++++++++++++++++++++++
+
+.. image:: images/palettes/ag_sunset.png
+
+brwnyl - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/brwnyl.png
+
+armyrose - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/armyrose.png
+
+fall - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/fall.png
+
+geyser - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/geyser.png
+
+temps - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/temps.png
+
+tealrose - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/tealrose.png
+
+tropic - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/tropic.png
+
+earth - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/earth.png
+
+antique - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/antique.png
+
+bold - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/bold.png
+
+pastel - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/pastel.png
+
+prism - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/prism.png
+
+safe - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/safe.png
+
+vivid - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/vivid.png
+
 Matplotlib
 ----------
+
+Palettes from `matplotlib <https://matplotlib.org/stable/index.html>`_.
+
+"rainbow" was renamed to "mpl_rainbow" for compatibility reasons.
 
 tab10 - *palette*
 +++++++++++++++++
@@ -338,45 +521,414 @@ tab20c - *stack palette*
 
 .. image:: images/palettes/tab20c.png
 
-Crayons
--------
-
-Palettes that have been release as crayon sets in the past.
-    
-fluorescent - *palette*
+magma - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/fluorescent.png
-    
-gem_tones - *palette*
-+++++++++++++++++++++
+.. image:: images/palettes/magma.png
 
-.. image:: images/palettes/gem_tones.png
-    
-heads_n_tails - *palette*
+inferno - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/heads_n_tails.png
-    
-magic_scent - *palette*
-+++++++++++++++++++++++
+.. image:: images/palettes/inferno.png
 
-.. image:: images/palettes/magic_scent.png
-    
-metallic_fx - *palette*
-+++++++++++++++++++++++
-
-.. image:: images/palettes/metallic_fx.png
-    
-silly_scents - *palette*
+plasma - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/silly_scents.png
-    
-silver_swirls - *palette*
+.. image:: images/palettes/plasma.png
+
+viridis - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/silver_swirls.png
+.. image:: images/palettes/viridis.png
 
+cividis - *stack palette*
++++++++++++++++++++++++++
 
+.. image:: images/palettes/cividis.png
 
+twilight - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/twilight.png
+
+twilight_shifted - *stack palette*
+++++++++++++++++++++++++++++++++++
+
+.. image:: images/palettes/twilight_shifted.png
+
+wistia - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/wistia.png
+
+afmhot - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/afmhot.png
+
+autumn - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/autumn.png
+
+binary - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/binary.png
+
+bone - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/bone.png
+
+bwr - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/bwr.png
+
+cool - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/cool.png
+
+coolwarm - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/coolwarm.png
+
+copper - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/copper.png
+
+cubehelix - *stack palette*
++++++++++++++++++++++++++++
+
+.. image:: images/palettes/cubehelix.png
+
+gist_earth - *stack palette*
+++++++++++++++++++++++++++++
+
+.. image:: images/palettes/gist_earth.png
+
+gist_gray - *stack palette*
++++++++++++++++++++++++++++
+
+.. image:: images/palettes/gist_gray.png
+
+gist_heat - *stack palette*
++++++++++++++++++++++++++++
+
+.. image:: images/palettes/gist_heat.png
+
+gist_yarg - *stack palette*
++++++++++++++++++++++++++++
+
+.. image:: images/palettes/gist_yarg.png
+
+gray - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/gray.png
+
+hot - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/hot.png
+
+hsv - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/hsv.png
+
+jet - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/jet.png
+
+turbo - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/turbo.png
+
+ocean - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/ocean.png
+
+pink - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/pink.png
+
+seismic - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/seismic.png
+
+spring - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/spring.png
+
+summer - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/summer.png
+
+terrain - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/terrain.png
+
+winter - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/winter.png
+
+rocket - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/rocket.png
+
+mako - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/mako.png
+
+icefire - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/icefire.png
+
+vlag - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/vlag.png
+
+flare - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/flare.png
+
+crest - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/crest.png
+
+mpl_rainbow - *stack palette*
++++++++++++++++++++++++++++++
+
+.. image:: images/palettes/mpl_rainbow.png
+
+Seaborn
+-------
+
+Palettes from `seaborn <https://seaborn.pydata.org/index.html>`_.
+
+deep - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/deep.png
+
+muted - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/muted.png
+
+pastel - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/pastel.png
+
+bright - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/bright.png
+
+dark - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/dark.png
+
+colorblind - *stack palette*
+++++++++++++++++++++++++++++
+
+.. image:: images/palettes/colorblind.png
+
+Plotly
+------
+
+Palettes from `plotly <https://plotly.com/>`_.
+
+"icefire" was renamed to "plotly_icefire" for compatibility reasons.
+
+plotly - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/plotly.png
+
+d3 - *stack palette*
+++++++++++++++++++++
+
+.. image:: images/palettes/d3.png
+
+g10 - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/g10.png
+
+t10 - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/t10.png
+
+alphabet - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/alphabet.png
+
+dark24 - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/dark24.png
+
+light24 - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/light24.png
+
+blackbody - *stack palette*
++++++++++++++++++++++++++++
+
+.. image:: images/palettes/blackbody.png
+
+bluered - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/bluered.png
+
+electric - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/electric.png
+
+plotly3 - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/plotly3.png
+
+algae - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/algae.png
+
+amp - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/amp.png
+
+deep - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/deep.png
+
+dense - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/dense.png
+
+haline - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/haline.png
+
+ice - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/ice.png
+
+matter - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/matter.png
+
+solar - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/solar.png
+
+speed - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/speed.png
+
+tempo - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/tempo.png
+
+thermal - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/thermal.png
+
+turbid - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/turbid.png
+
+picnic - *stack palette*
+++++++++++++++++++++++++
+
+.. image:: images/palettes/picnic.png
+
+portland - *stack palette*
+++++++++++++++++++++++++++
+
+.. image:: images/palettes/portland.png
+
+balance - *stack palette*
++++++++++++++++++++++++++
+
+.. image:: images/palettes/balance.png
+
+curl - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/curl.png
+
+delta - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/delta.png
+
+oxy - *stack palette*
++++++++++++++++++++++
+
+.. image:: images/palettes/oxy.png
+
+edge - *stack palette*
+++++++++++++++++++++++
+
+.. image:: images/palettes/edge.png
+
+phase - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/phase.png
+
+mrybm - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/mrybm.png
+
+mygbm - *stack palette*
++++++++++++++++++++++++
+
+.. image:: images/palettes/mygbm.png
+
+plotly_icefire - *stack palette*
+++++++++++++++++++++++++++++++++
+
+.. image:: images/palettes/plotly_icefire.png

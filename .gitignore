@@ -1,0 +1,12 @@
+/.idea
+/.vscode
+/build
+/colorir.egg-info
+/dist
+/docs/build
+/tests/test_palettes/colorful.palette
+/tests/test_palettes/test_sl.spalette
+/tests/test_palettes/test_sl.palette
+/tests/test_palettes/elementary.spalette
+/tests/test_palettes/single_blue.palette
+**/__pycache__

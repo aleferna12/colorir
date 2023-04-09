@@ -22,7 +22,7 @@ copyright = '2022, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
-release = '1.3.14'
+release = '2.0.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,7 +36,8 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinxcontrib.prettyspecialmethods',
 ]
 
 root_doc = "index"

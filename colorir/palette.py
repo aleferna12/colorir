@@ -8,50 +8,50 @@ Every color in a :class:`Palette` has a name associated with it. If unnamed colo
 to your particular use case, you may want to use a :class:`StackPalette` instead.
 
 Examples:
-    Create a palette with the color red:
+    Create a palette:
 
     >>> palette = Palette(red="#ff0000")
 
-    Add the color blue:
+    Add colors:
 
     >>> palette.add("blue", "#0000ff")
 
-    Get the value for red:
+    Get the value of colors:
 
     >>> palette.red
     Hex('#ff0000')
 
-    Get names of all colors:
-
-    >>> palette.color_names
-    ['red', 'blue']
-
-    Remove red:
+    Remove colors:
 
     >>> palette.remove("red")
     >>> "red" in palette.color_names
     False
 
-    Name the palette and save it to the default directory:
+    Save a palette:
 
-    >>> palette.name = "single_blue"
-    >>> palette.save()
+    >>> palette.save(name="single_blue")
 
-    Load it again from elsewhere later:
+    Load saved palettes:
 
     >>> palette = Palette.load("single_blue")
+
+    Concatenate two palettes together:
+
+    >>> Palette(red="f00", blue="00f") & Palette(green="0f0", yellow="0ff")
+    Palette(red=#ff0000, blue=#0000ff, green=#00ff00, yellow=#00ffff)
 """
 import abc
 import json
 import os
+import numpy as np
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Dict, Iterable
 from warnings import warn
-
 from . import config
 from . import utils
-from .color_class import ColorBase, sRGB, HSL, HSV
-from .color_format import ColorFormat, ColorLike
+from .color_class import ColorBase, RGB, HSL, HSV, ColorLike
+from .color_format import ColorFormat
+from .gradient import Grad
 
 _throw_exception = object()
 _builtin_palettes_dir = Path(__file__).resolve().parent / "builtin_palettes"
@@ -65,11 +65,10 @@ __all__ = [
 
 
 class PaletteBase(metaclass=abc.ABCMeta):
-    def __init__(self, name=None, color_format=None):
+    def __init__(self, color_format=None):
         if color_format is None:
             color_format = config.DEFAULT_COLOR_FORMAT
 
-        self.name = name
         self._color_format = color_format
 
     @property
@@ -89,57 +88,16 @@ class PaletteBase(metaclass=abc.ABCMeta):
         self._color_format = color_format
 
     def __len__(self):
+        """Returns the number of colors in the palette."""
         return len(self.colors)
 
     def __contains__(self, item):
+        """Returns ```True`` if the color is found in the palette and ``False`` otherwise."""
         return self.color_format.format(item) in self.colors
 
     def __iter__(self):
+        """Iterates over the colors in the palette."""
         return iter(self.colors)
-
-    def most_similar(self, color: ColorLike, n=1, method="CIE76"):
-        """Finds the `n` most similar colors to `color` in this palette.
-
-        Args:
-            color: The value of the color of reference. Can be an instance of any
-                :mod:`~colorir.color_class` class or, alternatively, a color-like object that
-                resembles the color to which others will be compared in search of similar results.
-            n: How many similar colors to be retrieved. -1 means all colors from the palette will
-                be returned from most similar to least.
-            method: Method for calculating color distance. See the documentation of
-                :func:`~colorir.utils.color_dist()`.
-
-        Examples:
-            >>> palette = Palette(red="#ff0000", blue="#0000ff")
-            >>> palette.most_similar("#880000")
-            Hex('#ff0000')
-
-        Returns:
-            A single :class:`~colorir.color_class.ColorBase` if `n` == 1 or a list of
-            :class:`~colorir.color_class.ColorBase` if `n` != 1. If the return type is a list, the
-            colors will be ordered from most similar to least.
-        """
-        color = self.color_format.format(color)
-        closest = sorted(self.colors,
-                         key=lambda color2: utils.color_dist(color, color2, method=method))
-        if n == 1:
-            return closest[0]
-        elif n < 0:
-            n = len(self)
-        return closest[:n]
-
-    def to_cmap(self, N: int = None):
-        """Converts this palette into a matplotlib ListedColormap.
-
-        Args:
-            N: Passed down to ListedColormap constructor.
-        """
-        from matplotlib.colors import ListedColormap
-
-        colors = [color.hex(include_a=True, tail_a=True) for color in self.colors]
-        if self.name is None:
-            return ListedColormap(colors, N=N)
-        return ListedColormap(colors, N=N, name=self.name)
 
 
 class Palette(PaletteBase):
@@ -160,10 +118,17 @@ class Palette(PaletteBase):
         colors: Colors that will be stored in this palette.
     """
     def __init__(self,
-                 name: str = None,
+                 colors: Union["Palette", Dict[str, ColorLike]] = None,
                  color_format: ColorFormat = None,
-                 **colors: ColorLike):
-        super().__init__(name, color_format)
+                 **color_kwargs: ColorLike):
+        super().__init__(color_format)
+        if colors is None:
+            colors = color_kwargs
+        elif color_kwargs:
+            raise ValueError("colors can be passed either through the 'colors' parameter or through kwargs "
+                             "but not both")
+        if isinstance(colors, Palette):
+            colors = colors.to_dict()
 
         self._color_dict = {}
         for k, v in colors.items():
@@ -194,9 +159,8 @@ class Palette(PaletteBase):
              palettes_dir: str = None,
              search_builtins=True,
              search_cwd=True,
-             name: str = None,
              color_format: ColorFormat = None,
-             warnings=True):
+             warnings=True) -> "Palette":
         """Factory method that loads previously created palettes into a :class:`Palette` instance.
 
         A palette is a file containing json-formatted information about colors that ends with the
@@ -211,8 +175,7 @@ class Palette(PaletteBase):
         Args:
             palettes: List of palettes located in the location represented by `palettes_dir` that
                 should be loaded by this :class:`Palette` instance. Additionally may include
-                built-in palettes such as 'css' if `search_builtins` is set to ``True``. If this
-                parameter is a string, the :attr:`Palette.name` will be inferred from it. By
+                built-in palettes such as 'css' if `search_builtins` is set to ``True``. By
                 default, loads all palettes found in the specified directory.
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
@@ -221,9 +184,6 @@ class Palette(PaletteBase):
                 or 'basic'.
             search_cwd: Whether `palettes` may also include palettes located in the current
                 working directory.
-            name: Name of the palette which will be used to save it with the
-                :meth:`Palette.save()`. If the `palettes` parameter is a single string, defaults
-                to that.
             color_format: Color format specifying how the colors of this :class:`Palette` should be
                 stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
@@ -235,9 +195,9 @@ class Palette(PaletteBase):
 
             >>> css_palette = Palette.load('css')
 
-            Loads both the basic and fluorescent palettes into a new palette called 'colorful':
+            Loads both the basic and fluorescent palettes into a new palette:
 
-            >>> colorful = Palette.load(['basic', 'fluorescent'], name='colorful')
+            >>> colorful = Palette.load(['basic', 'fluorescent'])
         """
         if palettes_dir is None:
             palettes_dir = config.DEFAULT_PALETTES_DIR
@@ -247,8 +207,6 @@ class Palette(PaletteBase):
         if search_cwd:
             palettes_dir.append(os.getcwd())
         if isinstance(palettes, str):
-            if name is None:
-                name = palettes
             palettes = [palettes]
 
         found_palettes = {}
@@ -259,48 +217,95 @@ class Palette(PaletteBase):
                 palette_name = palette_file.name.replace(".palette", '')
                 found_palettes[palette_name] = json.loads(palette_file.read_text())
 
-        palette_obj = cls(name=name, color_format=color_format)
-        if palettes is None: palettes = list(found_palettes)
+        palette_obj = cls(color_format=color_format)
+        if palettes is None:
+            palettes = list(found_palettes)
         # Reiterates based on user input order
         for palette_name in palettes:
             for c_name, c_rgba in found_palettes[palette_name].items():
-                c_rgba = (int(c_rgba[3:5], 16),
-                          int(c_rgba[5:7], 16),
-                          int(c_rgba[7:9], 16),
-                          int(c_rgba[1:3], 16))
+                c_rgba = np.array([int(c_rgba[3:5], 16),
+                                   int(c_rgba[5:7], 16),
+                                   int(c_rgba[7:9], 16),
+                                   int(c_rgba[1:3], 16)])
                 new_color = palette_obj.color_format._from_rgba(c_rgba)
-                old_color = palette_obj.get_color(c_name, new_color)
-                if new_color != old_color and warnings:
+                old_color = palette_obj.get_color(c_name, None)
+                if old_color is None:
+                    palette_obj.add(c_name, new_color)
+                elif new_color != old_color and warnings:
                     warn(
                         f"a discrepancy was detected when adding color '{c_name}' "
                         f"({new_color}) from palette named '{palette_name}': '{c_name}' is "
                         f"already present with a different value ({old_color})")
-                else:
-                    palette_obj.add(c_name, new_color)
         return palette_obj
 
     def __getattr__(self, item):
-        return self._color_dict[item]
+        return self.get_color(item)
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            return self.get_color(item)
+        elif isinstance(item, list):
+            pal = Palette(color_format=self.color_format)
+            pal._color_dict = {c_name: self._color_dict[c_name] for c_name in item}
+            return pal
+        raise TypeError(f"'Palette' indices must be 'str' or 'list', not '{type(item)}'")
+
+    def __setitem__(self, key, value):
+        if not isinstance(key, str):
+            raise TypeError("key must be a string")
+        if key in self._color_dict:
+            self.update(key, value)
+            return
+        self.add(key, value)
+
+    def __delitem__(self, key):
+        self.remove(key)
+
+    def __dir__(self) -> List[str]:
+        return dir(Palette) + list(self.__dict__) + list(self._color_dict.keys())
 
     def __str__(self):
-        name_str = self.name + ", " if self.name else ""
         colors_str = ', '.join(
-            f"{c_name}={c_val}" for c_name, c_val in self._color_dict.items()
+            f"{c_name}={str(c_val)}" for c_name, c_val in self._color_dict.items()
         )
-        return f"{self.__class__.__name__}({name_str}{colors_str})"
+        return f"{self.__class__.__name__}({colors_str})"
 
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
             return str(self)
-        return utils.swatch(self, stdout=False)
+        return utils.swatch(self, file=None)
 
     def __eq__(self, other):
         return self._color_dict.items() == other._color_dict.items()
 
-    def __add__(self, other):
-        c_dict = dict(self._color_dict)
-        c_dict.update(other._color_dict)
-        return Palette(**c_dict)
+    def __and__(self, other):
+        """Join two palettes sequentially.
+
+        Repeated color names wil raise an exception.
+
+        Examples:
+
+            >>> Palette(red="ff0000") & Palette(blue="0000ff")
+            Palette(red=#ff0000, blue=#0000ff)
+        """
+        pal = Palette(self, color_format=self.color_format)
+        for c_name, c_val in other.to_dict().items():
+            pal.add(c_name, c_val)
+        return pal
+
+    def __invert__(self):
+        """Returns a copy of this object but with its colors inverted in RGB space.
+
+        Examples:
+
+            >>> palette = Palette(red="ff0000", yellow="ffff00")
+            >>> ~palette
+            Palette(red=#00ffff, yellow=#0000ff)
+        """
+        pal = Palette(color_format=self.color_format)
+        for c_name, c_val in self.to_dict().items():
+            pal.add(c_name, ~c_val)
+        return pal
 
     def get_color(self,
                   name: Union[str, List[str]],
@@ -416,7 +421,7 @@ class Palette(PaletteBase):
             name: Name of the color to be removed.
 
         Examples:
-            >>> palette = Palette(red=sRGB(255, 0, 0))
+            >>> palette = Palette(red=RGB(1, 0, 0))
             >>> palette.remove("red")
             >>> "red" in palette.color_names
             False
@@ -426,7 +431,7 @@ class Palette(PaletteBase):
         else:
             raise ValueError(f"provided 'name' parameter is not a color stored in this 'Palette'")
 
-    def save(self, palettes_dir: str = None):
+    def save(self, name: str, palettes_dir: str = None):
         """Saves the changes made to this :class:`Palette` instance.
 
         If this method is not called after modifications made by :meth:`Palette.add()`,
@@ -436,18 +441,15 @@ class Palette(PaletteBase):
         Examples:
             Loads both the basic and fluorescent palettes into a new palette called 'colorful':
 
-            >>> colorful = Palette.load(['basic', 'fluorescent'], name='colorful')
+            >>> colorful = Palette.load(['basic', 'fluorescent'])
 
             Save the palette to the default palette directory:
 
-            >>> colorful.save()
+            >>> colorful.save(name='colorful')
         """
-        if self.name is None:
-            raise AttributeError(
-                "the 'name' attribute of a 'Palette' instance must be defined to save it")
         if palettes_dir is None:
             palettes_dir = config.DEFAULT_PALETTES_DIR
-        with open(Path(palettes_dir) / (self.name + ".palette"), "w") as file:
+        with open(Path(palettes_dir) / (name + ".palette"), "w") as file:
             formatted_colors = {}
             for c_name, c_val in self._color_dict.items():
                 c_rgba = c_val.hex(include_a=True, tail_a=False)
@@ -456,11 +458,51 @@ class Palette(PaletteBase):
 
     def to_stackpalette(self) -> "StackPalette":
         """Converts this palette into a :class:`StackPalette`."""
-        return StackPalette(self.name, self.color_format, *self._color_dict.values())
+        return StackPalette(colors=self._color_dict.values(), color_format=self.color_format)
 
     def to_dict(self):
         """Converts this palette into a python `dict`."""
         return dict(self._color_dict)
+
+    def grayscale(self):
+        """Returns a copy of this object but with its colors in grayscale.
+
+        Examples:
+
+            >>> palette = Palette(red="ff0000", yellow="ffff00")
+            >>> palette.grayscale()
+            Palette(red=#7f7f7f, yellow=#f7f7f7)
+        """
+        pal = Palette(color_format=self.color_format)
+        for c_name, c_val in self.to_dict().items():
+            pal.add(c_name, c_val.grayscale())
+        return pal
+
+    def most_similar(self, color: ColorLike, n=1, method="CIE76"):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        Args:
+            color: The value of the color of reference.
+            n: How many colors to be retrieved from most similar to least. -1 means all colors will be returned.
+            method: Method for calculating color distance. See the documentation of the function `color_dist`.
+
+        Examples:
+            >>> palette = Palette(red="#ff0000", blue="#0000ff")
+            >>> palette.most_similar("#880000")
+            ('red', Hex('#ff0000'))
+
+        Returns:
+            A tuple (color_name, color) if `n` == 1 or a `Palette` if `n` != 1.
+        """
+        closest = sorted(zip(self.color_names, self.colors),
+                         key=lambda tup: utils.color_dist(color, tup[1], method))
+        if n == 1:
+            return closest[0]
+        if n < 1:
+            n = len(self)
+        pal = Palette(color_format=self.color_format)
+        pal._color_dict = dict(closest[:n])
+        return pal
 
 
 class StackPalette(PaletteBase):
@@ -470,13 +512,11 @@ class StackPalette(PaletteBase):
     irrelevant.
 
     Examples:
-        >>> spalette = StackPalette("elementary", None, "ff0000", "00ff00", "0000ff")
+        >>> spalette = StackPalette(["ff0000", "00ff00", "0000ff"])
         >>> spalette[0]
         Hex('#ff0000')
 
     Args:
-        name: Name of the palette which will be used to save it with
-            :meth:`StackPalette.save()`.
         color_format: Color format specifying how the colors of this :class:`StackPalette` should
             be stored. Defaults to the value specified in
             :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
@@ -484,10 +524,11 @@ class StackPalette(PaletteBase):
     """
 
     def __init__(self,
-                 name: str = None,
-                 color_format: ColorFormat = None,
-                 *colors: ColorLike):
-        super().__init__(name=name, color_format=color_format)
+                 colors: Iterable[ColorLike] = None,
+                 color_format: ColorFormat = None):
+        super().__init__(color_format=color_format)
+        if colors is None:
+            colors = []
 
         self._color_stack = []
         for color in colors:
@@ -501,7 +542,6 @@ class StackPalette(PaletteBase):
     @PaletteBase.color_format.setter
     def color_format(self, color_format):
         PaletteBase.color_format.fset(self, color_format)
-
         self._color_stack = [color_format._from_rgba(color._rgba) for color in self._color_stack]
 
     @classmethod
@@ -510,8 +550,7 @@ class StackPalette(PaletteBase):
              palettes_dir: str = None,
              search_builtins=True,
              search_cwd=True,
-             name: str = None,
-             color_format: ColorFormat = None):
+             color_format: ColorFormat = None) -> "StackPalette":
         """Factory method that loads previously created stack palettes into a
         :class:`StackPalette` instance.
 
@@ -526,8 +565,7 @@ class StackPalette(PaletteBase):
 
         Args:
             palettes: List of stack palettes located in the location represented by `palettes_dir`
-                that should be loaded by this :class:`StackPalette` instance. If this parameter is
-                a string, the :attr:`StackPalette.name` will be inferred from it. By default,
+                that should be loaded by this :class:`StackPalette` instance. By default,
                 loads all palettes found in the specified directory.
             palettes_dir: The directory from which the palettes specified in the `palettes`
                 parameter will be loaded. Defaults to the value specified in
@@ -536,9 +574,6 @@ class StackPalette(PaletteBase):
                 or 'dark2'.
             search_cwd: Whether `palettes` may also include palettes located in the current
                 working directory.
-            name: Name of the palette which will be used to save it with the
-                :meth:`StackPalette.save()`. If the `palettes` parameter is a single string,
-                defaults to that.
             color_format: Color format specifying how the colors of this :class:`Palette` should be
                 stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
@@ -551,8 +586,6 @@ class StackPalette(PaletteBase):
         if search_cwd:
             palettes_dir.append(os.getcwd())
         if isinstance(palettes, str):
-            if name is None:
-                name = palettes
             palettes = [palettes]
 
         found_palettes = {}
@@ -563,15 +596,16 @@ class StackPalette(PaletteBase):
                 palette_name = palette_file.name.replace(".spalette", '')
                 found_palettes[palette_name] = json.loads(palette_file.read_text())
 
-        palette_obj = cls(name=name, color_format=color_format)
-        if palettes is None: palettes = list(found_palettes)
+        palette_obj = cls(color_format=color_format)
+        if palettes is None:
+            palettes = list(found_palettes)
         # Reiterates based on user input order
         for palette_name in palettes:
             for c_rgba in found_palettes[palette_name]:
-                c_rgba = (int(c_rgba[3:5], 16),
-                          int(c_rgba[5:7], 16),
-                          int(c_rgba[7:9], 16),
-                          int(c_rgba[1:3], 16))
+                c_rgba = np.array([int(c_rgba[3:5], 16),
+                                   int(c_rgba[5:7], 16),
+                                   int(c_rgba[7:9], 16),
+                                   int(c_rgba[1:3], 16)])
                 new_color = palette_obj.color_format._from_rgba(c_rgba)
                 palette_obj.add(new_color)
         return palette_obj
@@ -581,7 +615,6 @@ class StackPalette(PaletteBase):
     def new_complementary(cls,
                           n: int,
                           color: ColorLike = None,
-                          name: str = None,
                           color_format: ColorFormat = None):
         """Creates a new palette with `n` complementary colors.
 
@@ -591,9 +624,9 @@ class StackPalette(PaletteBase):
         Examples:
              Make a palette from red and its complementary color, cyan:
 
-             >>> spalette = StackPalette.new_complementary(2, sRGB(255, 0, 0))
+             >>> spalette = StackPalette.new_complementary(2, RGB(1, 0, 0))
              >>> spalette
-             StackPalette(Hex('#ff0000'), Hex('#00ffff'))
+             StackPalette([#ff0000, #00ffff])
 
              Make a tetradic palette of random colors:
 
@@ -603,13 +636,11 @@ class StackPalette(PaletteBase):
             n: The number of colors in the new palette.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
-            name: Name of the palette which will be used to save it with
-                :meth:`StackPalette.save()`.
             color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         """
-        n_spalette = cls(name=name, color_format=color_format)
+        n_spalette = cls(color_format=color_format)
         if color is None:
             hsv = utils.random_color(color_format=ColorFormat(HSV, max_h=360))
         else:
@@ -627,7 +658,6 @@ class StackPalette(PaletteBase):
                       sections=12,
                       start=0,
                       color: ColorLike = None,
-                      name: str = None,
                       color_format: ColorFormat = None):
         """Creates a new palette with `n` analogous colors.
 
@@ -636,9 +666,9 @@ class StackPalette(PaletteBase):
         Examples:
              Make a palette from red and its analogous color, orange:
 
-             >>> spalette = StackPalette.new_analogous(2, start=1, color=sRGB(255, 0, 0))
+             >>> spalette = StackPalette.new_analogous(2, start=1, color=RGB(1, 0, 0))
              >>> spalette
-             StackPalette(Hex('#ff0000'), Hex('#ff8000'))
+             StackPalette([#ff0000, #ff8000])
 
              Make a palette of four similar colors:
 
@@ -655,8 +685,6 @@ class StackPalette(PaletteBase):
                 be sampled clockwise from 'color'. If '-1', they will be sampled counter-clockwise.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
-            name: Name of the palette which will be used to save it with
-                :meth:`StackPalette.save()`.
             color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
@@ -673,7 +701,7 @@ class StackPalette(PaletteBase):
         else:
             raise ValueError("'starting_point' must be either 0, 1 or -1")
 
-        n_spalette = cls(name=name, color_format=color_format)
+        n_spalette = cls(color_format=color_format)
         if color is None:
             hsv = utils.random_color(color_format=ColorFormat(HSV, max_h=360))
         else:
@@ -686,54 +714,92 @@ class StackPalette(PaletteBase):
         return n_spalette
 
     def __getitem__(self, item):
+        if isinstance(item, int):
+            return self._color_stack[item]
         if isinstance(item, list):
-            return [self._color_stack[i] for i in item]
-        return self._color_stack[item]
+            pal = StackPalette(color_format=self.color_format)
+            pal._color_stack = [self._color_stack[i] for i in item]
+            return pal
+        if isinstance(item, slice):
+            indexes = list(range(*item.indices(len(self))))
+            return self[indexes]
+        raise TypeError(f"'StackPalette' indices must be 'int', 'list' or 'slice', not '{type(item)}'")
 
     def __setitem__(self, key, value):
-        if isinstance(key, list):
+        if isinstance(key, int):
+            self.update(key, value)
+        elif isinstance(key, list):
+            if len(key) != len(value):
+                raise ValueError("length of indexes and provided values must match")
             for i, val in zip(key, value):
                 self.update(i, val)
+        elif isinstance(key, slice):
+            indexes = list(range(*key.indices(len(self))))
+            self[indexes] = value
         else:
-            self.update(key, value)
+            raise TypeError("index must be 'int', 'list' or 'slice'")
 
     def __str__(self):
-        name_str = self.name + ", " if self.name else ""
-        colors_str = ', '.join(c_val.__repr__() for c_val in self._color_stack)
-        return f"{self.__class__.__name__}({name_str}{colors_str})"
+        colors_str = ', '.join(str(c_val) for c_val in self._color_stack)
+        return f"{self.__class__.__name__}([{colors_str}])"
 
     def __repr__(self):
         if config.REPR_STYLE in ["traditional", "inherit"]:
             return str(self)
-        return utils.swatch(self, stdout=False)
+        return utils.swatch(self, file=None)
 
     def __eq__(self, other):
         return self._color_stack == other._color_stack
 
-    def __add__(self, other):
-        c_list = self.colors + other.colors
-        return StackPalette(None, None, *c_list)
-
-    def swap(self, index1: int, index2: int):
-        """Swap the places of two colors in the palette.
-
-        Can be used to reorganize the palette if needed.
+    def __and__(self, other):
+        """Join two palettes sequentially.
 
         Examples:
-            >>> spalette = StackPalette(None, None, "ff0000", "0000ff")
-            >>> spalette
-            StackPalette(Hex('#ff0000'), Hex('#0000ff'))
-            >>> spalette.swap(0, 1)
-            >>> spalette
-            StackPalette(Hex('#0000ff'), Hex('#ff0000'))
+
+            >>> StackPalette(["ff0000"]) & StackPalette(["0000ff"])
+            StackPalette([#ff0000, #0000ff])
+        """
+        c_list = self.colors + other.colors
+        return StackPalette(c_list, color_format=self.color_format)
+
+    def __invert__(self):
+        """Returns a copy of this object but with its colors inverted in RGB space.
+
+        Examples:
+
+            >>> spalette = StackPalette(["ff0000", "ffff00"])
+            >>> ~spalette
+            StackPalette([#00ffff, #0000ff])
+        """
+        pal = StackPalette(color_format=self.color_format)
+        for color in self.colors:
+            pal.add(~color)
+        return pal
+
+    def resize(self, n: int, repeat=False, grad_class=Grad, **kwargs):
+        """Resizes the palette to be `n` elements long by interpolating or repeating colors.
 
         Args:
-            index1: The index of the first color.
-            index2: The index of the second color.
+            repeat: If ``True``, repeats the colors intead of interpolating them to reach the length goal.
+            grad_class: Which gradient class to use for interpolation.
+            n: Number of elements in the final palette.
+            kwargs: Key-word arguments passed down to the internal gradient object.
+
+        Examples:
+
+            >>> StackPalette(["000000", "ffffff"]).resize(3)
+            StackPalette([#000000, #777777, #ffffff])
+            >>> StackPalette(["000000", "ffffff"]).resize(3, repeat=True)
+            StackPalette([#000000, #ffffff, #000000])
+
+        Returns:
+            A resized copy of this stack palette.
         """
-        c_temp = self._color_stack[index1]
-        self._color_stack[index1] = self._color_stack[index2]
-        self._color_stack[index2] = c_temp
+        if repeat:
+            color_indices = [i % len(self) for i in range(n)]
+            return self[color_indices]
+        colors = grad_class(colors=self.colors, **kwargs).n_colors(n)
+        return StackPalette(colors=colors, color_format=self.color_format)
 
     def add(self, color: ColorLike):
         """Adds a color to the end of the stack palette.
@@ -768,7 +834,7 @@ class StackPalette(PaletteBase):
         Examples:
             Create a slightly dark shade of red:
 
-            >>> spalette = StackPalette(None, None, "dd0000")
+            >>> spalette = StackPalette(["dd0000"])
             >>> spalette[0]
             Hex('#dd0000')
 
@@ -787,7 +853,7 @@ class StackPalette(PaletteBase):
         stack.
 
         Examples:
-            >>> spalette = StackPalette(None, None, "#ff0000")
+            >>> spalette = StackPalette(["#ff0000"])
             >>> "#ff0000" in spalette
             True
             >>> spalette.remove()
@@ -796,7 +862,7 @@ class StackPalette(PaletteBase):
         """
         self._color_stack.pop()
 
-    def save(self, palettes_dir: str = None):
+    def save(self, name: str, palettes_dir: str = None):
         """Saves the changes made to this :class:`StackPalette` instance.
 
         If this method is not called after modifications made by :meth:`StackPalette.add()`,
@@ -806,16 +872,12 @@ class StackPalette(PaletteBase):
         Examples:
             Create a new :class:`StackPalette` and save it to the current directory:
 
-            >>> spalette = StackPalette("elementary", None, "ff0000", "00ff00", "0000ff")
-            >>> spalette.save()
+            >>> spalette = StackPalette(["ff0000", "00ff00", "0000ff"])
+            >>> spalette.save(name="elementary")
         """
-        if self.name is None:
-            raise AttributeError(
-                "the 'name' attribute of a 'StackPalette' instance must be defined to save it"
-            )
         if palettes_dir is None:
             palettes_dir = config.DEFAULT_PALETTES_DIR
-        with open(Path(palettes_dir) / (self.name + ".spalette"), "w") as file:
+        with open(Path(palettes_dir) / (name + ".spalette"), "w") as file:
             formatted_colors = []
             for c_val in self._color_stack:
                 c_rgba = tuple(spec for spec in c_val._rgba)
@@ -831,9 +893,50 @@ class StackPalette(PaletteBase):
                 stack palette.
         """
         if len(names) == len(set(names)) == len(self._color_stack):
-            return Palette(self.name, self.color_format, **dict(zip(names, self._color_stack)))
+            return Palette(dict(zip(names, self._color_stack)), color_format=self.color_format)
         raise ValueError("'names' must have the same length as this 'StackPalette' and no "
                          "duplicates")
+
+    def grayscale(self):
+        """Returns a copy of this object but with its colors in grayscale.
+
+        Examples:
+
+            >>> spalette = StackPalette(["ff0000", "ffff00"])
+            >>> spalette.grayscale()
+            StackPalette([#7f7f7f, #f7f7f7])
+        """
+        pal = StackPalette(color_format=self.color_format)
+        for color in self.colors:
+            pal.add(color.grayscale())
+        return pal
+
+    def most_similar(self, color: ColorLike, n=1, method="CIE76"):
+        """Finds the `n` most similar colors to `color` in this palette.
+
+        Args:
+            color: The value of the color of reference.
+            n: How many colors to be retrieved from most similar to least. -1 means all colors will be returned.
+            method: Method for calculating color distance. See the documentation of `color_dist`.
+
+        Examples:
+            >>> palette = StackPalette(["#ff0000", "#0000ff"])
+            >>> palette.most_similar("#880000")
+            Hex('#ff0000')
+
+        Returns:
+            A single color object if `n` == 1 or a `StackPalette` if `n` != 1.
+        """
+        color = self.color_format.format(color)
+        closest = sorted(self.colors,
+                         key=lambda color2: utils.color_dist(color, color2, method=method))
+        if n == 1:
+            return closest[0]
+        pal = StackPalette(color_format=self.color_format)
+        pal._color_stack = closest
+        if n < 0:
+            return pal
+        return pal[:n]
 
 
 def find_palettes(palettes_dir: str = None,

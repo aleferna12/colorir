@@ -5,7 +5,7 @@ specifications. For example, both Kivy [1]_ and PyGame [2]_ use mostly RGB color
 building applications. However, Kivy expects the colors to have a maximum value of 1, while PyGame
 expects it to be 255. To bridge these expectations and allow the use of the same set of colors for
 multiple projects across different frameworks, the :class:`ColorFormat` class was created.
-This class can be used to build strictly defined formats which allows the creation and
+This class can be used to build strictly defined formats which act as a template for the creation and
 interpretation of colors using :meth:`ColorFormat.new_color()` and :meth:`ColorFormat.format()`
 respectively.
 
@@ -88,22 +88,18 @@ References:
     .. [1] Kivy: Cross-platform Python Framework for NUI Development at https://kivy.org/.
     .. [2] PyGame library at https://www.pygame.org/.
 """
-from typing import Type, Union, NewType
-
+from typing import Type
 from . import color_class
 
 __all__ = [
-    "ColorLike",
     "ColorFormat",
+    "FormatError",
     "PYGAME_COLOR_FORMAT",
     "TKINTER_COLOR_FORMAT",
     "KIVY_COLOR_FORMAT",
     "WEB_COLOR_FORMAT",
     "MATPLOTLIB_COLOR_FORMAT"
 ]
-
-ColorLike = NewType("ColorLike", Union["color_class.ColorBase", str, tuple, list])
-"""Type constant that describes common representations of colors in python."""
 
 
 class ColorFormat:
@@ -117,7 +113,7 @@ class ColorFormat:
     Examples:
         >>> c_format = ColorFormat(color_class.sRGB, max_rgb=1)
         >>> c_format.new_color(1, 0, 0)
-        sRGB(1, 0, 0)
+        RGB(1, 0, 0)
 
         For more examples see the documentation of the :mod:`~colorir.color_format` module.
     """
@@ -153,7 +149,7 @@ class ColorFormat:
             ...                        max_a=1,
             ...                        include_a=True)
             >>> c_format.new_color(1, 0, 0)
-            sRGB(1, 0, 0, 1)
+            RGB(1, 0, 0, 1)
         """
         kwargs.update(self.format_params)
         return self.color_sys(*args, **kwargs)
@@ -162,7 +158,7 @@ class ColorFormat:
     def _from_rgba(self, rgba):
         return self.color_sys._from_rgba(rgba, **self.format_params)
 
-    def format(self, color: ColorLike) -> "color_class.ColorBase":
+    def format(self, color: "color_class.ColorLike") -> "color_class.ColorBase":
         """Tries to format a color-like object into this color format.
 
         Because there are multiple implementations of tuple-based color systems, the `color`
@@ -173,16 +169,16 @@ class ColorFormat:
         Examples:
             >>> rgb_format = ColorFormat(color_class.sRGB, round_to=0)
             >>> rgb_format.format("#ff0000")
-            sRGB(255, 0, 0)
-            >>> rgb_format.format((255, 0, 0))
-            sRGB(255, 0, 0)
+            RGB(1, 0, 0)
+            >>> rgb_format.format((1, 0, 0))
+            RGB(1, 0, 0)
             >>> hex_format = ColorFormat(color_class.Hex)
             >>> hex_format.format("#ff0000")
             Hex('#ff0000')
-            >>> hex_format.format((255, 0, 0)) # Can't understand how to parse this tuple
+            >>> hex_format.format((1, 0, 0)) # Can't understand how to parse this tuple
             Traceback (most recent call last):
               ...
-            ValueError: tried to interpret a tuple-formatted color object with a Hex ColorFormat
+            colorir.color_format.FormatError: tried to interpret a tuple-formatted color with a Hex-based ColorFormat
 
         Args:
             color: The value of the color to be formatted. Can be an instance of any
@@ -190,26 +186,43 @@ class ColorFormat:
                 resembles the format of the color you want to format.
         """
         if isinstance(color, color_class.ColorBase):
-            return self._from_rgba(color._rgba)
-        elif isinstance(color, str):
-            # Try to preserve input options (none implemented now but who knows)
+            with _wrap_format_error():
+                return self._from_rgba(color._rgba)
+        if isinstance(color, str):
+            # Try to preserve input options
             if self.color_sys == color_class.Hex:
-                return self.new_color(color)
+                with _wrap_format_error():
+                    return self.new_color(color)
             # No alpha in the string, safe to interpret with Hex
             if len(color) < 8:
                 # Fallback to Hex default args
-                return self._from_rgba(color_class.Hex(color)._rgba)
-            raise ValueError("tried to interpret a string-formatted color that contains an alpha"
-                             "component with a non-Hex ColorFormat")
-        if self.color_sys != color_class.Hex:
-            # Assume that the color system is tuple-based
-            return self.new_color(*color)
-        else:
-            raise ValueError("tried to interpret a tuple-formatted color object with a Hex "
-                             "ColorFormat")
+                with _wrap_format_error():
+                    return self._from_rgba(color_class.Hex(color)._rgba)
+            raise FormatError("tried to interpret a string-formatted color that contains an alpha"
+                              "component with a non-Hex ColorFormat")
+        if hasattr(color, "__iter__"):
+            if self.color_sys == color_class.Hex:
+                raise FormatError("tried to interpret a tuple-formatted color with a Hex-based ColorFormat")
+            with _wrap_format_error():
+                return self.new_color(*color)
+        raise FormatError()
 
 
-PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB, max_rgb=255, max_a=255, round_to=0)
+class FormatError(Exception):
+    def __init__(self, message="An error occurred when trying to format this color"):
+        super().__init__(message)
+
+
+class _wrap_format_error:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            raise FormatError()
+
+
+PYGAME_COLOR_FORMAT = ColorFormat(color_sys=color_class.RGB, max_rgb=255, max_a=255, round_to=0)
 """Color format compatible with PyGame standards."""
 
 KIVY_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB,

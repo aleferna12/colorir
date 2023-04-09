@@ -6,7 +6,7 @@ README = (HERE/"README.rst").read_text()
 
 setup(
     name="colorir",
-    version="1.3.14",
+    version="2.0.0",
     packages=["colorir"],
     url="https://github.com/aleferna12/colorir",
     license="MIT",
@@ -18,5 +18,5 @@ setup(
     project_urls={"Documentation": "https://colorir.readthedocs.io/en/latest/"},
     include_package_data=True,
     python_requires=">=3.8",
-    install_requires=["colormath", "numpy<1.23.0"]
+    install_requires=["colormath", "numpy"]
 )
