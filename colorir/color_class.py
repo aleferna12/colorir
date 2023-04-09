@@ -104,7 +104,7 @@ class ColorBase(metaclass=abc.ABCMeta):
         return self.format._from_rgba(np.append(255 - self._rgba[:-1], self._rgba[-1]))
 
     def __mod__(self, other):
-        """Blends two colors at 50% using :func:`colorir.util.blend()`."""
+        """Blends two colors at 50% using :func:`colorir.utils.blend()`."""
         return colorir.blend(self, other)
 
     def __add__(self, other):
