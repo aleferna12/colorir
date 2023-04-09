@@ -36,7 +36,7 @@ Getting started with colorir can be as simple as:
 
 .. code-block:: python
 
-    sky = Palette.load("sky")  # Loads the sky palette
+    sky = Palette.load("sky")  # Loads a previously created palette called sky
     sky_grad = PolarGrad([sky.sunrise, sky.highnoon])  # Creates a gradient from the color "sunrise" to the color "highnoon"
     swatch(sky)  # Shows colorir objects in the terminal
     swatch(sky_grad)
@@ -44,5 +44,18 @@ Getting started with colorir can be as simple as:
 This code should print both the palette and the gradient directly in your terminal:
 
 .. image:: docs/source/images/readme_sky.png
+
+Colorir can be used to interpolate and manipulate colors in many different color systems,
+such as CIELab and HCLab (LCHab).
+
+Now let's make a gray scale version of the sky palette and save it to use later on
+another project:
+
+.. code-block:: python
+
+    gray_sky = sky.grayscale()
+    gray_sky.save("gray_sky")
+
+Now the gray_sky palette can be loaded with :code:`Palette.load("gray_sky")` from a different script.
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.

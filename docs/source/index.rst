@@ -126,7 +126,9 @@ To access the colors in a palette we can use dot attribute syntax:
 
 .. raw:: html
 
-    <span style="background-color:#00ffff"> &emsp; </span> &nbsp; <span style="color:#00ffff"> #00ffff </span>
+    <p>
+        <span style="background-color:#00ffff"> &emsp; </span> &nbsp; <span style="color:#00ffff"> #00ffff </span>
+    </p>
 
 We can make manipulate the properties of a color by adding and removing color
 components from other color systems:
@@ -135,13 +137,13 @@ components from other color systems:
 
 .. raw:: html
 
-    <span style="background-color:#007477"> &emsp; </span> &nbsp; <span style="color:#007477"> #007477 </span>
+    <p><span style="background-color:#007477"> &emsp; </span> &nbsp; <span style="color:#007477"> #007477 </span></p>
 
 >>> palette.cyan - HCLab(0, 25, 0)  # Remove 25 HCLab saturation from cyan
 
 .. raw:: html
 
-    <span style="background-color:#a5f3f2"> &emsp; </span> &nbsp; <span style="color:#a5f3f2"> #a5f3f2 </span>
+    <p><span style="background-color:#a5f3f2"> &emsp; </span> &nbsp; <span style="color:#a5f3f2"> #a5f3f2 </span></p>
 
 To interpolate colors we can use :func:`~colorir.utils.blend()`:
 
@@ -149,7 +151,7 @@ To interpolate colors we can use :func:`~colorir.utils.blend()`:
 
 .. raw:: html
 
-    <span style="background-color:#bffeb7"> &emsp; </span> &nbsp; <span style="color:#bffeb7"> #bffeb7 </span>
+    <p><span style="background-color:#bffeb7"> &emsp; </span> &nbsp; <span style="color:#bffeb7"> #bffeb7 </span></p>
 
 :func:`~colorir.utils.blend()` is actually a wrapper around the :class:`~colorir.gradient.Grad` class, which supports
 interpolation in many different color systems.
