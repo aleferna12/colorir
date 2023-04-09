@@ -33,7 +33,7 @@ __all__ = [
 
 
 def blend(color1, color2, perc=0.5, grad_class=Grad, **kwargs):
-    return grad_class([color1, color2]).perc(perc)
+    return grad_class([color1, color2], **kwargs).perc(perc)
 
 
 def grayscale(obj):
