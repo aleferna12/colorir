@@ -85,7 +85,7 @@ def swatch(obj,
     elif isinstance(obj, palette.Palette):
         longest_name = max([len(name) for name in obj.color_names])
     # Assume single ColorLike
-    elif not isinstance(obj, list):
+    elif not isinstance(obj, (list, palette.StackPalette)):
         obj = [obj]
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
