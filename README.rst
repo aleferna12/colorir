@@ -1,7 +1,7 @@
 Colorir
 =======
 
-.. image:: docs/source/images/read_mepalette_picker.png
+.. image:: docs/source/images/readme_palette_picker.png
     :width: 1000px
 
 .. note::
