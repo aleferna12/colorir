@@ -20,6 +20,7 @@ References:
 """
 import abc
 import colorsys
+import operator
 import numpy as np
 from typing import List, Union
 from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, LCHabColor, \
@@ -62,6 +63,13 @@ class ColorBase(metaclass=abc.ABCMeta):
     def _from_rgba(cls, rgba, **kwargs):
         pass
 
+    @property
+    def format(self) -> "colorir.color_format.ColorFormat":
+        """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
+        color object."""
+        format_ = {param: getattr(self, param) for param in self._format_params}
+        return colorir.color_format.ColorFormat(self.__class__, **format_)
+
     def __eq__(self, other):
         try:
             if not isinstance(other, ColorBase):
@@ -80,12 +88,17 @@ class ColorBase(metaclass=abc.ABCMeta):
     def __mod__(self, other):
         return colorir.blend(self, other)
 
-    @property
-    def format(self) -> "colorir.color_format.ColorFormat":
-        """Returns a :class:`~colorir.color_format.ColorFormat` representing the format of this
-        color object."""
-        format_ = {param: getattr(self, param) for param in self._format_params}
-        return colorir.color_format.ColorFormat(self.__class__, **format_)
+    def __add__(self, other):
+        return self._arithm_func(other, operator.add)
+
+    def __sub__(self, other):
+        return self._arithm_func(other, operator.sub)
+
+    def __mul__(self, other):
+        return self._arithm_func(other, operator.mul)
+
+    def __truediv__(self, other):
+        return self._arithm_func(other, operator.truediv)
 
     def grayscale(self):
         """Converts this color to a grayscale representation in the same format using CIE
@@ -182,6 +195,12 @@ class ColorBase(metaclass=abc.ABCMeta):
         """
         return HCLab._from_rgba(self._rgba, **kwargs)
 
+    def _arithm_func(self, other, foo):
+        if not isinstance(other, ColorTupleBase):
+            raise ValueError("operations are only possible if one of the colors is tuple-based")
+        vals = tuple(map(foo, other.format.format(self), other))
+        return self.format.format(other.format.format(vals))
+
 
 class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
     """Base class from which all color classes that are represented by tuples inherit.
@@ -234,20 +253,30 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         return any([colorbase_eq is True, tuple.__eq__(self, other) is True])
 
     def __add__(self, other):
-        vals = tuple(map(lambda x, y: x + y, self, other))
-        return self.format.format(vals)
+        if not isinstance(other, ColorTupleBase):
+            return self._tup_arithm_func(other, operator.add)
+        return ColorBase.__add__(self, other)
 
     def __sub__(self, other):
-        vals = tuple(map(lambda x, y: x - y, self, other))
-        return self.format.format(vals)
+        if not isinstance(other, ColorTupleBase):
+            return self._tup_arithm_func(other, operator.sub)
+        return ColorBase.__sub__(self, other)
 
     def __mul__(self, other):
-        vals = tuple(map(lambda x, y: x * y, self, other))
-        return self.format.format(vals)
+        if not isinstance(other, ColorTupleBase):
+            return self._tup_arithm_func(other, operator.mul)
+        return ColorBase.__mul__(self, other)
 
     def __truediv__(self, other):
-        vals = tuple(map(lambda x, y: x / y, self, other))
+        if not isinstance(other, ColorTupleBase):
+            return self._tup_arithm_func(other, operator.truediv)
+        return ColorBase.__truediv__(self, other)
+
+    # If right side of the operator is not a tuple-based color, we perform the operation element-wise
+    def _tup_arithm_func(self, other, foo):
+        vals = tuple(map(foo, self, other))
         return self.format.format(vals)
+
 
 
 class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):
