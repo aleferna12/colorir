@@ -56,6 +56,13 @@ another project:
     gray_sky = sky.grayscale()
     gray_sky.save("gray_sky")
 
-Now the gray_sky palette can be loaded with :code:`Palette.load("gray_sky")` from a different script.
+Now the gray_sky palette can be loaded with from a different script:
+
+.. code-block:: python
+
+    gray_sky = Palette.load("gray_sky")
+    swatch(gray_sky)
+
+.. image:: docs/source/images/readme_sky.png
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
