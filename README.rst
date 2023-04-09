@@ -63,6 +63,6 @@ Now the gray_sky palette can be loaded with from a different script:
     gray_sky = Palette.load("gray_sky")
     swatch(gray_sky)
 
-.. image:: docs/source/images/readme_sky.png
+.. image:: docs/source/images/readme_gray_sky.png
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
