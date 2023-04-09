@@ -2,6 +2,8 @@
 
     colorir is still in its early days and slight modifications to the API may happen between versions.
 
+.. image:: docs/source/images/palette_picker.png
+
 What is colorir?
 ----------------
 
