@@ -54,19 +54,11 @@ This code should print both the palette and the gradient directly in your termin
 Colorir can be used to interpolate and manipulate colors in many different color systems,
 such as CIELab and HCLab (LCHab).
 
-Now let's make a gray scale version of the sky palette and save it to use later on
-another project:
+Now let's make a gray scale version of the sky palette:
 
 .. code-block:: python
 
     gray_sky = sky.grayscale()
-    gray_sky.save("gray_sky")
-
-Now the gray_sky palette can be loaded with from a different script:
-
-.. code-block:: python
-
-    gray_sky = Palette.load("gray_sky")
     swatch(gray_sky)
 
 .. image:: docs/source/images/readme_gray_sky.png
