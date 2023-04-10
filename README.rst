@@ -11,7 +11,8 @@ Colorir
 What is colorir?
 ----------------
 
-colorir is a package that allows users to manipulate colors and palettes.
+colorir is a package used to create and manipulate palettes and colors.
+It makes it easy to build custom color schemes and pick colors for your projects.
 
 With colorir you can:
 
