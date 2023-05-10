@@ -22,7 +22,7 @@ With colorir you can:
 - Create gradients between colors and sample from them;
 - Easily visualize swatches of colors in the terminal;
 - Pass color values directly as input for other graphical or web frameworks;
-- And more!
+- Among other features
 
 colorir was designed to be your best friend when dealing with colors so that you won't ever need to write this kind of code again:
 
