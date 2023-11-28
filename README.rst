@@ -38,7 +38,7 @@ It is very easy to create an original and attractive color palette with colorir:
 .. image:: docs/source/images/readme_palette.png
 
 colorir also works seamlessly with other python packages and you don't have to convert colorir objects to pass
-them as input to other frameworks (although you might have to specify a format when loading colors the first time):
+them as input to other frameworks:
 
 .. code-block:: python
 
