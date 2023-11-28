@@ -46,5 +46,6 @@ them as input to other frameworks (although you might have to specify a format w
     plt.show()
 
 .. image:: docs/source/images/readme_pie_chart.png
+    :width: 300px
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
