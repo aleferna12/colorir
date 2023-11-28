@@ -22,6 +22,7 @@ Examples:
     Hex('#ff0000')
 
     Manipulate colors in the palette (see :mod:`~colorir.color_classes` for details on how this works):
+
     >>> palette = palette * HSL(1, 0.5, 1)  # Desaturate the whole palette 50%
     >>> palette
     Palette(red=#bf4040, blue=#4040bf)
