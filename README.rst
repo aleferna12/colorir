@@ -28,6 +28,7 @@ Getting started
 It is very easy to create an original and attractive color palette with colorir:
 
 .. code-block:: python
+
     import colorir as cl
     grad = cl.PolarGrad(["ffff00", "ff00ff"])  # Creates a gradient from yellow to magenta
     palette = cl.StackPalette(grad.n_colors(5))  # Samples 5 colors along the gradient and creates a palette with them
@@ -40,6 +41,7 @@ colorir also works seamlessly with other python packages and you don't have to c
 them as input to other frameworks (although you might have to specify a format when loading colors the first time):
 
 .. code-block:: python
+
     import matplotlib.pyplot as plt
 
     plt.pie([0.25, 0.15, 0.20, 0.20, 0.20], colors=palette)
