@@ -159,7 +159,7 @@ interpolation in different color systems:
       <span style="background-color:#ff71d3"> &emsp; </span> &nbsp; <span style="color:#ff71d3"> #ff71d3 </span>
     </p>
     <p style="margin-top:0px; padding:0px; line-height:1;">
-      <span style="background-color:#ff00ff"> &emsp; </span> &nbsp; <span style="color:#ff00ff"> magenta #ff00ff </span>
+      <span style="background-color:#ff00ff"> &emsp; </span> &nbsp; <span style="color:#ff00ff"> #ff00ff </span>
     </p>
 
 To save a palette use :meth:`Palette.save() <colorir.palette.Palette.save()>`:
