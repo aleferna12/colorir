@@ -276,30 +276,23 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         return any([colorbase_eq is True, tuple.__eq__(self, other) is True])
 
     def __add__(self, other):
-        if not isinstance(other, ColorTupleBase):
-            return self._tup_arithm_func(other, operator.add)
-        return ColorBase.__add__(self, other)
+        return self._tup_arithm_func(other, operator.add)
 
     def __sub__(self, other):
-        if not isinstance(other, ColorTupleBase):
-            return self._tup_arithm_func(other, operator.sub)
-        return ColorBase.__sub__(self, other)
+        return self._tup_arithm_func(other, operator.sub)
 
     def __mul__(self, other):
-        if not isinstance(other, ColorTupleBase):
-            return self._tup_arithm_func(other, operator.mul)
-        return ColorBase.__mul__(self, other)
+        return self._tup_arithm_func(other, operator.mul)
 
     def __truediv__(self, other):
-        if not isinstance(other, ColorTupleBase):
-            return self._tup_arithm_func(other, operator.truediv)
-        return ColorBase.__truediv__(self, other)
+        return self._tup_arithm_func(other, operator.truediv)
 
     # If right side of the operator is not a tuple-based color, we perform the operation element-wise
     def _tup_arithm_func(self, other, foo):
-        vals = tuple(map(foo, self, other))
-        return self.format.format(vals)
-
+        if not isinstance(other, ColorBase):
+            vals = tuple(map(foo, self, other))
+            return self.format.format(vals)
+        return ColorBase._arithm_func(self, other, foo)
 
 
 class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):

@@ -21,6 +21,11 @@ Examples:
     >>> palette.red
     Hex('#ff0000')
 
+    Manipulate colors in the palette (see :mod:`~colorir.color_classes` for details on how this works):
+    >>> palette = palette * HSL(1, 0.5, 1)  # Desaturate the whole palette 50%
+    >>> palette
+    Palette(red=#bf4040, blue=#4040bf)
+
     Remove colors:
 
     >>> palette.remove("red")
@@ -42,10 +47,11 @@ Examples:
 """
 import abc
 import json
+import operator
 import os
 import numpy as np
 from pathlib import Path
-from typing import Union, List, Dict, Iterable
+from typing import Union, List, Dict, Iterable, Type
 from warnings import warn
 from . import config
 from . import utils
@@ -87,6 +93,10 @@ class PaletteBase(metaclass=abc.ABCMeta):
     def color_format(self, color_format):
         self._color_format = color_format
 
+    @abc.abstractmethod
+    def _for_each_color(self, func, obj=None, *args, **kwargs):
+        pass
+
     def __len__(self):
         """Returns the number of colors in the palette."""
         return len(self.colors)
@@ -98,6 +108,35 @@ class PaletteBase(metaclass=abc.ABCMeta):
     def __iter__(self):
         """Iterates over the colors in the palette."""
         return iter(self.colors)
+
+    def __invert__(self):
+        """Returns a copy of the palette but with its colors inverted in RGB space.
+
+        Examples:
+
+            >>> palette = Palette(red="ff0000", yellow="ffff00")
+            >>> ~palette
+            Palette(red=#00ffff, yellow=#0000ff)
+        """
+        return self._for_each_color(operator.invert)
+
+    def __add__(self, obj):
+        return self._for_each_color(operator.add, obj=obj)
+
+    def __sub__(self, obj):
+        return self._for_each_color(operator.sub, obj=obj)
+
+    def __mul__(self, obj):
+        return self._for_each_color(operator.mul, obj=obj)
+
+    def __truediv__(self, obj):
+        return self._for_each_color(operator.truediv, obj=obj)
+
+    def __mod__(self, obj):
+        return self._for_each_color(operator.mod, obj=obj)
+
+    def blend(self, obj, perc=0.5, grad_class: Type[Grad] = Grad):
+        return self._for_each_color(utils.blend, obj=obj, perc=perc, grad_class=grad_class)
 
 
 class Palette(PaletteBase):
@@ -199,15 +238,9 @@ class Palette(PaletteBase):
 
             >>> colorful = Palette.load(['basic', 'fluorescent'])
         """
-        if palettes_dir is None:
-            palettes_dir = config.DEFAULT_PALETTES_DIR
-        palettes_dir = [palettes_dir]
-        if search_builtins:
-            palettes_dir.append(_builtin_palettes_dir)
-        if search_cwd:
-            palettes_dir.append(os.getcwd())
         if isinstance(palettes, str):
             palettes = [palettes]
+        palettes_dir = _resolve_palettes_dirs(palettes_dir, search_builtins=search_builtins, search_cwd=search_cwd)
 
         found_palettes = {}
         for path in palettes_dir:
@@ -291,20 +324,6 @@ class Palette(PaletteBase):
         pal = Palette(self, color_format=self.color_format)
         for c_name, c_val in other.to_dict().items():
             pal.add(c_name, c_val)
-        return pal
-
-    def __invert__(self):
-        """Returns a copy of this object but with its colors inverted in RGB space.
-
-        Examples:
-
-            >>> palette = Palette(red="ff0000", yellow="ffff00")
-            >>> ~palette
-            Palette(red=#00ffff, yellow=#0000ff)
-        """
-        pal = Palette(color_format=self.color_format)
-        for c_name, c_val in self.to_dict().items():
-            pal.add(c_name, ~c_val)
         return pal
 
     def get_color(self,
@@ -504,6 +523,25 @@ class Palette(PaletteBase):
         pal._color_dict = dict(closest[:n])
         return pal
 
+    def _for_each_color(self, func, obj=None, *args, **kwargs):
+        pal = Palette(color_format=self.color_format)
+        if obj is None:
+            for colork, colorv in self._color_dict.items():
+                pal.add(colork, func(colorv, *args, **kwargs))
+            return pal
+        if isinstance(obj, dict):
+            for colork, colorv in self._color_dict.items():
+                color2 = obj.get(colork, None)
+                if color2 is None:
+                    pal.add(colork, colorv)
+                else:
+                    pal.add(colork, func(colorv, color2, *args, **kwargs))
+            return pal
+        # Assume color-like
+        for colork, colorv in self._color_dict.items():
+            pal.add(colork, func(colorv, obj, *args, **kwargs))
+        return pal
+
 
 class StackPalette(PaletteBase):
     """Class that handles anonymous indexed colors stored as a stack.
@@ -578,15 +616,9 @@ class StackPalette(PaletteBase):
                 stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         """
-        if palettes_dir is None:
-            palettes_dir = config.DEFAULT_PALETTES_DIR
-        palettes_dir = [palettes_dir]
-        if search_builtins:
-            palettes_dir.append(_builtin_palettes_dir)
-        if search_cwd:
-            palettes_dir.append(os.getcwd())
         if isinstance(palettes, str):
             palettes = [palettes]
+        palettes_dir = _resolve_palettes_dirs(palettes_dir, search_builtins=search_builtins, search_cwd=search_cwd)
 
         found_palettes = {}
         for path in palettes_dir:
@@ -762,20 +794,6 @@ class StackPalette(PaletteBase):
         c_list = self.colors + other.colors
         return StackPalette(c_list, color_format=self.color_format)
 
-    def __invert__(self):
-        """Returns a copy of this object but with its colors inverted in RGB space.
-
-        Examples:
-
-            >>> spalette = StackPalette(["ff0000", "ffff00"])
-            >>> ~spalette
-            StackPalette([#00ffff, #0000ff])
-        """
-        pal = StackPalette(color_format=self.color_format)
-        for color in self.colors:
-            pal.add(~color)
-        return pal
-
     def resize(self, n: int, repeat=False, grad_class=Grad, **kwargs):
         """Resizes the palette to be `n` elements long by interpolating or repeating colors.
 
@@ -801,16 +819,14 @@ class StackPalette(PaletteBase):
         colors = grad_class(colors=self.colors, **kwargs).n_colors(n)
         return StackPalette(colors=colors, color_format=self.color_format)
 
-    def add(self, color: ColorLike):
+    def add(self, color: ColorLike, i=None):
         """Adds a color to the end of the stack palette.
-
-        Colors can only be added to the last index of the stack palette, just like in a normal
-        stack.
 
         Args:
             color: The value of the color to be created. Can be an instance of any
                 :mod:`~colorir.color_class` class or, alternatively, a color-like object that
                 resembles the color you want to add.
+            i: Index of the new color. It is added at the end of the palette by default.
 
         Examples:
             Adding a new blue color to the palette:
@@ -820,7 +836,9 @@ class StackPalette(PaletteBase):
             >>> spalette[0]
             Hex('#4287f5')
         """
-        self._color_stack.append(self.color_format.format(color))
+        if i is None:
+            i = len(self)
+        self._color_stack.insert(i, self.color_format.format(color))
 
     def update(self, index: int, color: ColorLike):
         """Updates a color to a new value.
@@ -938,6 +956,21 @@ class StackPalette(PaletteBase):
             return pal
         return pal[:n]
 
+    def _for_each_color(self, func, obj=None, *args, **kwargs):
+        pal = StackPalette(color_format=self.color_format)
+        if obj is None:
+            for color in self.colors:
+                pal.add(func(color, *args, **kwargs))
+            return pal
+        if isinstance(obj, list):
+            for color1, color2 in zip(self.colors, obj):
+                pal.add(func(color1, color2, *args, **kwargs))
+            return pal
+        # Assume color-like
+        for color in self.colors:
+            pal.add(func(color, obj, *args, **kwargs))
+        return pal
+
 
 def find_palettes(palettes_dir: str = None,
                   search_builtins=True,
@@ -955,14 +988,7 @@ def find_palettes(palettes_dir: str = None,
         kind: The kinds of palettes to include in the search. Can be either :class:`Palette`,
             :class:`StackPalette`, or a list of any of those.
     """
-    if palettes_dir is None:
-        palettes_dir = config.DEFAULT_PALETTES_DIR
-    if isinstance(palettes_dir, str):
-        palettes_dir = [palettes_dir]
-    if search_builtins:
-        palettes_dir.append(_builtin_palettes_dir)
-    if search_cwd:
-        palettes_dir.append(os.getcwd())
+    palettes_dir = _resolve_palettes_dirs(palettes_dir, search_builtins=search_builtins, search_cwd=search_cwd)
     globs = []
     if not isinstance(kind, (tuple, list)):
         kind = [kind]
@@ -1003,3 +1029,14 @@ def delete_palette(palette: str, palettes_dir: str = None):
         raise ValueError(f"couldn't find palette '{palette}' in '{palettes_dir}'")
     else:
         raise ValueError(f"palette name '{palette}' is ambiguous (more than one palette share it)")
+
+
+def _resolve_palettes_dirs(palettes_dir, search_builtins, search_cwd):
+    if palettes_dir is None:
+        palettes_dir = config.DEFAULT_PALETTES_DIR
+    palettes_dir = [palettes_dir]
+    if search_builtins:
+        palettes_dir.append(_builtin_palettes_dir)
+    if search_cwd:
+        palettes_dir.append(os.getcwd())
+    return palettes_dir

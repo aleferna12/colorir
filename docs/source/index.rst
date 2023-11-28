@@ -1,7 +1,3 @@
-.. note::
-
-    colorir is still in its early days and slight modifications to the API may happen between versions.
-
 .. raw:: html
 
     <style> .rainbow {background-image: linear-gradient(to left, blue, green, yellow, red); -webkit-background-clip: text; color: transparent;} </style>
@@ -25,29 +21,19 @@ API
 What is colorir?
 ----------------
 
-colorir is a package that allows users to manipulate colors and palettes.
+colorir is a package used to create and manipulate palettes and colors.
+What makes colorir different from other similar packages like `colour <https://pypi.org/project/colour/>`_ and
+`palettable <https://pypi.org/project/palettable/>`_ is that colorir focuses on personalization and interoperability:
+you can create your own color palettes and use them with any other python package such as matplotlib, tkinter
+or flask.
 
-With colorir you can:
+Main features
+-------------
 
-- Create palettes and save them to use in different projects;
-- Have access to a curated selection of unique color palettes and color names;
-- Easily convert between different color systems and formats;
-- Create gradients between colors and sample from them;
-- Easily visualize swatches of colors in the terminal;
-- Pass color values directly as input for other graphical or web frameworks;
-- And more!
-
-colorir was designed to be your best friend when dealing with colors so that you won't ever need to write this kind of code again:
-
-.. code-block:: python
-
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    CSS_ALICEBLUE = (240, 248, 255)
-    BACKGROUND_COLOR = (11, 0, 51)
-    FONT_COLOR = (113, 180, 141)
-    LINE_PLOT_COLOR = (131, 34, 50)
-    # ... long and ugly list of colors
+- Create color schemes and save them to use in different projects
+- Interpolate colors in different formats (such as RGB, CIELab etc) to make gradients and color maps
+- Have access to a curated selection of unique color palettes and color names
+- Easily visualize swatches of colors in the terminal
 
 Installation
 ------------
@@ -147,14 +133,34 @@ components from other color systems:
 
 To interpolate colors we can use :func:`~colorir.utils.blend()`:
 
->>> blend(palette.yellow, palette.cyan, 0.5)  # Get color at 50% between yellow and cyan
+>>> blend(palette.yellow, palette.magenta, 0.5)  # Get color at 50% between yellow and magenta
 
 .. raw:: html
 
-    <p><span style="background-color:#bffeb7"> &emsp; </span> &nbsp; <span style="color:#bffeb7"> #bffeb7 </span></p>
+    <p><span style="background-color:#f9afbe"> &emsp; </span> &nbsp; <span style="color:#f9afbe"> #f9afbe </span></p>
 
 :func:`~colorir.utils.blend()` is actually a wrapper around the :class:`~colorir.gradient.Grad` class, which supports
-interpolation in many different color systems.
+interpolation in different color systems:
+
+>>> Grad([palette.yellow, palette.magenta], color_sys=CIELab).n_colors(5)
+
+.. raw:: html
+
+    <p style="margin-bottom:0px; padding:0px; line-height:1;">
+      <span style="background-color:#ffff00"> &emsp; </span> &nbsp; <span style="color:#ffff00"> #ffff00 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#ffd471"> &emsp; </span> &nbsp; <span style="color:#ffd471"> #ffd471 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#ffa6a6"> &emsp; </span> &nbsp; <span style="color:#ffa6a6"> #ffa6a6 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#ff71d3"> &emsp; </span> &nbsp; <span style="color:#ff71d3"> #ff71d3 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#ff00ff"> &emsp; </span> &nbsp; <span style="color:#ff00ff"> #ff00ff </span>
+    </p>
 
 To save a palette use :meth:`Palette.save() <colorir.palette.Palette.save()>`:
 

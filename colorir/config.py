@@ -22,10 +22,10 @@ DEFAULT_COLOR_FORMAT = ColorFormat(Hex)
 """Default color format used by different objects in this package."""
 
 REPR_STYLE = "swatch"
-"""How colorir will represent objects in the teminal.
+"""How colorir will represent objects in the terminal.
 
 Valid values are 'swatch' - to print swatches of the objects; 'inherit' - to inherit repr 
-behaviour from parent class; and 'traditional' - to represent objects with text as is common in
+behaviour from parent class (so tuples or strings); and 'traditional' - to represent objects with text as is common in
 python.
 
 Be aware that not all class support all styles of representation. If an object does not support a

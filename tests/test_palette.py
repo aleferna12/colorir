@@ -32,8 +32,13 @@ class TestPalette(unittest.TestCase):
         with self.assertWarns(Warning):
             Palette.load(palettes=["test1", "test2"], search_builtins=False)
 
+    def test_color_manipulation(self):
+        pal = Palette(red="ff0000", green="00ff00", blue="0000ff")
+        manip_dict = {"red": HCLuv(1, 0.5, 1), "green": CIELab(0.2, 1, 1), "blue": HSL(0.5, 1, 1)}
+        self.assertEqual(pal * manip_dict, Palette(red="#d05959", green="#003d00", blue="#00ff00"))
 
-class TestSwatchPalette(unittest.TestCase):
+
+class TestStackPalette(unittest.TestCase):
     def test_and_op(self):
         spal = StackPalette(["ffffff"]) & StackPalette(["000000"])
         self.assertEqual(spal, StackPalette(["ffffff", "000000"]))
@@ -63,6 +68,11 @@ class TestSwatchPalette(unittest.TestCase):
         # Larger hue wheel sections
         wide_spal = StackPalette.new_analogous(3, sections=3, color=red)
         self.assertEqual(wide_spal, StackPalette([HSV(240, 1, 1), red, HSV(120, 1, 1)]))
+
+    def test_color_manipulation(self):
+        pal = StackPalette(["ff0000", "00ff00", "0000ff"])
+        manip_dict = [HCLuv(1, 0.5, 1), CIELab(0.2, 1, 1), HSL(0.5, 1, 1)]
+        self.assertEqual(pal * manip_dict, StackPalette(["#d05959", "#003d00", "#00ff00"]))
 
 
 class TestOtherFunctions(unittest.TestCase):

@@ -4,64 +4,47 @@ Colorir
 .. image:: docs/source/images/readme_palette_picker.png
     :width: 800px
 
-.. note::
-
-    colorir is still in its early days and slight modifications to the API may happen between versions.
-
 What is colorir?
 ----------------
 
 colorir is a package used to create and manipulate palettes and colors.
-It makes it easy to build custom color schemes and pick colors for your projects.
+What makes colorir different from other similar packages like `colour <https://pypi.org/project/colour/>`_ and
+`palettable <https://pypi.org/project/palettable/>`_ is that colorir focuses on personalization and interoperability:
+you can create your own color palettes and use them with any other python package such as matplotlib, tkinter
+or flask.
 
-With colorir you can:
+Main features
+-------------
 
-- Create palettes and save them to use in different projects;
-- Have access to a curated selection of unique color palettes and color names;
-- Easily convert between different color systems and formats;
-- Create gradients between colors and sample from them;
-- Easily visualize swatches of colors in the terminal;
-- Pass color values directly as input for other graphical or web frameworks;
-- Among other features
+- Create color schemes and save them to use in different projects
+- Interpolate colors in different formats (such as RGB, CIELab etc) to make gradients and color maps
+- Have access to a curated selection of unique color palettes and color names
+- Easily visualize swatches of colors in the terminal
 
-colorir was designed to be your best friend when dealing with colors so that you won't ever need to write this kind of code again:
 
-.. code-block:: python
-
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    CSS_ALICEBLUE = (240, 248, 255)
-    BACKGROUND_COLOR = (11, 0, 51)
-    FONT_COLOR = (113, 180, 141)
-    LINE_PLOT_COLOR = (131, 34, 50)
-    # ... long and ugly list of colors
-
-Getting Started
+Getting started
 ---------------
 
-Getting started with colorir can be as simple as:
+It is very easy to create an original and attractive color palette with colorir:
 
 .. code-block:: python
+    import colorir as cl
+    grad = cl.PolarGrad(["ffff00", "ff00ff"])  # Creates a gradient from yellow to magenta
+    palette = cl.StackPalette(grad.n_colors(5))  # Samples 5 colors along the gradient and creates a palette with them
+    palette *= cl.HCLab(1, 0.5, 1)  # Desaturates the palette 50% to get a more pleasing look
+    cl.swatch(palette)  # Shows the palette we created in the terminal
 
-    sky = Palette.load("sky")  # Loads a previously created palette called sky
-    sky_grad = PolarGrad([sky.sunrise, sky.highnoon])  # Creates a gradient from the color "sunrise" to the color "highnoon"
-    swatch(sky)  # Shows colorir objects in the terminal
-    swatch(sky_grad)
+.. image:: docs/source/images/readme_palette.png
 
-This code should print both the palette and the gradient directly in your terminal:
-
-.. image:: docs/source/images/readme_sky.png
-
-Colorir can be used to interpolate and manipulate colors in many different color systems,
-such as CIELab and HCLab (LCHab).
-
-Now let's make a gray scale version of the sky palette:
+colorir also works seamlessly with other python packages and you don't have to convert colorir objects to pass
+them as input to other frameworks (although you might have to specify a format when loading colors the first time):
 
 .. code-block:: python
+    import matplotlib.pyplot as plt
 
-    gray_sky = sky.grayscale()
-    swatch(gray_sky)
+    plt.pie([0.25, 0.15, 0.20, 0.20, 0.20], colors=palette)
+    plt.show()
 
-.. image:: docs/source/images/readme_gray_sky.png
+.. image:: docs/source/images/readme_pie_chart.png
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
