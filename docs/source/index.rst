@@ -131,6 +131,8 @@ components from other color systems:
 
     <p><span style="background-color:#a5f3f2"> &emsp; </span> &nbsp; <span style="color:#a5f3f2"> #a5f3f2 </span></p>
 
+See the :mod:`~colorir.color_class` module for details on how to manipulate colors with arithmetics.
+
 To interpolate colors we can use :func:`~colorir.utils.blend()`:
 
 >>> blend(palette.yellow, palette.magenta, 0.5)  # Get color at 50% between yellow and magenta
