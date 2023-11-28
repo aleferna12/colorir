@@ -142,7 +142,7 @@ To interpolate colors we can use :func:`~colorir.utils.blend()`:
 :func:`~colorir.utils.blend()` is actually a wrapper around the :class:`~colorir.gradient.Grad` class, which supports
 interpolation in different color systems:
 
->>> Grad([palette.yellow, palette.magenta], color_sys=CIELab).n_colors(5)
+>>> Grad([palette.yellow, palette.magenta], color_sys=CIELab).n_colors(5)  # Interpolates 5 colors from yellow to magenta
 
 .. raw:: html
 
