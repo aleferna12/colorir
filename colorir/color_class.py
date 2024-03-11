@@ -305,7 +305,7 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
 
 
 class ColorPolarBase(ColorTupleBase, metaclass=abc.ABCMeta):
-    """Mixin tag indicating that the color contains a polar HUE component.
+    """Mixin tag indicating that the color contains a polar hue component.
 
     Notes:
         This class is abstract and should not be instantiated.
@@ -408,14 +408,14 @@ class HSL(ColorPolarBase):
     .. [#] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
 
     Args:
-        h: HUE component of the color.
+        h: Hue component of the color.
         s: Saturation component of the color.
         l: Lightness component of the color.
         a: Opacity component of the color. Defaults to ``None``, which means it will be the same
             as the `max_sla` parameter.
-        max_h:  What is the maximum value for the `h` component. Some common values for this
+        max_h: What is the maximum value for the `h` component. Some common values for this
             parameter would be 360 or 1.
-        max_sla:  What is the maximum value for the `s`, `l` and `a` components. Some common values
+        max_sla: What is the maximum value for the `s`, `l` and `a` components. Some common values
             for this parameter would be 1 or 100.
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
             Setting it to ``True`` may result in an object such as :code:`HSL(360, 1, 0,
@@ -480,14 +480,14 @@ class HSV(ColorPolarBase):
         .. [#] Wikipedia at https://en.wikipedia.org/wiki/HSL_and_HSV.
 
     Args:
-        h: HUE component of the color.
+        h: Hue component of the color.
         s: Saturation component of the color.
         v: Value component of the color.
         a: Opacity component of the color. Defaults to ``None``, which means it will be the same
             as the `max_sva` parameter.
-        max_h:  What is the maximum value for the `h` component. Some common values for this
+        max_h: What is the maximum value for the `h` component. Some common values for this
             parameter would be 360 or 1.
-        max_sva:  What is the maximum value for the `s`, `v` and `a` components. Some common values
+        max_sva: What is the maximum value for the `s`, `v` and `a` components. Some common values
             for this parameter would be 1 or 100.
         include_a: Whether to include the opacity parameter `a` in the constructed tuple.
             Setting it to ``True`` may result in an object such as :code:`HSV(360, 1, 0,
@@ -891,7 +891,7 @@ class HCLab(ColorPolarBase):
 default_tail = object()
 
 
-def warn_tail():
+def _warn_tail():
     warnings.warn("the default value for the 'tail_a' argument will be changed to 'True' "
                   "in the next release. Pass the argument explicitly with 'Hex(string, tail_a=False)' instead.",
                   FutureWarning,
@@ -938,7 +938,7 @@ class Hex(ColorBase, str):
         if tail_a is default_tail:
             tail_a = False
             if include_a or len(hex_str) >= 8:
-                warn_tail()
+                _warn_tail()
 
         hex_str = hex_str.lstrip("#")
         if len(hex_str) not in (3, 6, 8):
@@ -970,7 +970,7 @@ class Hex(ColorBase, str):
         if tail_a is default_tail:
             tail_a = False
             if include_a:
-                warn_tail()
+                _warn_tail()
 
         rgba = tuple(rgba)
         hex_str = '%02x%02x%02x' % rgba[:3]

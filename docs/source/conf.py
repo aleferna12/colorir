@@ -18,7 +18,7 @@ sys.path.insert(0, "../..")
 # -- Project information -----------------------------------------------------
 
 project = 'colorir'
-copyright = '2022, Alexandre Fernandes'
+copyright = '2024, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
@@ -61,6 +61,9 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_theme_options = {
+    "collapse_navigation": False
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
