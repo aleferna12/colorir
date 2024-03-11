@@ -18,5 +18,5 @@ setup(
     project_urls={"Documentation": "https://colorir.readthedocs.io/en/latest/"},
     include_package_data=True,
     python_requires=">=3.8",
-    install_requires=["colormath", "numpy"]
+    install_requires=["numpy"]
 )

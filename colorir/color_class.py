@@ -41,9 +41,16 @@ import colorsys
 import operator
 import numpy as np
 from typing import List, Union
-from colormath.color_objects import LabColor, LuvColor, LCHuvColor, sRGBColor, LCHabColor, \
-    CMYColor, CMYKColor
-from colormath.color_conversions import convert_color
+from .colormath.color_objects import (
+    LabColor,
+    LuvColor,
+    LCHuvColor,
+    sRGBColor,
+    LCHabColor,
+    CMYColor,
+    CMYKColor
+)
+from .colormath.color_conversions import convert_color
 
 import colorir
 
@@ -92,7 +99,7 @@ class ColorBase(metaclass=abc.ABCMeta):
         try:
             if not isinstance(other, ColorBase):
                 other = colorir.config.DEFAULT_COLOR_FORMAT.format(other)
-            return all(np.rint(self._rgba) == np.rint(other._rgba))
+            return np.all(np.rint(self._rgba) == np.rint(other._rgba))
         except colorir.color_format.FormatError:
             return NotImplemented
 

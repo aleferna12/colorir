@@ -4,12 +4,12 @@ import numpy as np
 from math import sqrt
 from random import randint
 from typing import List, Iterable, get_args
-from colormath.color_conversions import convert_color
-from colormath.color_diff import *
-from colormath.color_objects import sRGBColor, LabColor
 
 from . import config
 from . import palette
+from .colormath.color_conversions import convert_color
+from .colormath.color_diff import *
+from .colormath.color_objects import sRGBColor, LabColor
 from .color_class import ColorBase, HCLab, ColorLike
 from .color_format import ColorFormat
 from .gradient import Grad
