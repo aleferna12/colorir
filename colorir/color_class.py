@@ -39,6 +39,8 @@ References:
 import abc
 import colorsys
 import operator
+import warnings
+
 import numpy as np
 from typing import List, Union
 from .colormath.color_objects import (
@@ -886,7 +888,16 @@ class HCLab(ColorPolarBase):
         return obj
 
 
-# noinspection PyCallingNonCallable
+default_tail = object()
+
+
+def warn_tail():
+    warnings.warn("the default value for the 'tail_a' argument will be changed to 'True' "
+                  "in the next release. Use 'Hex(string, tail_a=False, include_a=True)' instead.",
+                  FutureWarning,
+                  stacklevel=3)
+
+
 class Hex(ColorBase, str):
     """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 
@@ -923,7 +934,12 @@ class Hex(ColorBase, str):
                 uppercase=False,
                 include_hash=True,
                 include_a=False,
-                tail_a=False):
+                tail_a=default_tail):
+        if tail_a is default_tail:
+            tail_a = False
+            if include_a or len(hex_str) >= 8:
+                warn_tail()
+
         hex_str = hex_str.lstrip("#")
         if len(hex_str) not in (3, 6, 8):
             raise ValueError("'hex_str' length must be 3, 6 or 8 (excluding the optional '#')")
@@ -950,7 +966,12 @@ class Hex(ColorBase, str):
                               tail_a=tail_a)
 
     @classmethod
-    def _from_rgba(cls, rgba, uppercase=False, include_hash=True, include_a=False, tail_a=False):
+    def _from_rgba(cls, rgba, uppercase=False, include_hash=True, include_a=False, tail_a=default_tail):
+        if tail_a is default_tail:
+            tail_a = False
+            if include_a:
+                warn_tail()
+
         rgba = tuple(rgba)
         hex_str = '%02x%02x%02x' % rgba[:3]
 

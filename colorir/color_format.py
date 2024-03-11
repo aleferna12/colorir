@@ -235,7 +235,7 @@ KIVY_COLOR_FORMAT = ColorFormat(color_sys=color_class.sRGB,
 MATPLOTLIB_COLOR_FORMAT = ColorFormat(color_sys=color_class.Hex, include_a=True, tail_a=True)
 """Color format compatible with Matplotlib."""
 
-WEB_COLOR_FORMAT = ColorFormat(color_sys=color_class.Hex)
+WEB_COLOR_FORMAT = ColorFormat(color_sys=color_class.Hex, tail_a=True)
 """Color format compatible with HTML and CSS standards."""
 
 TKINTER_COLOR_FORMAT = WEB_COLOR_FORMAT
