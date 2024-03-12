@@ -1,0 +1,11 @@
+.palette {
+  display: flex;
+  width: 700px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.swatch {
+  width: 30px;
+  height: 30px;
+}

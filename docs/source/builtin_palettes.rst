@@ -4,31 +4,38 @@ Built-in Palettes
 
 These are built-in palettes that come with colorir by default.
 
-Some of the following palettes have named colors (considered palettes), while in others colors are unnamed (considered stack palettes). After the name of each palette, it is indicated which type it belongs to, and therefore whether it should be loaded with :meth:`Palette.load() <colorir.palette.Palette.load()>` or :meth:`StackPalette.load() <colorir.palette.StackPalette.load()>`.
+Some of the following palettes have named colors (considered palettes), while in others colors are unnamed
+(considered stack palettes). After the name of each palette, it is indicated which type it belongs to, and
+therefore whether it should be loaded with :meth:`Palette.load() <colorir.palette.Palette.load()>` or
+:meth:`StackPalette.load() <colorir.palette.StackPalette.load()>`.
 
-.. |ellipsis| image:: images/ellipsis.png
+You can view the name and hex color code of each color by hovering it with the mouse.
+Clicking on a color will copy its hex code to the clipboard.
 
 Essentials
 ----------
 
-Palettes that provide access to commonly used colors by name.
+Palettes that provide access to commonly used colors.
 
 basic - *palette*
 +++++++++++++++++
 
-.. image:: images/palettes/basic.png
+.. raw:: html
+    :file: _static/html/palettes/basic.html
 
 rainbow - *palette*
 +++++++++++++++++++
 
-.. image:: images/palettes/rainbow.png
-    
+.. raw:: html
+    :file: _static/html/palettes/rainbow.html
+
 css - *palette*
 +++++++++++++++
 
 Web colors of CSS and HTML.
 
-.. image:: images/palettes/css.png
+.. raw:: html
+    :file: _static/html/palettes/css.html
 
 Birds of Brazil
 ---------------
@@ -40,28 +47,32 @@ precious_tanager - *stack palette*
 
 Colors of the south-american *Tangara preciosa*.
 
-.. image:: images/palettes/precious_tanager.png
+.. raw:: html
+    :file: _static/html/palettes/precious_tanager.html
 
 scarlet_macaw - *stack palette*
 +++++++++++++++++++++++++++++++
 
 Colors of the parrot *Ara macao*.
 
-.. image:: images/palettes/scarlet_macaw.png
+.. raw:: html
+    :file: _static/html/palettes/scarlet_macaw.html
 
 toco_toucan - *stack palette*
 +++++++++++++++++++++++++++++
 
 Colors of the largest species of toucan, *Ramphastos toco*.
 
-.. image:: images/palettes/toco_toucan.png
+.. raw:: html
+    :file: _static/html/palettes/toco_toucan.html
 
 hyacinth_macaw - *stack palette*
 ++++++++++++++++++++++++++++++++
 
 Colors of the parrot *Anodorhynchus hyacinthinus*.
 
-.. image:: images/palettes/hyacinth_macaw.png
+.. raw:: html
+    :file: _static/html/palettes/hyacinth_macaw.html
 
 Originals
 ---------
@@ -73,7 +84,8 @@ carnival - *stack palette*
 
 Similarly to `spectral`_ spans over a wide span of hue values, making it a good fit for categorical data.
 
-.. image:: images/palettes/carnival.png
+.. raw:: html
+    :file: _static/html/palettes/carnival.html
 
 .. _passion:
 
@@ -82,7 +94,8 @@ passion - *palette*
 
 Complements the `peace`_ palette. Take a moment to look at the name of the colors of these palettes, they took a while to come up with!
 
-.. image:: images/palettes/passion.png
+.. raw:: html
+    :file: _static/html/palettes/passion.html
 
 .. _peace:
 
@@ -91,33 +104,38 @@ peace - *palette*
 
 Complements the `passion`_ palette.
 
-.. image:: images/palettes/peace.png
+.. raw:: html
+    :file: _static/html/palettes/peace.html
 
 sky - *palette*
 +++++++++++++++
 
 Take a look at the sky! Its colors have inspired many poets and painters throughout history.
 
-.. image:: images/palettes/sky.png
+.. raw:: html
+    :file: _static/html/palettes/sky.html
 
 mystic_forest - *palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/mystic_forest.png
+.. raw:: html
+    :file: _static/html/palettes/mystic_forest.html
 
 fire - *palette*
 ++++++++++++++++
 
 Colors inspired by the many aspects of flame.
 
-.. image:: images/palettes/fire.png
+.. raw:: html
+    :file: _static/html/palettes/fire.html
 
 world_flags - *palette*
 +++++++++++++++++++++++
 
 Colors picked from country flags.
 
-.. image:: images/palettes/world_flags.png
+.. raw:: html
+    :file: _static/html/palettes/world_flags.html
 
 pantone_years - *palette*
 +++++++++++++++++++++++++
@@ -128,14 +146,16 @@ pantone_years - *palette*
 
 Colors awarded as `color of the year <https://www.pantone.com/articles/past-colors-of-the-year>`_ by Pantone.
 
-.. image:: images/palettes/pantone_years.png
+.. raw:: html
+    :file: _static/html/palettes/pantone_years.html
 
 pigments - *palette*
 ++++++++++++++++++++
 
 Colors derived from `pigments <https://colourlex.com/pigments/pigments-colour/>`_.
 
-.. image:: images/palettes/pigments.png
+.. raw:: html
+    :file: _static/html/palettes/pigments.html
 
 Color Brewer
 ------------
@@ -145,179 +165,214 @@ Palettes extracted from the amazing `Color Brewer project <https://colorbrewer2.
 accent - *palette*
 ++++++++++++++++++
 
-.. image:: images/palettes/accent.png
+.. raw:: html
+    :file: _static/html/palettes/accent.html
 
 dark2 - *palette*
 +++++++++++++++++
 
-.. image:: images/palettes/dark2.png
+.. raw:: html
+    :file: _static/html/palettes/dark2.html
 
 paired - *palette*
 ++++++++++++++++++
 
-.. image:: images/palettes/paired.png
+.. raw:: html
+    :file: _static/html/palettes/paired.html
 
 pastel1 - *palette*
 +++++++++++++++++++
 
-.. image:: images/palettes/pastel1.png
+.. raw:: html
+    :file: _static/html/palettes/pastel1.html
 
 pastel2 - *palette*
 +++++++++++++++++++
 
-.. image:: images/palettes/pastel2.png
+.. raw:: html
+    :file: _static/html/palettes/pastel2.html
 
 set1 - *palette*
 ++++++++++++++++
 
-.. image:: images/palettes/set1.png
+.. raw:: html
+    :file: _static/html/palettes/set1.html
 
 set2 - *palette*
 ++++++++++++++++
 
-.. image:: images/palettes/set2.png
+.. raw:: html
+    :file: _static/html/palettes/set2.html
 
 set3 - *palette*
 ++++++++++++++++
 
-.. image:: images/palettes/set3.png
+.. raw:: html
+    :file: _static/html/palettes/set3.html
 
 .. _spectral:
 
 spectral - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/spectral.png
+.. raw:: html
+    :file: _static/html/palettes/spectral.html
 
 blues - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/blues.png
+.. raw:: html
+    :file: _static/html/palettes/blues.html
 
 greens - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/greens.png
+.. raw:: html
+    :file: _static/html/palettes/greens.html
 
 greys - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/greys.png
+.. raw:: html
+    :file: _static/html/palettes/greys.html
 
 oranges - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/oranges.png
+.. raw:: html
+    :file: _static/html/palettes/oranges.html
 
 purples - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/purples.png
+.. raw:: html
+    :file: _static/html/palettes/purples.html
 
 reds - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/reds.png
+.. raw:: html
+    :file: _static/html/palettes/reds.html
 
 brbg - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/brbg.png
+.. raw:: html
+    :file: _static/html/palettes/brbg.html
 
 bugn - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/bugn.png
+.. raw:: html
+    :file: _static/html/palettes/bugn.html
 
 bupu - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/bupu.png
+.. raw:: html
+    :file: _static/html/palettes/bupu.html
 
 gnbu - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/gnbu.png
+.. raw:: html
+    :file: _static/html/palettes/gnbu.html
 
 orrd - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/orrd.png
+.. raw:: html
+    :file: _static/html/palettes/orrd.html
 
 piyg - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/piyg.png
+.. raw:: html
+    :file: _static/html/palettes/piyg.html
 
 prgn - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/prgn.png
+.. raw:: html
+    :file: _static/html/palettes/prgn.html
 
 pubu - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/pubu.png
+.. raw:: html
+    :file: _static/html/palettes/pubu.html
 
 pubugn - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/pubugn.png
+.. raw:: html
+    :file: _static/html/palettes/pubugn.html
 
 puor - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/puor.png
+.. raw:: html
+    :file: _static/html/palettes/puor.html
 
 purd - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/purd.png
+.. raw:: html
+    :file: _static/html/palettes/purd.html
 
 rdbu - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/rdbu.png
+.. raw:: html
+    :file: _static/html/palettes/rdbu.html
 
 rdgy - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/rdgy.png
+.. raw:: html
+    :file: _static/html/palettes/rdgy.html
 
 rdpu - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/rdpu.png
+.. raw:: html
+    :file: _static/html/palettes/rdpu.html
 
 rdylbu - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/rdylbu.png
+.. raw:: html
+    :file: _static/html/palettes/rdylbu.html
 
 rdylgn - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/rdylgn.png
+.. raw:: html
+    :file: _static/html/palettes/rdylgn.html
 
 ylgn - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/ylgn.png
+.. raw:: html
+    :file: _static/html/palettes/ylgn.html
 
 ylgnbu - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/ylgnbu.png
+.. raw:: html
+    :file: _static/html/palettes/ylgnbu.html
 
 ylorbr - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/ylorbr.png
+.. raw:: html
+    :file: _static/html/palettes/ylorbr.html
 
 ylorrd - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/ylorrd.png
+.. raw:: html
+    :file: _static/html/palettes/ylorrd.html
 
 Carto
 -----
@@ -327,172 +382,206 @@ Palettes from the Carto project.
 burg - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/burg.png
+.. raw:: html
+    :file: _static/html/palettes/burg.html
 
 burgyl - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/burgyl.png
+.. raw:: html
+    :file: _static/html/palettes/burgyl.html
 
 redor - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/redor.png
+.. raw:: html
+    :file: _static/html/palettes/redor.html
 
 oryel - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/oryel.png
+.. raw:: html
+    :file: _static/html/palettes/oryel.html
 
 peach - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/peach.png
+.. raw:: html
+    :file: _static/html/palettes/peach.html
 
 pinkyl - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/pinkyl.png
+.. raw:: html
+    :file: _static/html/palettes/pinkyl.html
 
 mint - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/mint.png
+.. raw:: html
+    :file: _static/html/palettes/mint.html
 
 blugrn - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/blugrn.png
+.. raw:: html
+    :file: _static/html/palettes/blugrn.html
 
 darkmint - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/darkmint.png
+.. raw:: html
+    :file: _static/html/palettes/darkmint.html
 
 emrld - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/emrld.png
+.. raw:: html
+    :file: _static/html/palettes/emrld.html
 
 ag_grnyl - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/ag_grnyl.png
+.. raw:: html
+    :file: _static/html/palettes/ag_grnyl.html
 
 bluyl - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/bluyl.png
+.. raw:: html
+    :file: _static/html/palettes/bluyl.html
 
 teal - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/teal.png
+.. raw:: html
+    :file: _static/html/palettes/teal.html
 
 tealgrn - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/tealgrn.png
+.. raw:: html
+    :file: _static/html/palettes/tealgrn.html
 
 purp - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/purp.png
+.. raw:: html
+    :file: _static/html/palettes/purp.html
 
 purpor - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/purpor.png
+.. raw:: html
+    :file: _static/html/palettes/purpor.html
 
 magenta - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/magenta.png
+.. raw:: html
+    :file: _static/html/palettes/magenta.html
 
 sunset - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/sunset.png
+.. raw:: html
+    :file: _static/html/palettes/sunset.html
 
 sunsetdark - *stack palette*
 ++++++++++++++++++++++++++++
 
-.. image:: images/palettes/sunsetdark.png
+.. raw:: html
+    :file: _static/html/palettes/sunsetdark.html
 
 ag_sunset - *stack palette*
 +++++++++++++++++++++++++++
 
-.. image:: images/palettes/ag_sunset.png
+.. raw:: html
+    :file: _static/html/palettes/ag_sunset.html
 
 brwnyl - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/brwnyl.png
+.. raw:: html
+    :file: _static/html/palettes/brwnyl.html
 
 armyrose - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/armyrose.png
+.. raw:: html
+    :file: _static/html/palettes/armyrose.html
 
 fall - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/fall.png
+.. raw:: html
+    :file: _static/html/palettes/fall.html
 
 geyser - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/geyser.png
+.. raw:: html
+    :file: _static/html/palettes/geyser.html
 
 temps - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/temps.png
+.. raw:: html
+    :file: _static/html/palettes/temps.html
 
 tealrose - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/tealrose.png
+.. raw:: html
+    :file: _static/html/palettes/tealrose.html
 
 tropic - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/tropic.png
+.. raw:: html
+    :file: _static/html/palettes/tropic.html
 
 earth - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/earth.png
+.. raw:: html
+    :file: _static/html/palettes/earth.html
 
 antique - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/antique.png
+.. raw:: html
+    :file: _static/html/palettes/antique.html
 
 bold - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/bold.png
+.. raw:: html
+    :file: _static/html/palettes/bold.html
 
 pastel - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/pastel.png
+.. raw:: html
+    :file: _static/html/palettes/pastel.html
 
 prism - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/prism.png
+.. raw:: html
+    :file: _static/html/palettes/prism.html
 
 safe - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/safe.png
+.. raw:: html
+    :file: _static/html/palettes/safe.html
 
 vivid - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/vivid.png
+.. raw:: html
+    :file: _static/html/palettes/vivid.html
 
 Matplotlib
 ----------
@@ -504,222 +593,266 @@ Palettes from `matplotlib <https://matplotlib.org/stable/index.html>`_.
 tab10 - *palette*
 +++++++++++++++++
 
-.. image:: images/palettes/tab10.png
+.. raw:: html
+    :file: _static/html/palettes/tab10.html
 
 tab20 - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/tab20.png
+.. raw:: html
+    :file: _static/html/palettes/tab20.html
 
 tab20b - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/tab20b.png
+.. raw:: html
+    :file: _static/html/palettes/tab20b.html
 
 tab20c - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/tab20c.png
+.. raw:: html
+    :file: _static/html/palettes/tab20c.html
 
 magma - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/magma.png
+.. raw:: html
+    :file: _static/html/palettes/magma.html
 
 inferno - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/inferno.png
+.. raw:: html
+    :file: _static/html/palettes/inferno.html
 
 plasma - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/plasma.png
+.. raw:: html
+    :file: _static/html/palettes/plasma.html
 
 viridis - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/viridis.png
+.. raw:: html
+    :file: _static/html/palettes/viridis.html
 
 cividis - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/cividis.png
+.. raw:: html
+    :file: _static/html/palettes/cividis.html
 
 twilight - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/twilight.png
+.. raw:: html
+    :file: _static/html/palettes/twilight.html
 
 twilight_shifted - *stack palette*
 ++++++++++++++++++++++++++++++++++
 
-.. image:: images/palettes/twilight_shifted.png
+.. raw:: html
+    :file: _static/html/palettes/twilight_shifted.html
 
 wistia - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/wistia.png
+.. raw:: html
+    :file: _static/html/palettes/wistia.html
 
 afmhot - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/afmhot.png
+.. raw:: html
+    :file: _static/html/palettes/afmhot.html
 
 autumn - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/autumn.png
+.. raw:: html
+    :file: _static/html/palettes/autumn.html
 
 binary - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/binary.png
+.. raw:: html
+    :file: _static/html/palettes/binary.html
 
 bone - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/bone.png
+.. raw:: html
+    :file: _static/html/palettes/bone.html
 
 bwr - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/bwr.png
+.. raw:: html
+    :file: _static/html/palettes/bwr.html
 
 cool - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/cool.png
+.. raw:: html
+    :file: _static/html/palettes/cool.html
 
 coolwarm - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/coolwarm.png
+.. raw:: html
+    :file: _static/html/palettes/coolwarm.html
 
 copper - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/copper.png
+.. raw:: html
+    :file: _static/html/palettes/copper.html
 
 cubehelix - *stack palette*
 +++++++++++++++++++++++++++
 
-.. image:: images/palettes/cubehelix.png
+.. raw:: html
+    :file: _static/html/palettes/cubehelix.html
 
 gist_earth - *stack palette*
 ++++++++++++++++++++++++++++
 
-.. image:: images/palettes/gist_earth.png
+.. raw:: html
+    :file: _static/html/palettes/gist_earth.html
 
 gist_gray - *stack palette*
 +++++++++++++++++++++++++++
 
-.. image:: images/palettes/gist_gray.png
+.. raw:: html
+    :file: _static/html/palettes/gist_gray.html
 
 gist_heat - *stack palette*
 +++++++++++++++++++++++++++
 
-.. image:: images/palettes/gist_heat.png
+.. raw:: html
+    :file: _static/html/palettes/gist_heat.html
 
 gist_yarg - *stack palette*
 +++++++++++++++++++++++++++
 
-.. image:: images/palettes/gist_yarg.png
+.. raw:: html
+    :file: _static/html/palettes/gist_yarg.html
 
 gray - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/gray.png
+.. raw:: html
+    :file: _static/html/palettes/gray.html
 
 hot - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/hot.png
+.. raw:: html
+    :file: _static/html/palettes/hot.html
 
 hsv - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/hsv.png
+.. raw:: html
+    :file: _static/html/palettes/hsv.html
 
 jet - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/jet.png
+.. raw:: html
+    :file: _static/html/palettes/jet.html
 
 turbo - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/turbo.png
+.. raw:: html
+    :file: _static/html/palettes/turbo.html
 
 ocean - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/ocean.png
+.. raw:: html
+    :file: _static/html/palettes/ocean.html
 
 pink - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/pink.png
+.. raw:: html
+    :file: _static/html/palettes/pink.html
 
 seismic - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/seismic.png
+.. raw:: html
+    :file: _static/html/palettes/seismic.html
 
 spring - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/spring.png
+.. raw:: html
+    :file: _static/html/palettes/spring.html
 
 summer - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/summer.png
+.. raw:: html
+    :file: _static/html/palettes/summer.html
 
 terrain - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/terrain.png
+.. raw:: html
+    :file: _static/html/palettes/terrain.html
 
 winter - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/winter.png
+.. raw:: html
+    :file: _static/html/palettes/winter.html
 
 rocket - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/rocket.png
+.. raw:: html
+    :file: _static/html/palettes/rocket.html
 
 mako - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/mako.png
+.. raw:: html
+    :file: _static/html/palettes/mako.html
 
 icefire - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/icefire.png
+.. raw:: html
+    :file: _static/html/palettes/icefire.html
 
 vlag - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/vlag.png
+.. raw:: html
+    :file: _static/html/palettes/vlag.html
 
 flare - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/flare.png
+.. raw:: html
+    :file: _static/html/palettes/flare.html
 
 crest - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/crest.png
+.. raw:: html
+    :file: _static/html/palettes/crest.html
 
 mpl_rainbow - *stack palette*
 +++++++++++++++++++++++++++++
 
-.. image:: images/palettes/mpl_rainbow.png
+.. raw:: html
+    :file: _static/html/palettes/mpl_rainbow.html
 
 Seaborn
 -------
@@ -729,32 +862,38 @@ Palettes from `seaborn <https://seaborn.pydata.org/index.html>`_.
 deep - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/deep.png
+.. raw:: html
+    :file: _static/html/palettes/deep.html
 
 muted - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/muted.png
+.. raw:: html
+    :file: _static/html/palettes/muted.html
 
 pastel - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/pastel.png
+.. raw:: html
+    :file: _static/html/palettes/pastel.html
 
 bright - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/bright.png
+.. raw:: html
+    :file: _static/html/palettes/bright.html
 
 dark - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/dark.png
+.. raw:: html
+    :file: _static/html/palettes/dark.html
 
 colorblind - *stack palette*
 ++++++++++++++++++++++++++++
 
-.. image:: images/palettes/colorblind.png
+.. raw:: html
+    :file: _static/html/palettes/colorblind.html
 
 Plotly
 ------
@@ -766,169 +905,203 @@ Palettes from `plotly <https://plotly.com/>`_.
 plotly - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/plotly.png
+.. raw:: html
+    :file: _static/html/palettes/plotly.html
 
 d3 - *stack palette*
 ++++++++++++++++++++
 
-.. image:: images/palettes/d3.png
+.. raw:: html
+    :file: _static/html/palettes/d3.html
 
 g10 - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/g10.png
+.. raw:: html
+    :file: _static/html/palettes/g10.html
 
 t10 - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/t10.png
+.. raw:: html
+    :file: _static/html/palettes/t10.html
 
 alphabet - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/alphabet.png
+.. raw:: html
+    :file: _static/html/palettes/alphabet.html
 
 dark24 - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/dark24.png
+.. raw:: html
+    :file: _static/html/palettes/dark24.html
 
 light24 - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/light24.png
+.. raw:: html
+    :file: _static/html/palettes/light24.html
 
 blackbody - *stack palette*
 +++++++++++++++++++++++++++
 
-.. image:: images/palettes/blackbody.png
+.. raw:: html
+    :file: _static/html/palettes/blackbody.html
 
 bluered - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/bluered.png
+.. raw:: html
+    :file: _static/html/palettes/bluered.html
 
 electric - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/electric.png
+.. raw:: html
+    :file: _static/html/palettes/electric.html
 
 plotly3 - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/plotly3.png
+.. raw:: html
+    :file: _static/html/palettes/plotly3.html
 
 algae - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/algae.png
+.. raw:: html
+    :file: _static/html/palettes/algae.html
 
 amp - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/amp.png
+.. raw:: html
+    :file: _static/html/palettes/amp.html
 
 deep - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/deep.png
+.. raw:: html
+    :file: _static/html/palettes/deep.html
 
 dense - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/dense.png
+.. raw:: html
+    :file: _static/html/palettes/dense.html
 
 haline - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/haline.png
+.. raw:: html
+    :file: _static/html/palettes/haline.html
 
 ice - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/ice.png
+.. raw:: html
+    :file: _static/html/palettes/ice.html
 
 matter - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/matter.png
+.. raw:: html
+    :file: _static/html/palettes/matter.html
 
 solar - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/solar.png
+.. raw:: html
+    :file: _static/html/palettes/solar.html
 
 speed - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/speed.png
+.. raw:: html
+    :file: _static/html/palettes/speed.html
 
 tempo - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/tempo.png
+.. raw:: html
+    :file: _static/html/palettes/tempo.html
 
 thermal - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/thermal.png
+.. raw:: html
+    :file: _static/html/palettes/thermal.html
 
 turbid - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/turbid.png
+.. raw:: html
+    :file: _static/html/palettes/turbid.html
 
 picnic - *stack palette*
 ++++++++++++++++++++++++
 
-.. image:: images/palettes/picnic.png
+.. raw:: html
+    :file: _static/html/palettes/picnic.html
 
 portland - *stack palette*
 ++++++++++++++++++++++++++
 
-.. image:: images/palettes/portland.png
+.. raw:: html
+    :file: _static/html/palettes/portland.html
 
 balance - *stack palette*
 +++++++++++++++++++++++++
 
-.. image:: images/palettes/balance.png
+.. raw:: html
+    :file: _static/html/palettes/balance.html
 
 curl - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/curl.png
+.. raw:: html
+    :file: _static/html/palettes/curl.html
 
 delta - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/delta.png
+.. raw:: html
+    :file: _static/html/palettes/delta.html
 
 oxy - *stack palette*
 +++++++++++++++++++++
 
-.. image:: images/palettes/oxy.png
+.. raw:: html
+    :file: _static/html/palettes/oxy.html
 
 edge - *stack palette*
 ++++++++++++++++++++++
 
-.. image:: images/palettes/edge.png
+.. raw:: html
+    :file: _static/html/palettes/edge.html
 
 phase - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/phase.png
+.. raw:: html
+    :file: _static/html/palettes/phase.html
 
 mrybm - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/mrybm.png
+.. raw:: html
+    :file: _static/html/palettes/mrybm.html
 
 mygbm - *stack palette*
 +++++++++++++++++++++++
 
-.. image:: images/palettes/mygbm.png
+.. raw:: html
+    :file: _static/html/palettes/mygbm.html
 
 plotly_icefire - *stack palette*
 ++++++++++++++++++++++++++++++++
 
-.. image:: images/palettes/plotly_icefire.png
+.. raw:: html
+    :file: _static/html/palettes/plotly_icefire.html

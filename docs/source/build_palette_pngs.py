@@ -6,7 +6,7 @@ TRUNCATE_PALETTE = False
 MAX_COLORS = 21
 IMG_HEIGHT = 25
 
-pal_pngs_dir = os.path.join(os.path.dirname(__file__), "images/palettes")
+pal_pngs_dir = os.path.join(os.path.dirname(__file__), "_static/image/palettes")
 
 pals = {name: StackPalette.load(name) for name in find_palettes(kind=StackPalette)}
 pals.update({name: Palette.load(name).to_stackpalette() for name in find_palettes(kind=Palette)})
@@ -27,7 +27,7 @@ for pal_name, pal in pals.items():
                        width=0,
                        outline="#000000")
     if TRUNCATE_PALETTE and len(pal.colors) > MAX_COLORS:
-        ellipsis_dir = os.path.join(os.path.dirname(__file__), "images/ellipsis.png")
+        ellipsis_dir = os.path.join(os.path.dirname(__file__), "_static/image/ellipsis.png")
         ellipsis_png = Image.open(ellipsis_dir)
         ellipsis_png = ellipsis_png.resize((IMG_HEIGHT, IMG_HEIGHT))
         im.paste(ellipsis_png, (x + IMG_HEIGHT, 0))

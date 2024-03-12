@@ -16,6 +16,7 @@ API
     api
     examples
     builtin_palettes
+    color_index
     palette_picker
 
 What is colorir?

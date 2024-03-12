@@ -19,7 +19,7 @@ Where `app` is one of:
 Custom palettes for plotting
 ----------------------------
 
-.. image:: images/custom_palettes.png
+.. image:: _static/image/custom_palettes.png
 	:width: 400px
 
 In this example we will use colorir to create custom color palettes
@@ -32,7 +32,7 @@ and gradients and then use them to plot some data.
 Color Wheel with Kivy
 ---------------------
 
-.. image:: images/color_wheel.png
+.. image:: _static/image/color_wheel.png
 	:width: 300px
 
 A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.Grad`.
@@ -44,7 +44,7 @@ A color wheel viewer (not a color picker) showcasing :class:`~colorir.gradient.G
 Palette Picker with Plotly
 --------------------------
 
-.. image:: images/palette_picker.png
+.. image:: _static/image/palette_picker.png
 	:width: 300px
 
 A plotly application used to test palettes with different data types.
@@ -56,7 +56,7 @@ A plotly application used to test palettes with different data types.
 Color Picker with Tkinter
 -------------------------
 
-.. image:: images/color_picker.png
+.. image:: _static/image/color_picker.png
 	:width: 300px
 
 A simple color picker that shows all the palettes available on our current directory (+ the built-in palettes)

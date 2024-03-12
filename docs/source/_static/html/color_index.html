@@ -1,0 +1,12 @@
+<div>
+    <script>
+        window.onload = function() {document.getElementById('named').click()}
+    </script>
+    <div style="display: flex; gap: 10px;">
+        <input type=radio id=named name=colorset onclick="$('#colors').load('_static/html/named_colors.html')">
+        <label for=named>Named colors</label>
+        <input type=radio id=all name=colorset onclick="$('#colors').load('_static/html/all_colors.html')">
+        <label for=all>All colors</label>
+    </div>
+    <div id="colors" class="palette"></div>
+</div>
