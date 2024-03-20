@@ -1,7 +1,7 @@
 Colorir
 =======
 
-.. image:: docs/source/images/readme_palette_picker.png
+.. image:: docs/source/_static/image/readme_palette_picker.png
     :width: 800px
 
 What is colorir?
@@ -35,7 +35,7 @@ It is very easy to create an original and attractive color palette with colorir:
     palette *= cl.HCLab(1, 0.5, 1)  # Desaturates the palette 50% to get a more pleasing look
     cl.swatch(palette)  # Shows the palette we created in the terminal
 
-.. image:: docs/source/images/readme_palette.png
+.. image:: docs/source/_static/image/readme_palette.png
 
 colorir also works seamlessly with other python packages and you don't have to convert colorir objects to pass
 them as input to other frameworks:
@@ -47,7 +47,7 @@ them as input to other frameworks:
     plt.pie([0.25, 0.15, 0.20, 0.20, 0.20], colors=palette)
     plt.show()
 
-.. image:: docs/source/images/readme_pie_chart.png
+.. image:: docs/source/_static/image/readme_pie_chart.png
     :width: 300px
 
 For more information (including use-cases and examples), see colorir's documentation `here <https://colorir.readthedocs.io/en/latest/>`_.
