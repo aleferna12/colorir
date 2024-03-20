@@ -6,8 +6,8 @@ README = (HERE/"README.rst").read_text()
 
 setup(
     name="colorir",
-    version="2.0.3",
-    packages=find_packages(include=['sample', 'sample.*']),
+    version="2.0.4",
+    packages=find_packages(include=['colorir', 'colorir.*']),
     url="https://github.com/aleferna12/colorir",
     license="MIT",
     author="aleferna",

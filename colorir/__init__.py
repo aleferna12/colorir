@@ -5,6 +5,6 @@ from .color_format import *
 from .utils import *
 from . import config
 
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 
 
