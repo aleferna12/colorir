@@ -162,49 +162,49 @@ Color Brewer
 
 Palettes extracted from the amazing `Color Brewer project <https://colorbrewer2.org/>`_.
 
-accent - *palette*
+accent - *stack palette*
 ++++++++++++++++++
 
 .. raw:: html
     :file: _static/html/palettes/accent.html
 
-dark2 - *palette*
+dark2 - *stack palette*
 +++++++++++++++++
 
 .. raw:: html
     :file: _static/html/palettes/dark2.html
 
-paired - *palette*
+paired - *stack palette*
 ++++++++++++++++++
 
 .. raw:: html
     :file: _static/html/palettes/paired.html
 
-pastel1 - *palette*
+pastel1 - *stack palette*
 +++++++++++++++++++
 
 .. raw:: html
     :file: _static/html/palettes/pastel1.html
 
-pastel2 - *palette*
+pastel2 - *stack palette*
 +++++++++++++++++++
 
 .. raw:: html
     :file: _static/html/palettes/pastel2.html
 
-set1 - *palette*
+set1 - *stack palette*
 ++++++++++++++++
 
 .. raw:: html
     :file: _static/html/palettes/set1.html
 
-set2 - *palette*
+set2 - *stack palette*
 ++++++++++++++++
 
 .. raw:: html
     :file: _static/html/palettes/set2.html
 
-set3 - *palette*
+set3 - *stack palette*
 ++++++++++++++++
 
 .. raw:: html
