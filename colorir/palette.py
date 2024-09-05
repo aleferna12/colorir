@@ -651,7 +651,7 @@ class StackPalette(PaletteBase):
                           color_format: ColorFormat = None):
         """Creates a new palette with `n` complementary colors.
 
-        Colors are considered complementary if they are interspaced in the additive from .colormath color
+        Colors are considered complementary if they are interspaced in the additive color
         wheel.
 
         Examples:
@@ -694,7 +694,7 @@ class StackPalette(PaletteBase):
                       color_format: ColorFormat = None):
         """Creates a new palette with `n` analogous colors.
 
-        Colors are considered analogous if they are side-by-side in the additive from .colormath color wheel.
+        Colors are considered analogous if they are side-by-side in the additive color wheel.
 
         Examples:
              Make a palette from red and its analogous color, orange:
@@ -709,12 +709,12 @@ class StackPalette(PaletteBase):
 
         Args:
             n: The number of colors in the new palette.
-            sections: The number of sections in which the additive from .colormath color wheel will be divided
+            sections: The number of sections in which the additive color wheel will be divided
                 before sampling colors. The bigger this number, the more similar the colors will
                 be.
             start: Where the color described in the 'color' parameter will be placed with respect
                 to the others. If '0', 'color' will be in the center of the generated palette, and
-                colors will be sampled from both its sides in the from .colormath wheel. If '1', colors will
+                colors will be sampled from both its sides in the color wheel. If '1', colors will
                 be sampled clockwise from 'color'. If '-1', they will be sampled counter-clockwise.
             color: A color from which the others will be generated against. By default, a color is
                 randomly chosen.
