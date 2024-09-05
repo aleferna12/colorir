@@ -7,11 +7,7 @@ Colorir
 What is colorir?
 ----------------
 
-colorir is a package used to create and manipulate palettes and colors.
-What makes colorir different from other similar packages like `colour <https://pypi.org/project/colour/>`_ and
-`palettable <https://pypi.org/project/palettable/>`_ is that colorir focuses on personalization and interoperability:
-you can create your own color palettes and use them with any other python package such as matplotlib, tkinter
-or flask.
+colorir is a package used to create and manipulate color palettes.
 
 Main features
 -------------
