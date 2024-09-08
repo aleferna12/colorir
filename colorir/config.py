@@ -10,6 +10,7 @@ Examples:
 
     >>> config.DEFAULT_PALETTES_DIR = ".../my_project/palettes"
 """
+from importlib import metadata
 from os import path
 
 from .color_format import ColorFormat
@@ -31,3 +32,5 @@ python.
 Be aware that not all class support all styles of representation. If an object does not support a
 particular style, it will fall back to its 'traditional' style.
 """
+
+_NUMPY_LEGACY = False if metadata.version("numpy")[0] == "1" else "1.25"

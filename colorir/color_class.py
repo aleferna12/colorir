@@ -101,7 +101,7 @@ class ColorBase(metaclass=abc.ABCMeta):
         try:
             if not isinstance(other, ColorBase):
                 other = colorir.config.DEFAULT_COLOR_FORMAT.format(other)
-            return np.all(np.rint(self._rgba) == np.rint(other._rgba))
+            return all(np.rint(self._rgba) == np.rint(other._rgba))
         except colorir.color_format.FormatError:
             return NotImplemented
 
@@ -267,11 +267,12 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         return tuple.__repr__(self)
 
     def __repr__(self):
-        if colorir.config.REPR_STYLE == "traditional":
-            return f"{self.__class__.__name__}{tuple.__repr__(self)}"
-        if colorir.config.REPR_STYLE == "inherit":
-            return str(self)
-        return colorir.utils.swatch(self, file=None)
+        with np.printoptions(legacy="1.25"):  # Gets rid of ugly numpy types
+            if colorir.config.REPR_STYLE == "traditional":
+                return f"{self.__class__.__name__}{tuple.__repr__(self)}"
+            if colorir.config.REPR_STYLE == "inherit":
+                return str(self)
+            return colorir.utils.swatch(self, file=None)
 
     def __hash__(self):
         return ColorBase.__hash__(self)

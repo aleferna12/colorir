@@ -91,18 +91,19 @@ def swatch(obj,
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
     os.system("")
     ret_str = ""
-    for i, c_val in enumerate(obj):
-        rect_str = color_str(" " * width, bg_color=c_val)
-        val_str = f" {c_val}"
-        if longest_name is not None:
-            name = obj.color_names[i]
-            spacing = tabular * " " * (longest_name - len(name))
-            val_str = ' ' + name + spacing + val_str
-        if colored_text:
-            val_str = color_str(val_str, fg_color=c_val)
-        ret_str += rect_str + val_str + '\n'
-        for _ in range(height - 1):
-            ret_str += rect_str + '\n'
+    with np.printoptions(legacy="1.25"):  # Gets rid of ugly numpy types
+        for i, c_val in enumerate(obj):
+            rect_str = color_str(" " * width, bg_color=c_val)
+            val_str = f" {c_val}"
+            if longest_name is not None:
+                name = obj.color_names[i]
+                spacing = tabular * " " * (longest_name - len(name))
+                val_str = ' ' + name + spacing + val_str
+            if colored_text:
+                val_str = color_str(val_str, fg_color=c_val)
+            ret_str += rect_str + val_str + '\n'
+            for _ in range(height - 1):
+                ret_str += rect_str + '\n'
     ret_str = ret_str.strip("\n")
     if file is None:
         return ret_str
