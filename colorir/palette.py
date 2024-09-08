@@ -151,7 +151,6 @@ class Palette(PaletteBase):
         For more examples see the documentation of the :mod:`~colorir.palette` module.
 
     Args:
-        name: Name of the palette which will be used to save it with :meth:`Palette.save()`.
         color_format: Color format specifying how the colors of this :class:`Palette` should be
             stored. Defaults to the value specified in
             :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
