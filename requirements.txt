@@ -7,4 +7,3 @@ kivy~=2.3.0
 pillow~=10.4.0
 setuptools~=72.1.0
 ipython~=8.27.0
-sphinx_rtd_theme~=2.0.0
