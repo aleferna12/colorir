@@ -7,11 +7,11 @@
 Welcome to :rainbow:`colorir`'s documentation!
 ==============================================
 
-API
----
+Contents
+--------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     api
     examples

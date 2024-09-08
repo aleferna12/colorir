@@ -66,7 +66,7 @@ html_theme_options = {
 }
 html_static_path = ['_static']
 html_css_files = [
-    'style.css',
+    'css/style.css',
 ]
 
 # Add any paths that contain custom static files (such as style sheets) here,
