@@ -42,7 +42,7 @@ class Window(tk.Tk):
             frame,
             width=self.btn_size,
             height=self.btn_size,
-            bg=colors.get_color(name),  # Background of the button is its color
+            bg=colors.get(name),  # Background of the button is its color
             bd=1,
             command=partial(self.btn_command, name)
         ) for name in colors.color_names}
@@ -51,7 +51,7 @@ class Window(tk.Tk):
 
     def btn_command(self, name):
         # Adds a strip of the selected color to the left of the screen
-        self.pal_btns.config(bg=colors.get_color(name))
+        self.pal_btns.config(bg=colors.get(name))
         self.clipboard_clear()
         self.clipboard_append(name)
 
@@ -60,7 +60,7 @@ class Window(tk.Tk):
             btn.grid_forget()
         row = 0
         col = 0
-        for c_name in sorted(c_names, key=lambda name: hue_sort_key(8)(colors.get_color(name))):
+        for c_name in sorted(c_names, key=lambda name: hue_sort_key(8)(colors.get(name))):
             self.color_btns[c_name].grid(row=row, column=col)
             if (col + 2) * self.btn_size < self.canvas.winfo_width():
                 col += 1

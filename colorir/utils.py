@@ -78,30 +78,36 @@ def swatch(obj,
         file: If ``None`` returns the swatch as a string. Otherwise, this argument must be a file object and
             is passed to `print`.
     """
-    longest_name = None
-    if isinstance(obj, Grad):
+    longest_name = 0
+    if isinstance(obj, palette.Palette):
+        longest_name = max([len(name) for name in obj.color_names], default=0)
+        obj = obj._color_dict
+    elif isinstance(obj, palette.StackPalette):
+        obj = obj.colors
+    elif isinstance(obj, Grad):
         # Seven steps for each color transition = 7 * (n - 1) - (n - 2)
         obj = obj.n_colors(6 * len(obj.colors) - 5, include_ends=True)
-    elif isinstance(obj, palette.Palette):
-        longest_name = max([len(name) for name in obj.color_names])
-    # Assume single ColorLike
-    elif not isinstance(obj, (list, palette.StackPalette)):
-        obj = [obj]
+
+    if isinstance(obj, list):
+        obj = dict(zip(range(len(obj)), obj))
+    elif not isinstance(obj, dict):
+        obj = {0: obj}
+
     # Needed to make Windows understand "\33" (https://stackoverflow.com/questions/12492810/python-
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
     os.system("")
     ret_str = ""
     with np.printoptions(legacy="1.25"):  # Gets rid of ugly numpy types
-        for i, c_val in enumerate(obj):
+        for c_name, c_val in obj.items():
+            if isinstance(c_name, int) or c_name[0] == "#":
+                c_name = ""
             rect_str = color_str(" " * width, bg_color=c_val)
-            val_str = f" {c_val}"
-            if longest_name is not None:
-                name = obj.color_names[i]
-                spacing = tabular * " " * (longest_name - len(name))
-                val_str = ' ' + name + spacing + val_str
+            val_str = f"{c_val}"
+            spacing = tabular * (longest_name - len(c_name)) * " "
+            val_str = c_name + spacing + " " + val_str
             if colored_text:
                 val_str = color_str(val_str, fg_color=c_val)
-            ret_str += rect_str + val_str + '\n'
+            ret_str += rect_str + " " + val_str + '\n'
             for _ in range(height - 1):
                 ret_str += rect_str + '\n'
     ret_str = ret_str.strip("\n")

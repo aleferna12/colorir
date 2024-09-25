@@ -180,7 +180,7 @@ class Palette(PaletteBase):
     @property
     def color_names(self) -> List[str]:
         """A list of all color names currently stored in the palette."""
-        return list(self._color_dict.keys())
+        return list(name for name in self._color_dict.keys() if name[0] != "#")
 
     # color_format could be used to build a color on every Palette.color call, but that is
     # computationally intensive. That's why the colors are stored as ready objects and are
@@ -192,6 +192,7 @@ class Palette(PaletteBase):
         self._color_dict = {c_name: color_format._from_rgba(c_value._rgba)
                             for c_name, c_value in self._color_dict.items()}
 
+    # TODO: make new method "read" that reads a single palette, add deprecation warning
     @classmethod
     def load(cls,
              palettes: Union[str, List[str]] = None,
@@ -261,7 +262,7 @@ class Palette(PaletteBase):
                                    int(c_rgba[7:9], 16),
                                    int(c_rgba[1:3], 16)])
                 new_color = palette_obj.color_format._from_rgba(c_rgba)
-                old_color = palette_obj.get_color(c_name, None)
+                old_color = palette_obj.get(c_name, None)
                 if old_color is None:
                     palette_obj.add(c_name, new_color)
                 elif new_color != old_color and warnings:
@@ -272,20 +273,29 @@ class Palette(PaletteBase):
         return palette_obj
 
     def __getattr__(self, item):
-        return self.get_color(item)
+        return self.__getitem__(item)
 
+    # TODO: accept slices as parameters aas well
     def __getitem__(self, item):
-        if isinstance(item, str):
-            return self.get_color(item)
+        if isinstance(item, (str, int)):
+            val = self.get(item)
+            if val is None:
+                raise KeyError(f"'{item}' was not found in palette")
+            return val
         elif isinstance(item, list):
             pal = Palette(color_format=self.color_format)
-            pal._color_dict = {c_name: self._color_dict[c_name] for c_name in item}
+            for i in item:
+                val = self.get(i)
+                if val is None:
+                    raise KeyError(f"'{i}' was not found in palette")
+                pal.add(i)
             return pal
-        raise TypeError(f"'Palette' indices must be 'str' or 'list', not '{type(item)}'")
+        raise TypeError(f"'Palette' indices must be 'str', 'int', or 'list', not '{type(item)}'")
 
+    # TODO: accept slices as parameters aas well
     def __setitem__(self, key, value):
-        if not isinstance(key, str):
-            raise TypeError("key must be a string")
+        if not isinstance(key, (str, int)):
+            raise TypeError("key must be a 'str' or 'int'")
         if key in self._color_dict:
             self.update(key, value)
             return
@@ -347,6 +357,11 @@ class Palette(PaletteBase):
             A single :class:`~colorir.color_class.ColorBase` if `name` is a string or a list of
             :class:`~colorir.color_class.ColorBase` if `name` is a list of strings.
         """
+        warn(
+            "This method was deprecated and will be removed in a future version. Use 'get' instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         if fallback is _throw_exception:
             if isinstance(name, str):
                 return self._color_dict[name]
@@ -374,11 +389,25 @@ class Palette(PaletteBase):
         color = self.color_format.format(color)
         color_list = []
         for name in self.color_names:
-            if self.get_color(name) == color:
+            if self.get(name) == color:
                 color_list.append(name)
         return color_list
 
-    def add(self, name: str, color: ColorLike):
+    def get(self, index: Union[str, int], default=None):
+        """Finds a color given its index.
+
+        Args:
+            index: Name or integer index of the color to be retrieved.
+            default: What to return instead of the color if it is not found.
+        """
+        if isinstance(index, str):
+            return self._color_dict.get(index, default)
+        if isinstance(index, int):
+            return list(self._color_dict.values())[index]
+        raise ValueError(f"'index' must be a 'str' or 'int'")
+
+
+    def add(self, index: Union[str, int], color: ColorLike = None):
         """Adds a color to the palette.
 
         Two colors with the same name but different values are invalid and can not coexist in a
@@ -386,31 +415,58 @@ class Palette(PaletteBase):
         colors.
 
         Args:
-            name: Name to be assigned to the new color.
+            index: Name or integer index of the new color. This argument is optional and an unnamed color
+                is added to the end of the palette if the function is called with a single argument
+                (see examples below). An integer can be used to insert a color at a specific index.
             color: The value of the color to be created. Can be an instance of any
                 :mod:`~colorir.color_class` class or, alternatively, a color-like object that
                 resembles the color you want to add.
 
         Examples:
-            Adding a new blue color to the palette:
+            Adding a new blue color to the palette by name:
 
             >>> palette = Palette()
-            >>> palette.add("bestblue", "4287f5")
+            >>> palette.add("bestblue", "#4287f5")
             >>> palette.bestblue
             Hex('#4287f5')
+            >>> palette[0]
+            Hex('#4287f5')
+
+            Inserting an unnamed color to the palette at 'index':
+
+            >>> palette.add(0, "#dff0e5")
+            >>> palette[0]
+            Hex('#dff0e5')
+
+            Adding an unnamed color to the end of the palette:
+
+            >>> palette.add("#ed0012")
+            >>> palette[-1]
+            Hex('#ed0012')
         """
         # Test to detect invalid color names
-        if name in dir(self):
-            raise ValueError(f"'{name}' is a reserved attribute name of Palette or is already "
-                             "in use by another color. 'Palette.update()' might help in that case")
-        color = self.color_format.format(color)
-        self._color_dict[name] = color
+        if index in dir(self):
+            raise ValueError(f"'{index}' is a reserved attribute name of Palette or is already "
+                             "in use by another color, 'Palette.update()' might help in the latter case")
+        if color is None:
+            color = self.color_format.format(index)
+            index = color.hex(include_a=True, tail_a=False)
+        else:
+            color = self.color_format.format(color)
+        if isinstance(index, str):
+            self._color_dict[index] = color
+        elif isinstance(index, int):
+            color_list = list(self._color_dict.items())
+            color_list.insert(index, (color.hex(include_a=True, tail_a=False), color))
+            self._color_dict = dict(color_list)
+        else:
+            raise ValueError(f"'index' must be a 'str' or 'int'")
 
-    def update(self, name: str, color: ColorLike):
+    def update(self, index: Union[str, int], color: ColorLike):
         """Updates a color to a new value.
 
         Args:
-            name: Name of the color to be updated.
+            index: Name or integer index of the color to be updated.
             color: The value of the color to be updated. Can be an instance of any
                 :mod:`~colorir.color_class` class or, alternatively, a color-like object that
                 resembles the format of the color you want to update.
@@ -427,29 +483,41 @@ class Palette(PaletteBase):
             >>> palette.update("myred", "800000")
             >>> palette.myred
             Hex('#800000')
-        """
-        if name in self._color_dict:
-            self._color_dict[name] = self.color_format.format(color)
-        else:
-            raise ValueError(f"provided 'name' parameter is not a color loaded in this 'Palette'")
 
-    def remove(self, name):
+            Change it back by index:
+
+            >>> palette.update(0, "dd0000")
+            >>> palette.myred
+            Hex('#dd0000')
+        """
+        if isinstance(index, int):
+            index = list(self._color_dict.keys())[index]
+        if index in self._color_dict:
+            self._color_dict[index] = self.color_format.format(color)
+        else:
+            raise KeyError(f"'{index}' was not found in palette")
+
+    def remove(self, index: Union[str, int]):
         """Removes a color from the palette.
 
         Args:
-            name: Name of the color to be removed.
+            index: Name or integer index of the color to be removed.
 
         Examples:
-            >>> palette = Palette(red=RGB(1, 0, 0))
-            >>> palette.remove("red")
-            >>> "red" in palette.color_names
-            False
+            >>> palette = Palette(red=RGB(1, 0, 0), blue=RGB(0, 0, 1))
+            >>> palette.remove(0)
+            >>> palette.remove("blue")
+            >>> palette.colors == []
+            True
         """
-        if name in self._color_dict:
-            del self._color_dict[name]
+        if isinstance(index, int):
+            index = list(self._color_dict.keys())[index]
+        if index in self._color_dict:
+            del self._color_dict[index]
         else:
             raise ValueError(f"provided 'name' parameter is not a color stored in this 'Palette'")
 
+    # TODO: make new method "write" that writes to a file path. Add deprecation warning
     def save(self, name: str, palettes_dir: str = None):
         """Saves the changes made to this :class:`Palette` instance.
 
@@ -479,6 +547,7 @@ class Palette(PaletteBase):
         """Converts this palette into a :class:`StackPalette`."""
         return StackPalette(colors=self._color_dict.values(), color_format=self.color_format)
 
+    # TODO: should this include all colors or only named?
     def to_dict(self):
         """Converts this palette into a python `dict`."""
         return dict(self._color_dict)
@@ -543,6 +612,7 @@ class Palette(PaletteBase):
         return pal
 
 
+# TODO: add deprecation warning
 class StackPalette(PaletteBase):
     """Class that handles anonymous indexed colors stored as a stack.
 

@@ -283,7 +283,7 @@ class ColorTupleBase(ColorBase, tuple, metaclass=abc.ABCMeta):
         if isinstance(other, ColorBase):
             return colorbase_eq
         # Otherwise we also try tuple.__eq__
-        return any([colorbase_eq is True, tuple.__eq__(self, other) is True])
+        return colorbase_eq is True or tuple.__eq__(self, other) is True
 
     def __add__(self, other):
         return self._tup_arithm_func(other, operator.add)
@@ -899,6 +899,7 @@ def _warn_tail():
                   stacklevel=3)
 
 
+# TODO: require # so that we can add CSS colors as a color type
 class Hex(ColorBase, str):
     """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 
@@ -1017,7 +1018,7 @@ class Hex(ColorBase, str):
         if isinstance(other, ColorBase):
             return colorbase_eq
         # Otherwise we also try str.__eq__
-        return any([colorbase_eq is True, str.__eq__(self, other) is True])
+        return colorbase_eq is True or str.__eq__(self, other) is True
 
 
 # Aliases
