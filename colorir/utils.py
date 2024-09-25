@@ -144,8 +144,7 @@ def show(obj,
                 display(make_image(obj, width, height))
                 return
         except (ImportError, NameError):
-            pass
-        show_tkinter(obj, width, height, interactive)
+            show_tkinter(obj, width, height, interactive)
 
 
 def show_tkinter(obj, width, height, interactive):

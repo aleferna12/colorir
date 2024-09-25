@@ -156,6 +156,7 @@ class Palette(PaletteBase):
             :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
     """
+    # TODO: decide what to do with this constructor now that palette can have unnamed colors
     def __init__(self,
                  colors: Union["Palette", Dict[str, ColorLike]] = None,
                  color_format: ColorFormat = None,
