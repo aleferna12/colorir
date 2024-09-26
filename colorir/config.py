@@ -19,7 +19,7 @@ from .color_class import Hex
 DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
 """Default directory from which palettes will be loaded and to which they will be saved."""
 
-DEFAULT_COLOR_FORMAT = ColorFormat(Hex)
+DEFAULT_COLOR_FORMAT = ColorFormat(Hex, tail_a=True)
 """Default color format used by different objects in this package."""
 
 REPR_STYLE = "swatch"

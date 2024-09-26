@@ -136,6 +136,7 @@ class PaletteBase(metaclass=abc.ABCMeta):
     def __mod__(self, obj):
         return self._for_each_color(operator.mod, obj=obj)
 
+    # TODO: deprecate grad_class (also in utils)
     def blend(self, obj, perc=0.5, grad_class: Type[Grad] = Grad):
         return self._for_each_color(utils.blend, obj=obj, perc=perc, grad_class=grad_class)
 
@@ -158,7 +159,7 @@ class Palette(PaletteBase):
     """
     # TODO: decide what to do with this constructor now that palette can have unnamed colors
     def __init__(self,
-                 colors: Union["Palette", Dict[str, ColorLike]] = None,
+                 colors: Union["Palette", Dict[str, ColorLike], List[ColorLike]] = None,
                  color_format: ColorFormat = None,
                  **color_kwargs: ColorLike):
         super().__init__(color_format)
@@ -168,11 +169,17 @@ class Palette(PaletteBase):
             raise ValueError("colors can be passed either through the 'colors' parameter or through kwargs "
                              "but not both")
         if isinstance(colors, Palette):
+            warn("Copying palettes using this method is deprecated and will be removed in the future, "
+                 "use 'palette.copy()' instead.")
             colors = colors.to_dict()
 
         self._color_dict = {}
-        for k, v in colors.items():
-            self.add(k, v)
+        if isinstance(colors, dict):
+            for k, v in colors.items():
+                self.add(k, v)
+        elif isinstance(colors, list):
+            for color in colors:
+                self.add(color)
 
     @property
     def colors(self) -> List[ColorBase]:
@@ -289,18 +296,25 @@ class Palette(PaletteBase):
                 val = self.get(i)
                 if val is None:
                     raise KeyError(f"'{i}' was not found in palette")
-                pal.add(i)
+                if isinstance(i, int):
+                    pal.add(val)
+                else:
+                    pal.add(i, val) # Assumes i is str
             return pal
         raise TypeError(f"'Palette' indices must be 'str', 'int', or 'list', not '{type(item)}'")
 
-    # TODO: accept slices as parameters aas well
+    # TODO: accept slices as parameters as well
     def __setitem__(self, key, value):
-        if not isinstance(key, (str, int)):
-            raise TypeError("key must be a 'str' or 'int'")
-        if key in self._color_dict:
+        if isinstance(key, int):
             self.update(key, value)
-            return
-        self.add(key, value)
+        elif isinstance(key, str):
+            if key in self._color_dict:
+                self.update(key, value)
+            else:
+                self.add(key, value)
+        elif isinstance(key, list):
+            for k, v in zip(key, value):
+                self[k] = v
 
     def __delitem__(self, key):
         self.remove(key)
@@ -592,6 +606,10 @@ class Palette(PaletteBase):
         pal = Palette(color_format=self.color_format)
         pal._color_dict = dict(closest[:n])
         return pal
+
+    def copy(self):
+        # TODO: implement
+        return self[:]
 
     def _for_each_color(self, func, obj=None, *args, **kwargs):
         pal = Palette(color_format=self.color_format)
