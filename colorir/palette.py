@@ -283,14 +283,13 @@ class Palette(PaletteBase):
     def __getattr__(self, item):
         return self.__getitem__(item)
 
-    # TODO: accept slices as parameters aas well
     def __getitem__(self, item):
         if isinstance(item, (str, int)):
             val = self.get(item)
             if val is None:
                 raise KeyError(f"'{item}' was not found in palette")
             return val
-        elif isinstance(item, list):
+        if isinstance(item, list):
             pal = Palette(color_format=self.color_format)
             for i in item:
                 val = self.get(i)
@@ -301,9 +300,11 @@ class Palette(PaletteBase):
                 else:
                     pal.add(i, val) # Assumes i is str
             return pal
-        raise TypeError(f"'Palette' indices must be 'str', 'int', or 'list', not '{type(item)}'")
+        if isinstance(item, slice):
+            indexes = list(range(*item.indices(len(self))))
+            return self[indexes]
+        raise TypeError(f"'Palette' indices must be 'str', 'int', 'list', or 'slice', not '{type(item)}'")
 
-    # TODO: accept slices as parameters as well
     def __setitem__(self, key, value):
         if isinstance(key, int):
             self.update(key, value)
@@ -315,6 +316,11 @@ class Palette(PaletteBase):
         elif isinstance(key, list):
             for k, v in zip(key, value):
                 self[k] = v
+        elif isinstance(key, slice):
+            indexes = list(range(*key.indices(len(self))))
+            self[indexes] = value
+        else:
+            raise TypeError(f"'Palette' indices must be 'str', 'int', 'list', or 'slice', not '{type(key)}'")
 
     def __delitem__(self, key):
         self.remove(key)
@@ -472,7 +478,9 @@ class Palette(PaletteBase):
             self._color_dict[index] = color
         elif isinstance(index, int):
             color_list = list(self._color_dict.items())
-            color_list.insert(index, (color.hex(include_a=True, tail_a=False), color))
+            # TODO: this causes a bug where unnamed colors can only be added once.
+            #  Fix that by changing color_dict to a pandas Series like structure
+            color_list.insert(index, (str(color.hex(include_a=True, tail_a=False)), color))
             self._color_dict = dict(color_list)
         else:
             raise ValueError(f"'index' must be a 'str' or 'int'")
@@ -858,7 +866,7 @@ class StackPalette(PaletteBase):
             indexes = list(range(*key.indices(len(self))))
             self[indexes] = value
         else:
-            raise TypeError("index must be 'int', 'list' or 'slice'")
+            raise TypeError(f"'StackPalette' indices must be 'str', 'int', 'list', or 'slice', not '{type(key)}'")
 
     def __str__(self):
         colors_str = ', '.join(str(c_val) for c_val in self._color_stack)
