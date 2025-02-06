@@ -54,6 +54,9 @@ import numpy as np
 from pathlib import Path
 from typing import Union, List, Dict, Iterable, Type
 from warnings import warn
+
+from networkx import config
+
 from . import config
 from . import utils
 from .color_class import ColorBase, RGB, HSL, HSV, ColorLike
@@ -291,14 +294,15 @@ class Palette(PaletteBase):
             return val
         if isinstance(item, list):
             pal = Palette(color_format=self.color_format)
+            indexes = list(self._color_dict)
             for i in item:
-                val = self.get(i)
-                if val is None:
-                    raise KeyError(f"'{i}' was not found in palette")
-                if isinstance(i, int):
-                    pal.add(val)
+                if isinstance(i, str):
+                    pal.add(i, self.get(i))
+                elif isinstance(i, int):
+                    pal.add(indexes[i], self.get(i))
                 else:
-                    pal.add(i, val) # Assumes i is str
+                    raise TypeError(f"'Palette' list indexing can be performed with 'str' or 'int', "
+                                    f"but not '{type(item)}'")
             return pal
         if isinstance(item, slice):
             indexes = list(range(*item.indices(len(self))))
@@ -428,7 +432,7 @@ class Palette(PaletteBase):
         raise ValueError(f"'index' must be a 'str' or 'int'")
 
 
-    def add(self, index: Union[str, int], color: ColorLike = None):
+    def add(self, index: str, color: ColorLike):
         """Adds a color to the palette.
 
         Two colors with the same name but different values are invalid and can not coexist in a
@@ -436,9 +440,7 @@ class Palette(PaletteBase):
         colors.
 
         Args:
-            index: Name or integer index of the new color. This argument is optional and an unnamed color
-                is added to the end of the palette if the function is called with a single argument
-                (see examples below). An integer can be used to insert a color at a specific index.
+            index: Name or integer index of the new color.
             color: The value of the color to be created. Can be an instance of any
                 :mod:`~colorir.color_class` class or, alternatively, a color-like object that
                 resembles the color you want to add.
@@ -452,18 +454,6 @@ class Palette(PaletteBase):
             Hex('#4287f5')
             >>> palette[0]
             Hex('#4287f5')
-
-            Inserting an unnamed color to the palette at 'index':
-
-            >>> palette.add(0, "#dff0e5")
-            >>> palette[0]
-            Hex('#dff0e5')
-
-            Adding an unnamed color to the end of the palette:
-
-            >>> palette.add("#ed0012")
-            >>> palette[-1]
-            Hex('#ed0012')
         """
         # Test to detect invalid color names
         if index in dir(self):
@@ -476,14 +466,8 @@ class Palette(PaletteBase):
             color = self.color_format.format(color)
         if isinstance(index, str):
             self._color_dict[index] = color
-        elif isinstance(index, int):
-            color_list = list(self._color_dict.items())
-            # TODO: this causes a bug where unnamed colors can only be added once.
-            #  Fix that by changing color_dict to a pandas Series like structure
-            color_list.insert(index, (str(color.hex(include_a=True, tail_a=False)), color))
-            self._color_dict = dict(color_list)
         else:
-            raise ValueError(f"'index' must be a 'str' or 'int'")
+            raise ValueError(f"'index' must be a 'str'")
 
     def update(self, index: Union[str, int], color: ColorLike):
         """Updates a color to a new value.
@@ -1000,13 +984,15 @@ class StackPalette(PaletteBase):
                 formatted_colors.append(c_rgba)
             json.dump(formatted_colors, file, indent=4)
 
-    def to_palette(self, names: List[str]) -> Palette:
+    def to_palette(self, names: List[str] = None) -> Palette:
         """Converts this stack palette into a :class:`Palette`.
 
         Args:
             names: Names that will be given to the colors in the same order they appear in this
-                stack palette.
+                stack palette. If omitted, the colors will be numerated and named as 'cx', where x is its index.
         """
+        if names is None:
+            names = [f"c{i}" for i in range(len(self))]
         if len(names) == len(set(names)) == len(self._color_stack):
             return Palette(dict(zip(names, self._color_stack)), color_format=self.color_format)
         raise ValueError("'names' must have the same length as this 'StackPalette' and no "
