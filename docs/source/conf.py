@@ -22,7 +22,7 @@ copyright = '2024, Alexandre Fernandes'
 author = 'Alexandre Fernandes'
 
 # The full version, including alpha/beta/rc tags
-release = '2.0.5'
+release = '2.1.0'
 
 
 # -- General configuration ---------------------------------------------------
