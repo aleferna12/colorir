@@ -29,7 +29,7 @@ It is very easy to create an original and attractive color palette with colorir:
     grad = cl.PolarGrad(["ffff00", "ff00ff"])  # Creates a gradient from yellow to magenta
     palette = cl.StackPalette(grad.n_colors(5))  # Samples 5 colors along the gradient and creates a palette with them
     palette *= cl.HCLab(1, 0.5, 1)  # Desaturates the palette 50% to get a more pleasing look
-    cl.swatch(palette)  # Shows the palette we created in the terminal
+    palette  # Shows the palette we created in the terminal
 
 .. image:: docs/source/_static/image/readme_palette.png
 
