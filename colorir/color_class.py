@@ -894,7 +894,7 @@ default_tail = object()
 
 def _warn_tail():
     warnings.warn("the default value for the 'tail_a' argument will be changed to 'True' "
-                  "in the next release. Pass the argument explicitly with 'Hex(string, tail_a=False)' instead.",
+                  "in the next release, pass the argument explicitly with 'Hex(string, tail_a=False)' instead",
                   FutureWarning,
                   stacklevel=3)
 

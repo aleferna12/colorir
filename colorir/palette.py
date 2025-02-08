@@ -58,7 +58,7 @@ from networkx import config
 
 from . import config
 from . import utils
-from .color_class import ColorBase, RGB, HSL, HSV, ColorLike
+from .color_class import ColorBase, RGB, HSL, HSV, ColorLike, ColorPolarBase
 from .color_format import ColorFormat
 from .gradient import Grad
 
@@ -138,7 +138,7 @@ class PaletteBase(metaclass=abc.ABCMeta):
     def __mod__(self, obj):
         return self._for_each_color(operator.mod, obj=obj)
 
-    def blend(self, obj, perc=0.5, grad_class=utils._deprecated_grad):
+    def blend(self, obj, perc=0.5, grad_class=utils._deprecated):
         return self._for_each_color(utils.blend, obj=obj, perc=perc, grad_class=grad_class)
 
 
@@ -268,10 +268,9 @@ class Palette(PaletteBase):
                 if old_color is None:
                     palette_obj.add(c_name, new_color)
                 elif new_color != old_color and warnings:
-                    warn(
-                        f"a discrepancy was detected when adding color '{c_name}' "
-                        f"({new_color}) from palette named '{palette_name}': '{c_name}' is "
-                        f"already present with a different value ({old_color})")
+                    warn(f"a discrepancy was detected when adding color '{c_name}' "
+                         f"({new_color}) from palette named '{palette_name}': '{c_name}' is "
+                         f"already present with a different value ({old_color})")
         return palette_obj
 
     def __getattr__(self, item):
@@ -712,7 +711,8 @@ class StackPalette(PaletteBase):
     def new_complementary(cls,
                           n: int,
                           color: ColorLike = None,
-                          color_format: ColorFormat = None):
+                          color_format: ColorFormat = None,
+                          color_system: Type[ColorPolarBase] = utils._default_change):
         """Creates a new palette with `n` complementary colors.
 
         Colors are considered complementary if they are interspaced in the additive color
@@ -736,17 +736,28 @@ class StackPalette(PaletteBase):
             color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+            color_system: Which polar color system to use. Supported values are HSV, HSL, HCLuv and HCLab.
         """
+        if color_system is utils._default_change:
+            warn("the default 'color_system' argument will be changed to 'colorir.HCLuv' "
+                 "in the next minor release "
+                 "of colorir, specify a 'color_system' to suppress this warning",
+                 stacklevel=2,
+                 category=FutureWarning)
+            color_system = HSV
+
         n_spalette = cls(color_format=color_format)
+        polar_cf = ColorFormat(color_system, max_h=360)
         if color is None:
-            hsv = utils.random_color(color_format=ColorFormat(HSV, max_h=360))
+            converted_color = utils.random_color(color_format=polar_cf)
         else:
-            hsv = n_spalette.color_format.format(color).hsv(max_h=360)
+            color = n_spalette.color_format.format(color)
+            converted_color = polar_cf.format(color)
 
         step = 360 / n
         for i in range(n):
-            hue = (hsv[0] + i * step) % 360
-            n_spalette.add(HSV(hue, hsv[1], hsv[2]))
+            hue = (converted_color.h + i * step) % 360
+            n_spalette.add(polar_cf.new_color(hue, *converted_color[1:]))
         return n_spalette
 
     @classmethod
@@ -755,7 +766,8 @@ class StackPalette(PaletteBase):
                       sections=12,
                       start=0,
                       color: ColorLike = None,
-                      color_format: ColorFormat = None):
+                      color_format: ColorFormat = None,
+                      color_system: Type[ColorPolarBase] = utils._default_change):
         """Creates a new palette with `n` analogous colors.
 
         Colors are considered analogous if they are side-by-side in the additive color wheel.
@@ -785,7 +797,16 @@ class StackPalette(PaletteBase):
             color_format: Color format specifying how the colors of this :class:`StackPalette`
                 should be stored. Defaults to the value specified in
                 :data:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
+            color_system: Which polar color system to use. Supported values are HSV, HSL, HCLuv and HCLab.
         """
+        if color_system is utils._default_change:
+            warn("the default 'color_system' argument will be changed to 'colorir.HCLuv' "
+                 "in the next minor release "
+                 "of colorir, specify a 'color_system' to suppress this warning",
+                 stacklevel=2,
+                 category=FutureWarning)
+            color_system = HSV
+
         if n > sections:
             raise ValueError("'n' parameter cannot be larger than 'sections' parameter")
         if start == 0:
@@ -799,15 +820,17 @@ class StackPalette(PaletteBase):
             raise ValueError("'starting_point' must be either 0, 1 or -1")
 
         n_spalette = cls(color_format=color_format)
+        polar_cf = ColorFormat(color_system, max_h=360)
         if color is None:
-            hsv = utils.random_color(color_format=ColorFormat(HSV, max_h=360))
+            converted_color = utils.random_color(color_format=polar_cf)
         else:
-            hsv = n_spalette.color_format.format(color).hsv(max_h=360)
+            color = n_spalette.color_format.format(color)
+            converted_color = polar_cf.format(color)
 
         step = 360 / sections
         for index, i in enumerate(iterator):
-            hue = (hsv[0] + i * step) % 360
-            n_spalette.add(HSV(hue, hsv[1], hsv[2]))
+            hue = (converted_color.h + i * step) % 360
+            n_spalette.add(polar_cf.new_color(hue, *converted_color[1:]))
         return n_spalette
 
     def __getitem__(self, item):
@@ -859,8 +882,8 @@ class StackPalette(PaletteBase):
         c_list = self.colors + other.colors
         return StackPalette(c_list, color_format=self.color_format)
 
-    def resize(self, n: int, repeat=False, grad_class=utils._deprecated_grad, **kwargs):
-        if grad_class is not utils._deprecated_grad:
+    def resize(self, n: int, repeat=False, grad_class=utils._deprecated, **kwargs):
+        if grad_class is not utils._deprecated:
             warn("'grad_class' argument is deprecated and will be removed in the next minor release of "
                  "colorir, for more control over color blending use 'colorir.Grad' or 'colorir.PolarGrad' instead",
                  stacklevel=2, category=DeprecationWarning)
@@ -1107,8 +1130,12 @@ def delete_palette(palette: str, palettes_dir: str = None):
 # TODO: raise deprecwarning for search_cwd
 def _resolve_palettes_dirs(palettes_dir, search_builtins, search_cwd):
     if palettes_dir is None:
-        warn("'config.DEFAULT_PALETTES_DIR' is going to change to the current directory on the next minor release, "
-             "specify 'palettes_dir=colorir.config.USR_PALETTES_DIR' to disable this warning", stacklevel=3)
+        warn(
+            "'config.DEFAULT_PALETTES_DIR' is going to change to the current directory on the next minor release, "
+            "specify 'palettes_dir=colorir.config.USR_PALETTES_DIR' to disable this warning",
+             stacklevel=3,
+             category=FutureWarning
+        )
     if palettes_dir is None:
         palettes_dir = config.DEFAULT_PALETTES_DIR
     palettes_dir = [palettes_dir]

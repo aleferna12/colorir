@@ -18,7 +18,8 @@ from .gradient import Grad
 
 # Patch asscalar
 np.asscalar = lambda a: a.item()
-_deprecated_grad = object()
+_deprecated = object()
+_default_change = object()
 
 __all__ = [
     "swatch",
@@ -35,8 +36,8 @@ __all__ = [
 ]
 
 
-def blend(color1, color2, perc=0.5, grad_class=_deprecated_grad, **kwargs):
-    if grad_class is not _deprecated_grad:
+def blend(color1, color2, perc=0.5, grad_class=_deprecated, **kwargs):
+    if grad_class is not _deprecated:
         warn("'grad_class' argument is deprecated and will be removed in the next minor release of colorir, "
              "for more control over color blending use 'colorir.Grad' or 'colorir.PolarGrad' instead",
              stacklevel=2, category=DeprecationWarning)
