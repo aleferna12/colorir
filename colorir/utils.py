@@ -152,9 +152,12 @@ def show(obj,
             # For some reason this function is not in globals()... so we gotta try it
             if get_ipython().__class__.__name__ == "ZMQInteractiveShell":
                 display(make_image(obj, width, height))
-                return
-        except (ImportError, NameError):
-            show_tkinter(obj, width, height, interactive)
+            else:
+                show_tkinter(obj, width, height, interactive)
+        except (ImportError, NameError) as e:
+            raise e
+    else:
+        show_tkinter(obj, width, height, interactive)
 
 
 def show_tkinter(obj, width, height, interactive):
