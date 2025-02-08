@@ -138,8 +138,7 @@ class PaletteBase(metaclass=abc.ABCMeta):
     def __mod__(self, obj):
         return self._for_each_color(operator.mod, obj=obj)
 
-    # TODO: deprecate grad_class (also in utils)
-    def blend(self, obj, perc=0.5, grad_class: Type[Grad] = Grad):
+    def blend(self, obj, perc=0.5, grad_class=utils._deprecated_grad):
         return self._for_each_color(utils.blend, obj=obj, perc=perc, grad_class=grad_class)
 
 
@@ -196,7 +195,6 @@ class Palette(PaletteBase):
         self._color_dict = {c_name: color_format._from_rgba(c_value._rgba)
                             for c_name, c_value in self._color_dict.items()}
 
-    # TODO: make new method "read" that reads a single palette, add deprecation warning
     @classmethod
     def load(cls,
              palettes: Union[str, List[str]] = None,
@@ -517,7 +515,6 @@ class Palette(PaletteBase):
         else:
             raise ValueError(f"provided 'name' parameter is not a color stored in this 'Palette'")
 
-    # TODO: make new method "write" that writes to a file path. Add deprecation warning
     def save(self, name: str, palettes_dir: str = None):
         """Saves the changes made to this :class:`Palette` instance.
 
@@ -547,7 +544,6 @@ class Palette(PaletteBase):
         """Converts this palette into a :class:`StackPalette`."""
         return StackPalette(colors=self._color_dict.values(), color_format=self.color_format)
 
-    # TODO: should this include all colors or only named?
     def to_dict(self):
         """Converts this palette into a python `dict`."""
         return dict(self._color_dict)
@@ -612,7 +608,6 @@ class Palette(PaletteBase):
         return pal
 
 
-# TODO: add deprecation warning
 class StackPalette(PaletteBase):
     """Class that handles anonymous indexed colors stored as a stack.
 
@@ -864,7 +859,13 @@ class StackPalette(PaletteBase):
         c_list = self.colors + other.colors
         return StackPalette(c_list, color_format=self.color_format)
 
-    def resize(self, n: int, repeat=False, grad_class=Grad, **kwargs):
+    def resize(self, n: int, repeat=False, grad_class=utils._deprecated_grad, **kwargs):
+        if grad_class is not utils._deprecated_grad:
+            warn("'grad_class' argument is deprecated and will be removed in the next minor release of "
+                 "colorir, for more control over color blending use 'colorir.Grad' or 'colorir.PolarGrad' instead",
+                 stacklevel=2, category=DeprecationWarning)
+        else:
+            grad_class = Grad
         """Resizes the palette to be `n` elements long by interpolating or repeating colors.
 
         Args:
