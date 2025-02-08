@@ -53,15 +53,15 @@ class TestStackPalette(unittest.TestCase):
 
     def test_complementary(self):
         red = "ff0000"
-        spal = StackPalette.new_complementary(3, red)
+        spal = StackPalette.new_complementary(3, red, color_system=HSV)
         self.assertEqual(spal, StackPalette([red, "00ff00", "0000ff"]))
 
     def test_analogous(self):
         red = HSV(0, 1, 1)
         # Center, clockwise and counter-clockwise generation
-        c_spal = StackPalette.new_analogous(3, color=red)
-        cw_spal = StackPalette.new_analogous(3, color=red, start=1)
-        ccw_spal = StackPalette.new_analogous(3, color=red, start=-1)
+        c_spal = StackPalette.new_analogous(3, color=red, color_system=HSV)
+        cw_spal = StackPalette.new_analogous(3, color=red, color_system=HSV, start=1)
+        ccw_spal = StackPalette.new_analogous(3, color=red, color_system=HSV, start=-1)
         self.assertEqual(c_spal, StackPalette([HSV(330, 1, 1), red, HSV(30, 1, 1)]))
         self.assertEqual(cw_spal, StackPalette([red, HSV(30, 1, 1), HSV(60, 1, 1)]))
         self.assertEqual(ccw_spal, StackPalette([HSV(300, 1, 1), HSV(330, 1, 1), red]))

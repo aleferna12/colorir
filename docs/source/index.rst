@@ -1,4 +1,4 @@
-.. raw:: html
+from colorir.examples.color_picker import palettesfrom colorir.examples.color_picker import palettes.. raw:: html
 
     <style> .rainbow {background-image: linear-gradient(to left, blue, green, yellow, red); -webkit-background-clip: text; color: transparent;} </style>
 
@@ -83,7 +83,7 @@ method:
 
 >>> palette.add("cyan", "#00ffff")
 >>> palette.add("yellow", HSL(60, 1, 0.5))  # We can pass colors in formats other than hex as well
->>> palette.add("magenta", CIELAB(60, -98, -60))  # They will be internally converted to match the rest of the palette
+>>> palette.add("magenta", CIELab(60, 98, -60))  # They will be internally converted to match the rest of the palette
 >>> palette
 
 .. raw:: html
@@ -109,7 +109,7 @@ method:
 
 To access the colors in a palette we can use dot attribute syntax:
 
->>> palette.cyan  # palette['cyan'] also works
+>>> palette.cyan  # palette['cyan'] or palette[3] also works
 
 .. raw:: html
 
@@ -126,11 +126,36 @@ components from other color systems:
 
     <p><span style="background-color:#007477"> &emsp; </span> &nbsp; <span style="color:#007477"> #007477 </span></p>
 
->>> palette.cyan - HCLab(0, 25, 0)  # Remove 25 HCLab saturation from cyan
+>>> palette.cyan * HCLab(1, 0.5, 1)  # Desaturate cyan by 50%
 
 .. raw:: html
 
     <p><span style="background-color:#a5f3f2"> &emsp; </span> &nbsp; <span style="color:#a5f3f2"> #a5f3f2 </span></p>
+
+Color arithmetic can also be done to all colors in a palette at once:
+
+>>> palette * HCLab(1, 0.5, 1)
+
+.. raw:: html
+
+    <p style="margin-bottom:0px; padding:0px; line-height:1;">
+      <span style="background-color:#c96047"> &emsp; </span> &nbsp; <span style="color:#c96047"> red #c96047 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#a0f08a"> &emsp; </span> &nbsp; <span style="color:#a0f08a"> green #a0f08a </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#5437a2"> &emsp; </span> &nbsp; <span style="color:#5437a2"> blue #5437a2 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#a5f3f2"> &emsp; </span> &nbsp; <span style="color:#a5f3f2"> cyan #a5f3f2 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#fffa9a"> &emsp; </span> &nbsp; <span style="color:#fffa9a"> yellow #fffa9a </span>
+    </p>
+    <p style="margin-top:0px; padding:0px; line-height:1;">
+      <span style="background-color:#cb6fc6"> &emsp; </span> &nbsp; <span style="color:#cb6fc6"> magenta #cb6fc6 </span>
+    </p>
 
 See the :mod:`~colorir.color_class` module for details on how to manipulate colors with arithmetics.
 
@@ -162,7 +187,55 @@ interpolation in different color systems:
       <span style="background-color:#ff71d3"> &emsp; </span> &nbsp; <span style="color:#ff71d3"> #ff71d3 </span>
     </p>
     <p style="margin-top:0px; padding:0px; line-height:1;">
-      <span style="background-color:#ff00ff"> &emsp; </span> &nbsp; <span style="color:#ff00ff"> #ff00ff </span>
+      <span style="background-color:#fe00fd"> &emsp; </span> &nbsp; <span style="color:#fe00fd"> #fe00fd </span>
+    </p>
+
+Naturally good-looking palettes can also be easily created with :meth:`~colorir.palette.StackPalette.new_analogous()`
+and :meth:`~colorir.palette.StackPalette.new_complementary()`. These methods return a
+:class:`~colorir.palette.StackPalette`, which behaves a lot like a :class:`~colorir.palette.Palette` except that it
+holds unnamed colors:
+
+>>> spalette = StackPalette.new_analogous(4)
+>>> spalette
+
+.. raw:: html
+
+    <p style="margin-bottom:0px; padding:0px; line-height:1;">
+      <span style="background-color:#ffd48d"> &emsp; </span> &nbsp; <span style="color:#ffd48d"> #ffd48d </span>
+    </p>
+    <p style="margin-bottom:0px; padding:0px; line-height:1;">
+      <span style="background-color:#dce083"> &emsp; </span> &nbsp; <span style="color:#dce083"> #dce083 </span>
+    </p>
+    <p style="margin-bottom:0px; padding:0px; line-height:1;">
+      <span style="background-color:#afea95"> &emsp; </span> &nbsp; <span style="color:#afea95"> #afea95 </span>
+    </p>
+    <p style="margin-top:0px; padding:0px; line-height:1;">
+      <span style="background-color:#7bf0b9"> &emsp; </span> &nbsp; <span style="color:#7bf0b9"> #7bf0b9 </span>
+    </p>
+
+You can also convert a :class:`~colorir.palette.StackPalette` to a :class:`~colorir.palette.Palette` using the
+:meth:`~colorir.palette.StackPalette.to_palette()` method:
+
+>>> palette2 = spalette.to_palette()
+
+Both :class:`~colorir.palette.StackPalette` and :class:`~colorir.palette.Palette` objects can be indexed numerically,
+sliced and combined with the '&' operator:
+
+>>> palette[[0, -1]] & palette2[1:]
+
+.. raw:: html
+
+    <p style="margin-bottom:0px; padding:0px; line-height:1;">
+      <span style="background-color:#ff0000"> &emsp; </span> &nbsp; <span style="color:#ff0000"> red #ff0000 </span>
+    </p>
+    <p style="margin:0px; padding:0px; line-height:1;">
+      <span style="background-color:#fe00fd"> &emsp; </span> &nbsp; <span style="color:#fe00fd"> magenta #fe00fd </span>
+    </p>
+    <p style="margin-bottom:0px; padding:0px; line-height:1;">
+      <span style="background-color:#afea95"> &emsp; </span> &nbsp; <span style="color:#afea95"> c2 #afea95 </span>
+    </p>
+    <p style="margin-top:0px; padding:0px; line-height:1;">
+      <span style="background-color:#7bf0b9"> &emsp; </span> &nbsp; <span style="color:#7bf0b9"> c3 #7bf0b9 </span>
     </p>
 
 To save a palette use :meth:`Palette.save() <colorir.palette.Palette.save()>`:
