@@ -899,7 +899,6 @@ def _warn_tail():
                   stacklevel=3)
 
 
-# TODO: require # so that we can add CSS colors as a color type
 class Hex(ColorBase, str):
     """Represents a color in the RGB color space [#]_ as a hexadecimal string.
 

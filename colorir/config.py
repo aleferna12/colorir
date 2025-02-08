@@ -16,9 +16,11 @@ from os import path
 from .color_format import ColorFormat
 from .color_class import Hex
 
-# TODO: rethink how this works, default directory should prob be current dir
 DEFAULT_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
 """Default directory from which palettes will be loaded and to which they will be saved."""
+
+USR_PALETTES_DIR = path.join(path.dirname(__file__), "palettes")
+"""System-wide directory where custom palettes can be saved. You probably do not wnt to change this."""
 
 DEFAULT_COLOR_FORMAT = ColorFormat(Hex, tail_a=True)
 """Default color format used by different objects in this package."""

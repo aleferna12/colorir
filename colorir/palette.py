@@ -54,7 +54,6 @@ import numpy as np
 from pathlib import Path
 from typing import Union, List, Dict, Iterable, Type
 from warnings import warn
-
 from networkx import config
 
 from . import config
@@ -160,9 +159,8 @@ class Palette(PaletteBase):
             :const:`config.DEFAULT_COLOR_FORMAT <colorir.config.DEFAULT_COLOR_FORMAT>`.
         colors: Colors that will be stored in this palette.
     """
-    # TODO: decide what to do with this constructor now that palette can have unnamed colors
     def __init__(self,
-                 colors: Union["Palette", Dict[str, ColorLike], List[ColorLike]] = None,
+                 colors: Union["Palette", Dict[str, ColorLike]] = None,
                  color_format: ColorFormat = None,
                  **color_kwargs: ColorLike):
         super().__init__(color_format)
@@ -172,17 +170,12 @@ class Palette(PaletteBase):
             raise ValueError("colors can be passed either through the 'colors' parameter or through kwargs "
                              "but not both")
         if isinstance(colors, Palette):
-            warn("Copying palettes using this method is deprecated and will be removed in the future, "
-                 "use 'palette.copy()' instead.")
             colors = colors.to_dict()
 
         self._color_dict = {}
         if isinstance(colors, dict):
             for k, v in colors.items():
                 self.add(k, v)
-        elif isinstance(colors, list):
-            for color in colors:
-                self.add(color)
 
     @property
     def colors(self) -> List[ColorBase]:
@@ -598,10 +591,6 @@ class Palette(PaletteBase):
         pal = Palette(color_format=self.color_format)
         pal._color_dict = dict(closest[:n])
         return pal
-
-    def copy(self):
-        # TODO: implement
-        return self[:]
 
     def _for_each_color(self, func, obj=None, *args, **kwargs):
         pal = Palette(color_format=self.color_format)
@@ -1114,7 +1103,11 @@ def delete_palette(palette: str, palettes_dir: str = None):
         raise ValueError(f"palette name '{palette}' is ambiguous (more than one palette share it)")
 
 
+# TODO: raise deprecwarning for search_cwd
 def _resolve_palettes_dirs(palettes_dir, search_builtins, search_cwd):
+    if palettes_dir is None:
+        warn("'config.DEFAULT_PALETTES_DIR' is going to change to the current directory on the next minor release, "
+             "specify 'palettes_dir=colorir.config.USR_PALETTES_DIR' to disable this warning", stacklevel=3)
     if palettes_dir is None:
         palettes_dir = config.DEFAULT_PALETTES_DIR
     palettes_dir = [palettes_dir]
