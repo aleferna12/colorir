@@ -107,7 +107,7 @@ def swatch(obj,
     # how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows)
     os.system("")
     ret_str = ""
-    with np.printoptions(legacy="1.25"):  # Gets rid of ugly numpy types
+    with np.printoptions(legacy="1.21"):  # Gets rid of ugly numpy types
         for c_name, c_val in obj.items():
             if isinstance(c_name, int) or c_name[0] == "#":
                 c_name = ""
