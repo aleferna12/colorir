@@ -1,4 +1,4 @@
-from colorir.examples.color_picker import palettesfrom colorir.examples.color_picker import palettes.. raw:: html
+.. raw:: html
 
     <style> .rainbow {background-image: linear-gradient(to left, blue, green, yellow, red); -webkit-background-clip: text; color: transparent;} </style>
 
