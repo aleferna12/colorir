@@ -117,7 +117,7 @@ To access the colors in a palette we can use dot attribute syntax:
         <span style="background-color:#00ffff"> &emsp; </span> &nbsp; <span style="color:#00ffff"> #00ffff </span>
     </p>
 
-We can make manipulate the properties of a color by adding and removing color
+We can manipulate the properties of a color by adding and removing color
 components from other color systems:
 
 >>> palette.cyan - CIELab(50, 0, 0)  # Remove 50 CIELab lightness from cyan
