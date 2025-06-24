@@ -5,5 +5,5 @@ plotly~=5.24.0
 pygame~=2.6.0
 kivy~=2.3.0
 pillow~=10.4.0
-setuptools~=72.1.0
+setuptools~=78.1.1
 ipython~=8.27.0
